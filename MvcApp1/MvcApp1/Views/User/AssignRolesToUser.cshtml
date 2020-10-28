@@ -1,0 +1,120 @@
+﻿@model MvcApp1.Models.User
+@{
+    ViewBag.Title = "AssignRolesToUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- http://jsfiddle.net/eUDRV/3/ -->
+<!-- http://jsfiddle.net/WfBRr/5/ -->
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+<style>
+    select {
+        width: 160px;
+        box-sizing: border-box;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#btnSelect").click(function () {
+            var selectedItem = $("#unselectedValues option:selected");
+            $("#selectedValues").append(selectedItem);
+            /// https://gist.github.com/ericclemmons/305035
+            var options = jQuery.makeArray($("#selectedValues").find('option'));
+            var sorted = options.sort(function (a, b) {
+                return (jQuery(a).text() > jQuery(b).text()) ? 1 : -1;
+            });
+            $("#selectedValues").append(jQuery(sorted)).attr('selectedIndex', 0);
+            /// http://jsfiddle.net/Mer38/
+            var txt = [];
+            $("#selectedValues option").each(function () {
+                txt.push($(this).val() + ",");
+            });
+            $("#r1").html(txt);
+            $("#UiSelectedValues").val(txt);
+        });
+        $("#btnUnselect").click(function () {
+            var selectedItem = $("#selectedValues option:selected");
+            $("#unselectedValues").append(selectedItem);
+            /// https://gist.github.com/ericclemmons/305035
+            var options = jQuery.makeArray($("#unselectedValues").find('option'));
+            var sorted = options.sort(function (a, b) {
+                return (jQuery(a).text() > jQuery(b).text()) ? 1 : -1;
+            });
+            $("#unselectedValues").append(jQuery(sorted)).attr('selectedIndex', 0);
+            /// http://jsfiddle.net/Mer38/
+            var txt = [];
+            $("#selectedValues option").each(function () {
+                txt.push($(this).val() + ",");
+            });
+            $("#r1").html(txt);
+            $("#UiSelectedValues").val(txt);
+        });
+    });
+</script>
+<h2>Assign Roles To User</h2>
+@using (Html.BeginForm("AssignRolesToUser", "User", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.UserId)
+    @Html.HiddenFor(model => model.LoginName)
+    @Html.HiddenFor(model => model.DisplayName)
+    @Html.HiddenFor(model => model.IsDisabled)
+    <div>
+        <dl class="dl-horizontal">
+            <dt>@Html.DisplayNameFor(model => model.LoginName)</dt>
+            <dd>@Html.DisplayFor(model => model.LoginName)</dd>
+            <dt>@Html.DisplayNameFor(model => model.DisplayName)</dt>
+            <dd>@Html.DisplayFor(model => model.DisplayName)</dd>
+            <dt>@Html.DisplayNameFor(model => model.IsDisabled)</dt>
+            <dd>@Html.DisplayFor(model => model.IsDisabled)</dd>
+        </dl>
+    </div>
+    <div class="form-horizontal">
+        <input id="UiSelectedValues" name="UiSelectedValues" type="hidden" value="@ViewBag.selectedRoleIdString" />
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5">
+                    <label for="selectedValues">Selected Roles (hold shift to select more than one)</label>
+                    <select id="selectedValues" name="selectedValues" size="10" multiple="multiple" class="form-control">
+                        @if (Model.RoleList != null && Model.RoleList.Count > 0)
+                        {
+                            foreach (var item in Model.RoleList)
+                            {
+                                if (item != null && item.IsSelected)
+                                {
+                                    <option value="@item.RoleId">@item.UniqueName, @item.DisplayName</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="button" id="btnSelect" value="Select" /><br /><br />
+                    <input type="button" id="btnUnselect" value="Unselect" />
+                </div>
+                <div class="col-md-5">
+                    <label for="unselectedValues">Unselected Roles (hold shift to select more than one)</label>
+                    <select id="unselectedValues" name="unselectedValues" size="10" multiple="multiple" class="form-control">
+                        @if (Model.RoleList != null && Model.RoleList.Count > 0)
+                        {
+                            foreach (var item in Model.RoleList)
+                            {
+                                if (item != null && item.IsSelected == false)
+                                {
+                                    <option value="@item.RoleId">@item.UniqueName, @item.DisplayName</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Assign" class="btn btn-default" />
+            </div>
+        </div>
+        R1:<p id="r1"></p>
+    </div>
+}
+<p>@Html.ActionLink("User", "Index") | @Html.ActionLink("Home", "Index", "Home")</p>

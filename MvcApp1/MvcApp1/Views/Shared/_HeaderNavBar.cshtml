@@ -1,0 +1,162 @@
+﻿@model IEnumerable<MvcApp1.Models.AppFunction>
+<style type="text/css">
+.dropdown-submenu {
+    position: relative;
+}
+.dropdown-submenu > .dropdown-submenu {
+    top: 0;
+    left: 100%;
+}
+.dropdown-submenu > .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+.dropdown-submenu.pull-left {
+    float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+</style>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+
+        @*<!-- https://www.w3schools.com/bootstrap/bootstrap_navbar.asp -->
+        <!-- https://bootsnipp.com/snippets/oPWaZ -->
+        <!-- https://www.bootply.com/66089 -->
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                <li>@Html.ActionLink("Index2", "Index2", "Home")</li>
+                <li>@Html.ActionLink("About", "About", "Home")</li>
+                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                <li>@Html.ActionLink("Student", "Index", "Student")</li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin<span class="caret"/></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Users", "Index", "User")</li>
+                        <li>@Html.ActionLink("Roles", "Index", "Role")</li>
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Level 2</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Level2-1</a></li>
+                                <li><a href="#">Level2-2</a></li>
+                            </ul>
+                        </li>
+                        <li>@Html.ActionLink("App Functions", "Index", "AppFunction")</li>
+                    </ul>
+                </li>
+                <li></li>
+            </ul>
+        </div>*@
+
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                @if ((Model?.Count() ?? 0) > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        if (item != null)
+                        {
+                            if (item.ChildList == null)
+                            {
+                                //Navigation bar level 1 item
+                                <li>@Html.ActionLink(item.DisplayName, item.ActionName, item.ControllerName)</li>
+                            }
+                            else
+                            {
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">@item.DisplayName<span class="caret" /></a>
+                                    <ul class="dropdown-menu">
+                                        @foreach (var item2 in item.ChildList)
+                                        {
+                                            if (item2 != null)
+                                            {
+                                                if (item2.ChildList == null)
+                                                {
+                                                    //Navigation bar level 2 item
+                                                    <li>@Html.ActionLink(item2.DisplayName, item2.ActionName, item2.ControllerName)</li>
+                                                }
+                                                else
+                                                {
+                                                    <li class="dropdown-submenu">
+                                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">@item2.DisplayName</a>
+                                                        <ul class="dropdown-menu">
+                                                            @foreach (var item3 in item2.ChildList)
+                                                            {
+                                                                //Navigation bar level 3 item
+                                                                <li>@Html.ActionLink(item3.DisplayName, item3.ActionName, item3.ControllerName)</li>
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                            }
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+
+                        @*if (item != null) {
+                    if (string.IsNullOrEmpty(item.ControllerName) && string.IsNullOrEmpty(item.ActionName)) {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">@item.DisplayName<span class="caret"/></a>
+                            <ul class="dropdown-menu multi-level">
+
+                            </ul>
+                        </li>
+                    }
+                    else {
+                        <li>@Html.ActionLink(item.DisplayName, item.ActionName, item.ControllerName)</li>
+                    }
+                }*@
+
+                    }
+                }
+            </ul>
+            @if (HttpContext.Current.User.Identity.IsAuthenticated || true)
+            {
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a>Welcome @Session["LoginName"].ToString()</a></li>
+                    <li>@Html.ActionLink("Logout", "Logout", "Home")</li>
+                </ul>
+            }
+        </div>
+    </div>
+</div>
