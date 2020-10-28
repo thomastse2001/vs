@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF=8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" />
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<title>Multi-select example</title>
+<!-- http://jsfiddle.net/eUDRV/3/ -->
+<style>
+SELECT {
+    width: 80%;
+    box-sizing: border-box;
+}
+</style>
+<script>
+  <!-- https://codepen.io/allurewebsolutions/pen/NNBwyW?__cf_chl_jschl_tk__=74e0d4356cdf66a2f581ed8112d5873815e63c55-1575340484-0-AfGSmOKpylXoqc0w1yC4ba__ccmZ-g05_Hcj1QaF3gByO21ObE4eFkY3kNGj6uFR52MK_tWl5bHPJFPPsbNS6xOaqIh5aaqoEG59ZOkyOT89WFPzvdaQnyO_teWLD9VJQgGPK6a_9Vl7F0QNDn7a9qe3PgMHEwUMZnLRYWupaJ69ACBmfu4HPyMwAxmESyGmgWg2OehD7sH2PVQ49bocKWP8UgCiO28l62HYIZJvqwQl6iJnJQyQvV-IkNY6QztPOzPORwzIGOzUWjb10KCYuXI5y5d7a-XCxzzOeFElg7wZFEcDKOoji5lCN0qIocLq85bjWCP6Z4JppsO3y_wUFdyn6FdnIbInJ1Y3BwZtkrNy -->
+  <!-- $(funciton(){ -->
+  <!-- var select = $('select'); -->
+  <!-- select.html(select.find('option').sort(function(x,y){ -->
+     <!-- return $(x).text() > $(y).text() ? 1 : -1; -->
+  <!-- })); -->
+  <!-- }); -->
+  
+$(document).ready(function(){
+  $("#btm1").click(function(){
+    $("p").hide();
+  });
+  
+
+  
+  $("#btnLeft").click(function(){
+    var selectedItem = $("#rightValues option:selected");
+    $("#leftValues").append(selectedItem);
+  
+    <!-- https://gist.github.com/ericclemmons/305035 -->
+    var options = jQuery.makeArray($("#leftValues").find('option'));
+    var sorted = options.sort(function(a, b) {
+       return (jQuery(a).text() > jQuery(b).text()) ? 1 : -1;
+    });
+    $("#leftValues").append(jQuery(sorted)).attr('selectedIndex', 0);
+    /// http://jsfiddle.net/Mer38/
+    var txt = [];
+    $("#leftValues option").each(function() {
+	  txt.push($(this).val()+",");
+    });
+	$("#p1").html(txt);
+  });
+  
+  $("#btnRight").click(function(){
+    var selectedItem = $("#leftValues option:selected");
+    $("#rightValues").append(selectedItem);
+  
+    <!-- https://gist.github.com/ericclemmons/305035 -->
+    var options = jQuery.makeArray($("#rightValues").find('option'));
+    var sorted = options.sort(function(a, b) {
+       return (jQuery(a).text() > jQuery(b).text()) ? 1 : -1;
+    });
+    $("#rightValues").append(jQuery(sorted)).attr('selectedIndex', 0);
+    /// http://jsfiddle.net/Mer38/
+    var txt = [];
+    $("#leftValues option").each(function() {
+	  txt.push($(this).val()+",");
+    });
+	$("#p1").html(txt);
+  });
+  
+  <!-- $("#rightValues").change(function(){ -->
+  <!-- var selectedItem = $("#rightValues option:selected"); -->
+  <!-- $("#txtRight").val(selectedItem.text()); -->
+  <!-- }); -->
+
+});
+</script>
+</head>
+<body>
+<h2>Multi-select example</h2>
+<p>This is a paragraph.</p>
+<p>This is another paragraph.</p>
+<button id="btm1">Click me</button>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-5">
+	  <label for="leftValues">Mutiple select list (hold shift to select more than one):</label>
+	  <select id="leftValues" size="10" multiple="multiple" class="form-control"></select>
+    </div>
+    <div class="col-sm-2">
+	  <input type="button" id="btnLeft" value="&lt;&lt;" />
+	  <input type="button" id="btnRight" value="&gt;&gt;" />
+    </div>
+    <div class="col-sm-5">
+	  <label for="rightValues">Mutiple select list (hold shift to select more than one):</label>
+	  <select id="rightValues" size="10" multiple="multiple" class="form-control">
+	    <option>1</option>
+		<option>2</option>
+		<option>3</option>
+		<option>4</option>
+		<option>5</option>
+	  </select>
+    </div>
+  </div>
+</div>
+P1:<p id="p1">abc</p>
+</body>
+</html>
