@@ -1,0 +1,47 @@
+﻿@model MvcApp1.Models.Role
+@{
+    ViewBag.Title = "AssignUsersToRoleResult";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Assign Users To Role - Result</h2>
+<div>
+    <h4>Success to assign users to role!</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>@Html.DisplayNameFor(model => model.UniqueName)</dt>
+        <dd>@Html.DisplayFor(model => model.UniqueName)</dd>
+        <dt>@Html.DisplayNameFor(model => model.DisplayName)</dt>
+        <dd>@Html.DisplayFor(model => model.DisplayName)</dd>
+        <dt>@Html.DisplayNameFor(model => model.IsDisabled)</dt>
+        <dd>@Html.DisplayFor(model => model.IsDisabled)</dd>
+    </dl>
+</div>
+<div>
+    <h4>Assigned Users:</h4>
+    @if(Model.UserList==null || Model.UserList.Count < 1)
+    {
+        <p>No users.</p>
+    }
+    else
+    {
+        <table class="table">
+            <tr>
+                <th>@Html.DisplayNameFor(x => Model.UserList[0].LoginName)</th>
+                <th>@Html.DisplayNameFor(x => Model.UserList[0].DisplayName)</th>
+                <th>@Html.DisplayNameFor(x => Model.UserList[0].IsDisabled)</th>
+            </tr>
+            @foreach(var item in Model.UserList)
+            {
+                if(item!=null && item.IsSelected)
+                {
+            <tr>
+                <td>@Html.DisplayFor(x => item.LoginName)</td>
+                <td>@Html.DisplayFor(x => item.DisplayName)</td>
+                <td>@Html.DisplayFor(x => item.IsDisabled)</td>
+            </tr>
+                }
+            }
+        </table>
+    }
+</div>
+<p>@Html.ActionLink("Role", "Index") | @Html.ActionLink("Home", "Index", "Home")</p>
