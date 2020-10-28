@@ -1,0 +1,1 @@
+sqlite3.exe "..\VsCSharpWinForm_sample2\bin\Debug\db.sqlite"
