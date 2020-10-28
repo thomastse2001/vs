@@ -1,0 +1,5 @@
+StudentId,UniqueName,DisplayName,Phone,Email,Gender,EnrollmentFee,IsNewlyEnrolled,Birthday
+1,apple.chan,"Apple Chan",11111111,apple.chan@abc.com,F,110,0,1990-02-16
+2,orange.lee,"Orange Lee",22222222,orange.lee@abc.com,M,120,1,1989-12-25
+3,mango.wong,"Mango, ""Ann"" Wong",33333333,mango.wong@abc.com,F,250,,
+4,ban.ho,Ban Ho,44444444,ban.ho@abc.com,M,100,,
