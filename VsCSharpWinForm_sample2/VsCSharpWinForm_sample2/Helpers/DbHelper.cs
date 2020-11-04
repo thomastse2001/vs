@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
+using System.Linq;
 //using System.Text;
-//using System.Data;
+using System.Data;
 using System.Data.SqlClient;/// For MSSQL.
 //using System.Data.SQLite;/// Need to install System.Data.SQLite in NuGet Package Manager.
 
@@ -12,7 +12,7 @@ namespace VsCSharpWinForm_sample2.Helpers
     {
         #region "Core"
         /// Database helper on Microsoft SQL Server, SQLite database.
-        /// Updated date: 2020-09-23
+        /// Updated date: 2020-11-04
         /// This region contains the core methods to access database.
         public static object GetObjectToDb<T>(T input)
         {
@@ -63,19 +63,18 @@ namespace VsCSharpWinForm_sample2.Helpers
 
         public class MSSQL
         {
-            public static string ConnectionString = "";/// @"Server=.\SQLExpress;Database=Db1;User Id=User1;Password=pass1";
+            public static string ConnectionString { get; set; } = "";/// @"Server=.\SQLExpress;Database=Db1;User Id=User1;Password=pass1";
 
             /// https://www.codeproject.com/Tips/423233/How-to-Connect-to-MySQL-Using-Csharp
             public static int ExecuteNonQuery(string sql, params SqlParameter[] arrayOfParameters)
             {
-                if (string.IsNullOrEmpty(sql)) { return 0; }
+                if (string.IsNullOrEmpty(sql)) return 0;
                 using (SqlConnection cn = new SqlConnection(ConnectionString))
                 {
                     cn.Open();
                     using (SqlCommand com = new SqlCommand(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { com.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                         return com.ExecuteNonQuery();
                     }
                 }
@@ -83,7 +82,7 @@ namespace VsCSharpWinForm_sample2.Helpers
 
             public static int ExecuteNonQueryWithTransaction(string sql, params SqlParameter[] arrayOfParameters)
             {
-                if (string.IsNullOrEmpty(sql)) { return 0; }
+                if (string.IsNullOrEmpty(sql)) return 0;
                 using (SqlConnection cn = new SqlConnection(ConnectionString))
                 {
                     cn.Open();
@@ -93,8 +92,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     {
                         using (SqlCommand com = new SqlCommand(sql, cn, trans))
                         {
-                            if ((arrayOfParameters?.Length ?? 0) > 0)
-                            { com.Parameters.AddRange(arrayOfParameters); }
+                            if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                             iReturn = com.ExecuteNonQuery();
                             trans.Commit();
                         }
@@ -158,8 +156,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                             {
                                 using (SqlCommand com = new SqlCommand(o.Key, cn, trans))
                                 {
-                                    if ((o.Value?.Length ?? 0) > 0)/// o.Value is an array of parameters.
-                                    { com.Parameters.AddRange(o.Value); }
+                                    /// o.Value is an array of parameters.
+                                    if ((o.Value?.Length ?? 0) > 0) com.Parameters.AddRange(o.Value);
                                     iReturn += com.ExecuteNonQuery();
                                 }
                             }
@@ -187,8 +185,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 {
                     using (SqlCommand com = new SqlCommand(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { com.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                         com.Connection.Open();
                         return com.ExecuteScalar();
                     }
@@ -204,15 +201,13 @@ namespace VsCSharpWinForm_sample2.Helpers
                     //using (SqlDataAdapter da = new SqlDataAdapter(sql, cn))
                     //{
                     //    //if (arrayOfParameters != null && arrayOfParameters.Length > 0)
-                    //    if ((arrayOfParameters?.Length ?? 0) > 0)
-                    //    { da.SelectCommand.Parameters.AddRange(arrayOfParameters); }
+                    //    if ((arrayOfParameters?.Length ?? 0) > 0) da.SelectCommand.Parameters.AddRange(arrayOfParameters);
                     //    cn.Open();
                     //    da.Fill(dtReturn);
                     //}
                     using (SqlCommand com = new SqlCommand(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { com.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                         com.Connection.Open();
                         using (SqlDataReader rdr = com.ExecuteReader())
                         {
@@ -548,7 +543,8 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// https://www.codeproject.com/Articles/22165/Using-SQLite-in-your-C-Application
         public class SQLite
         {
-            public static string DatabaseFilePath { get; set; } = "db.sqlite";
+            private static string _DatabaseFilePath = System.IO.Path.GetFullPath("db.sqlite");
+            public static string DatabaseFilePath { get { return _DatabaseFilePath; } set { _DatabaseFilePath = System.IO.Path.GetFullPath(value); } }
             public static string ConnectionStringTemplate = "Version=3;Data Source={0}";
 
             public static string GetConnectionString()
@@ -563,25 +559,21 @@ namespace VsCSharpWinForm_sample2.Helpers
             //    if (!System.IO.File.Exists(DatabaseFilePath))
             //    {
             //        string folder = System.IO.Path.GetDirectoryName(DatabaseFilePath);
-            //        if (!System.IO.Directory.Exists(folder))
-            //        {
-            //            System.IO.Directory.CreateDirectory(folder);
-            //        }
+            //        if (!System.IO.Directory.Exists(folder)) System.IO.Directory.CreateDirectory(folder);
             //        System.Data.SQLite.SQLiteConnection.CreateFile(DatabaseFilePath);
             //    }
             //}
 
             //public static int ExecuteNonQuery(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
             //{
-            //    if (string.IsNullOrEmpty(sql)) { return 0; }
+            //    if (string.IsNullOrEmpty(sql)) return 0;
             //    CreateDatabaseFileIfNotExist();
             //    using (System.Data.SQLite.SQLiteConnection cn = new System.Data.SQLite.SQLiteConnection(GetConnectionString()))
             //    {
             //        cn.Open();
             //        using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(sql, cn))
             //        {
-            //            if ((arrayOfParameters?.Length ?? 0) > 0)
-            //            { com.Parameters.AddRange(arrayOfParameters); }
+            //            if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
             //            return com.ExecuteNonQuery();
             //        }
             //    }
@@ -589,20 +581,18 @@ namespace VsCSharpWinForm_sample2.Helpers
 
             //public static int ExecuteNonQueryWithTransaction(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
             //{
-            //    if (string.IsNullOrEmpty(sql)) { return 0; }
+            //    if (string.IsNullOrEmpty(sql)) return 0;
             //    CreateDatabaseFileIfNotExist();
             //    using (System.Data.SQLite.SQLiteConnection cn = new System.Data.SQLite.SQLiteConnection(GetConnectionString()))
             //    {
             //        cn.Open();
             //        int iReturn = -2;
-            //        cn.Open();
             //        System.Data.SQLite.SQLiteTransaction trans = cn.BeginTransaction();
             //        try
             //        {
             //            using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(sql, cn, trans))
             //            {
-            //                if ((arrayOfParameters?.Length ?? 0) > 0)
-            //                { com.Parameters.AddRange(arrayOfParameters); }
+            //                if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
             //                iReturn = com.ExecuteNonQuery();
             //            }
             //            trans.Commit();
@@ -654,7 +644,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             ///// int i = ExecuteNonQuery(ConnectionString, arrayOfSqlItems);
             //public static int ExecuteNonQuery(params KeyValuePair<string, System.Data.SQLite.SQLiteParameter[]>[] arrayOfSqlItems)
             //{
-            //    if (arrayOfSqlItems == null) { return 0; }
+            //    if (arrayOfSqlItems == null) return 0;
             //    CreateDatabaseFileIfNotExist();
             //    using (System.Data.SQLite.SQLiteConnection cn = new System.Data.SQLite.SQLiteConnection(GetConnectionString()))
             //    {
@@ -669,8 +659,8 @@ namespace VsCSharpWinForm_sample2.Helpers
             //                {
             //                    using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(o.Key, cn, trans))
             //                    {
-            //                        if ((o.Value?.Length ?? 0) > 0)/// o.Value is array of parameters.
-            //                        { com.Parameters.AddRange(o.Value); }
+            //                        /// o.Value is array of parameters.
+            //                        if ((o.Value?.Length ?? 0) > 0) com.Parameters.AddRange(o.Value);
             //                        iReturn += com.ExecuteNonQuery();
             //                    }
             //                }
@@ -695,8 +685,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             //    {
             //        using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(sql, cn))
             //        {
-            //            if ((arrayOfParameters?.Length ?? 0) > 0)
-            //            { com.Parameters.AddRange(arrayOfParameters); }
+            //            if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
             //            com.Connection.Open();
             //            return com.ExecuteScalar();
             //        }
@@ -706,21 +695,19 @@ namespace VsCSharpWinForm_sample2.Helpers
             ///// Get a table from database.
             //public static System.Data.DataTable SelectDataTable(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
             //{
-            //    if (!System.IO.File.Exists(DatabaseFilePath)) { return null; }
+            //    if (!System.IO.File.Exists(DatabaseFilePath)) return null;
             //    using (System.Data.SQLite.SQLiteConnection cn = new System.Data.SQLite.SQLiteConnection(GetConnectionString()))
             //    {
             //        System.Data.DataTable dtReturn = new System.Data.DataTable();
             //        using (System.Data.SQLite.SQLiteDataAdapter da = new System.Data.SQLite.SQLiteDataAdapter(sql, cn))
             //        {
-            //            if ((arrayOfParameters?.Length ?? 0) > 0)
-            //            { da.SelectCommand.Parameters.AddRange(arrayOfParameters); }
+            //            if ((arrayOfParameters?.Length ?? 0) > 0) da.SelectCommand.Parameters.AddRange(arrayOfParameters);
             //            cn.Open();
             //            da.Fill(dtReturn);
             //        }
             //        //using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(sql, cn))
             //        //{
-            //        //    if ((arrayOfParameters?.Length ?? 0) > 0)
-            //        //    { com.Parameters.AddRange(arrayOfParameters); }
+            //        //    if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
             //        //    com.Connection.Open();
             //        //    using (System.Data.SQLite.SQLiteDataReader rdr = com.ExecuteReader())
             //        //    {
@@ -791,10 +778,10 @@ namespace VsCSharpWinForm_sample2.Helpers
             };
         }
 
-        //#region SQLiteExampleRegion
-        //public static void CreateStudentTableIfNotExist()
+        #region SQLiteExampleRegion
+        //private static void CreateStudentTableIfNotExist()
         //{
-        //    if (SQLite.TableExists("Student")) { return; }
+        //    if (SQLite.TableExists("Student")) return;
         //    int i = SQLite.ExecuteNonQuery(
         //        "CREATE TABLE Student ("
         //        + "StudentId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -813,7 +800,7 @@ namespace VsCSharpWinForm_sample2.Helpers
 
         //public static int InsertStudent(Models.Student o)
         //{
-        //    if (o == null) { return -1; }
+        //    if (o == null) return -1;
         //    List<System.Data.SQLite.SQLiteParameter> list = null;
         //    try
         //    {
@@ -835,8 +822,8 @@ namespace VsCSharpWinForm_sample2.Helpers
         //            new System.Data.SQLite.SQLiteParameter("@CreatedDate", System.Data.DbType.DateTime) { Value = GetObjectToDb(o.CreatedDate) },
         //            new System.Data.SQLite.SQLiteParameter("@UpdatedDate", System.Data.DbType.DateTime) { Value = GetObjectToDb(o.UpdatedDate) }
         //        };
-        //        if (o.EnrollmentFee.HasValue) { list.Add(new System.Data.SQLite.SQLiteParameter("@EnrollmentFee", System.Data.DbType.Int32) { Value = GetObjectToDb(o.EnrollmentFee) }); }
-        //        if (o.IsNewlyEnrolled.HasValue) { list.Add(new System.Data.SQLite.SQLiteParameter("@IsNewlyEnrolled", System.Data.DbType.Boolean) { Value = GetObjectToDb(o.IsNewlyEnrolled) }); }
+        //        if (o.EnrollmentFee.HasValue) list.Add(new System.Data.SQLite.SQLiteParameter("@EnrollmentFee", System.Data.DbType.Int32) { Value = GetObjectToDb(o.EnrollmentFee) });
+        //        if (o.IsNewlyEnrolled.HasValue) list.Add(new System.Data.SQLite.SQLiteParameter("@IsNewlyEnrolled", System.Data.DbType.Boolean) { Value = GetObjectToDb(o.IsNewlyEnrolled) });
         //        return SQLite.ExecuteNonQuery(sql, list.ToArray());
         //    }
         //    finally
@@ -849,21 +836,80 @@ namespace VsCSharpWinForm_sample2.Helpers
         //    }
         //}
 
+        //public static void InsertStudent2(Models.Student o)
+        //{
+        //    /// https://www.learnentityframeworkcore.com/dbcontext/adding-data
+        //    if (o == null) return;
+        //    using (Models.MyDbContext db = new Models.MyDbContext())
+        //    {
+        //        db.Students.Add(o);
+        //        db.SaveChanges();
+        //    }
+        //}
+
         //public static List<Models.Student> GetStudentList()
         //{
         //    System.Data.DataTable dt = SQLite.SelectDataTable("SELECT * FROM Student ORDER BY StudentId");
-        //    if ((dt?.Rows.Count ?? 0) < 1) { return null; }
+        //    if ((dt?.Rows.Count ?? 0) < 1) return null;
         //    else
         //    {
         //        List<Models.Student> list = new List<Models.Student>();
         //        foreach (System.Data.DataRow dr in dt.Rows)
         //        {
         //            Models.Student o = GetStudentFromDataRow(dr);
-        //            if (o != null) { list.Add(o); }
+        //            if (o != null) list.Add(o);
         //        }
         //        return list;
         //    }
         //}
-        //#endregion
+
+        //public static IEnumerable<Models.Student> GetStudentList2()
+        //{
+        //    using (Models.MyDbContext db = new Models.MyDbContext())
+        //    {
+        //        var result = from q in db.Students
+        //                     orderby q.StudentId
+        //                     select q;
+        //        return result.ToList();
+        //    }
+        //}
+
+        //private static void InitializeStudentTableIfNotExists()
+        //{
+        //    if (DbHelper.SQLite.TableExists("Student")) return;
+        //    DateTime tRef = DateTime.Now;
+        //    List<Models.Student> studentList = new List<Models.Student>
+        //    {
+        //        new Models.Student()
+        //        {
+        //            UniqueName = "apple.chan",
+        //            DisplayName = "Apple Chan",
+        //            Phone = "11111111",
+        //            Email = "apple.chan@abc.com",
+        //            Gender = 'F',
+        //            CreatedDate = tRef,
+        //            UpdatedDate = tRef
+        //        },
+        //        new Models.Student()
+        //        {
+        //            UniqueName = "orange.lee",
+        //            DisplayName = "Orange Lee",
+        //            Phone = "22222222",
+        //            Email = "orange.lee@abc.com",
+        //            Gender = 'M',
+        //            EnrollmentFee = 100,
+        //            IsNewlyEnrolled = false,
+        //            CreatedDate = tRef,
+        //            UpdatedDate = tRef
+        //        }
+        //    };
+        //    studentList.ForEach(x => InsertStudent(x));
+        //}
+
+        //public static void InitializeSqliteDb()
+        //{
+        //    InitializeStudentTableIfNotExists();
+        //}
+        #endregion
     }
 }

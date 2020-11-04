@@ -51,7 +51,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if ((o?.To?.Length ?? 0) < 1) { return false; }
+                if ((o?.To?.Length ?? 0) < 1) return false;
                 using (System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage()
                 {
                     From = new System.Net.Mail.MailAddress(o.From),
@@ -66,7 +66,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     {
                         foreach (string f in o.AttachmentPath)
                         {
-                            if (System.IO.File.Exists(f)) { mail.Attachments.Add(new System.Net.Mail.Attachment(f)); }
+                            if (System.IO.File.Exists(f)) mail.Attachments.Add(new System.Net.Mail.Attachment(f));
                             else
                             {
                                 Logger?.Error("Cannot find attachment {0}", f);

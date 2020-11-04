@@ -8,7 +8,7 @@ namespace VsCSharpWinForm_sample2.Helpers
     public class TLog
     {
         /// Write log to a text file in a specific format with a specific file name and path.
-        /// Updated date: 2020-09-21
+        /// Updated date: 2020-11-04
         /// Usage.
         /// // 1. Create an instance for it.
         /// TLog Logger = new TLog();
@@ -51,9 +51,8 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// Return value = default folder
         private static string GetDefaultFolder(string defaultFolder)
         {
-            if (string.IsNullOrEmpty(defaultFolder))
-            { return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); }
-            else { return defaultFolder.Trim().TrimEnd(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar }); }
+            if (string.IsNullOrEmpty(defaultFolder)) return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            else return defaultFolder.Trim().TrimEnd(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
         }
 
         /// Get the default absolte path if the input path is a relative path.
@@ -62,10 +61,10 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// defaultFolder = default folder
         private static string GetDefaultAbsolutePathIfRelative(string path, string defaultFolder)
         {
-            if (string.IsNullOrEmpty(path)) { return GetDefaultFolder(defaultFolder); }
+            if (string.IsNullOrEmpty(path)) return GetDefaultFolder(defaultFolder);
             path = path.Trim(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
-            if (System.IO.Path.IsPathRooted(path)) { return path; }
-            else { return GetDefaultFolder(defaultFolder) + System.IO.Path.DirectorySeparatorChar + path; }
+            if (System.IO.Path.IsPathRooted(path)) return path;
+            else return GetDefaultFolder(defaultFolder) + System.IO.Path.DirectorySeparatorChar + path;
         }
 
         /// Verify if the folder exists or not. If the folder does not exist, create it.
@@ -74,7 +73,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         private static bool FolderExistsOrCreateIt(string folder)
         {
             folder = folder.TrimEnd((char)9, ' ', System.IO.Path.DirectorySeparatorChar).Trim();
-            if (System.IO.Directory.Exists(folder)) { return true; }
+            if (System.IO.Directory.Exists(folder)) return true;
             System.IO.Directory.CreateDirectory(folder);
             return System.IO.Directory.Exists(folder);
         }
@@ -92,8 +91,8 @@ namespace VsCSharpWinForm_sample2.Helpers
             {
                 using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filepath, true))/// true for append.
                 {
-                    if ((args?.Length ?? 0) < 1) { sw.WriteLine(format); }
-                    else { sw.WriteLine(format, args); }
+                    if ((args?.Length ?? 0) < 1) sw.WriteLine(format);
+                    else sw.WriteLine(format, args);
                     sw.Flush();
                     return true;
                 }
@@ -104,9 +103,9 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// Write log to a file in a folder.
         private void WriteLogInFolder(string filepath, string format, params object[] args)
         {
-            if (string.IsNullOrEmpty(filepath)) { return; }
+            if (string.IsNullOrEmpty(filepath)) return;
             filepath = GetDefaultAbsolutePathIfRelative(filepath, null);
-            if (!FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath))) { return; }
+            if (!FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath))) return;
             /// Write log with current datetime.
             /// The idea is to wait a few milli-seconds and then try writing again if fail to write log.
             /// This LOCK block is dedicated here. To prevent the below error.
@@ -122,8 +121,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                     while (bLoop && i <= iMax)
                     {
                         s = string.Format("Re-Write log at {0} as the file is being used.", i);
-                        if (WriteLineToFile(filepath, s + " " + format, args)) { bLoop = false; }
-                        else { i += 1; }
+                        if (WriteLineToFile(filepath, s + " " + format, args)) bLoop = false;
+                        else i += 1;
                     }
                 }
             }
@@ -133,7 +132,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         public void Log(LogLevel logLevel, string format, params object[] args)
         {
             /// OFF = 0.
-            if (logLevel == 0) { return; }
+            if (logLevel == 0) return;
             /// Other levels.
             if (logLevel <= MinLogLevel)
             {

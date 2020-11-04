@@ -9,7 +9,7 @@ namespace VsCSharpWinForm_sample2.Helpers
     public class TIniFile
     {
         /// Get and set the values in the initial file.
-        /// Updated date: 2020-08-14
+        /// Updated date: 2020-11-04
 
         public static TLog Logger { get; set; }
         //public static Exception LastException { get; set; }
@@ -43,18 +43,15 @@ namespace VsCSharpWinForm_sample2.Helpers
             else { sReturn = bMultiValue ? "" : sValue; }/// set the default value as the return value if it is not multiple value.
             try
             {
-                /// exit if empty content.
-                if (string.IsNullOrEmpty(sBuffer)) { return sReturn; }
-                /// exit if empty key.
-                if (string.IsNullOrEmpty(sKey)) { return sReturn; }
+                if (string.IsNullOrEmpty(sBuffer) || string.IsNullOrEmpty(sKey)) return sReturn;
                 sKey2 = sKey.Trim(cArrayTrim).ToLower();
-                if (string.IsNullOrEmpty(sKey2)) { return sReturn; }
+                if (string.IsNullOrEmpty(sKey2)) return sReturn;
                 /// section
-                if (string.IsNullOrEmpty(sSection)) { sSection2 = ""; }
-                else { sSection2 = sSection.Trim(cArrayTrim).ToLower(); }
+                if (string.IsNullOrEmpty(sSection)) sSection2 = "";
+                else sSection2 = sSection.Trim(cArrayTrim).ToLower();
                 bSection = string.IsNullOrEmpty(sSection2) ? false : true;/// indicate if it is necessary to search section.
                 /// comment
-                if (string.IsNullOrEmpty(sComment)) { sComment = string.Empty; }/// set to Empty instead of "".
+                if (string.IsNullOrEmpty(sComment)) sComment = string.Empty;/// set to Empty instead of "".
                 /// if multiple values
                 iMultiValue = 0;
                 sArrMultiValue = sValue.Split(new string[] { sMultiValueDelimiter }, StringSplitOptions.RemoveEmptyEntries);
@@ -67,15 +64,15 @@ namespace VsCSharpWinForm_sample2.Helpers
                     s = sArr[iLine].ToString();
                     if (!string.IsNullOrEmpty(s))
                     {
-                        if (string.IsNullOrEmpty(sComment)) { iComment = -1; }
-                        else { iComment = s.IndexOf(sComment); }/// position of comment.
+                        if (string.IsNullOrEmpty(sComment)) iComment = -1;
+                        else iComment = s.IndexOf(sComment);/// position of comment.
 
                         /// Search section.
                         if (bSection)/// if need to find section.
                         {
                             /// Get line without comment.
-                            if (iComment > -1) { s2 = s.Substring(0, iComment).Trim(cArrayTrim); }
-                            else { s2 = s.Trim(cArrayTrim); }
+                            if (iComment > -1) s2 = s.Substring(0, iComment).Trim(cArrayTrim);
+                            else s2 = s.Trim(cArrayTrim);
                             if (s2.Substring(0, 1).Equals("[") && s2.Substring(s2.Length - 1, 1).Equals("]"))
                             {
                                 s2 = s2.Substring(1, s2.Length - 2);
@@ -87,7 +84,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         /// for bAction=True. Store the (current-1) line number.
                                         if (bAction && (iLastLineSection < 0)) { iLastLineSection = iLine - 1; }
                                     }
-                                    else { bSectionMatch = true; }
+                                    else bSectionMatch = true;
                                     // iLine += 1;
                                     /////////////////////// Continue While
                                     bContinueRemaining = false;/// Set to NOT continue running the remaining and go directly to next loop.
@@ -99,7 +96,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                     {
                                         bSectionMatch = false;/// set it to false so that stop to search key.
                                         /// for bAction=True. Store the (current-1) line number.
-                                        if (bAction && (iLastLineSection < 0)) { iLastLineSection = iLine - 1; }
+                                        if (bAction && (iLastLineSection < 0)) iLastLineSection = iLine - 1;
                                     }
                                 }
                             }
@@ -110,8 +107,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                             /// Search key.
                             if ((bSection == false) || bSectionMatch)// if ((bSection == false) || (bSection && bSectionMatch))
                             {
-                                if (iComment > -1) { iEqual = s.IndexOf("=", 0, iComment); }
-                                else { iEqual = s.IndexOf("="); }
+                                if (iComment > -1) iEqual = s.IndexOf("=", 0, iComment);
+                                else iEqual = s.IndexOf("=");
                                 if (iEqual > 0)
                                 {
                                     /// If match the key.
@@ -123,7 +120,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                             s2 = s.Substring(0, iValue);
                                             if (bMultiValue)
                                             {
-                                                if (iMultiValue < sArrMultiValue.Length) { s2 += sArrMultiValue[iMultiValue].ToString(); }
+                                                if (iMultiValue < sArrMultiValue.Length) s2 += sArrMultiValue[iMultiValue].ToString();
                                                 else
                                                 {
                                                     /// do nothing, in order to let it loops continuously to find out the other lines that may contains same key.
@@ -136,7 +133,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                                 s2 += sValue;
                                                 bLoopLine = false;/// stop looping so that the function returns the first value only.
                                             }
-                                            if (iComment > -1) { s2 += s.Substring(iComment); }/// comment.
+                                            if (iComment > -1) s2 += s.Substring(iComment);/// comment.
                                             sArr[iLine] = s2;
                                             sReturn = string.Join(Environment.NewLine, sArr);
                                         }
@@ -146,10 +143,10 @@ namespace VsCSharpWinForm_sample2.Helpers
                                             if (iValue < s.Length)
                                             {
                                                 /// return value.
-                                                if (iComment > -1) { s2 = s.Substring(iValue, iComment - iValue); }/// iComment must be larger than or equal to iValue, according to the logic of the above lines.
-                                                else { s2 = s.Substring(iValue); }
+                                                if (iComment > -1) s2 = s.Substring(iValue, iComment - iValue);/// iComment must be larger than or equal to iValue, according to the logic of the above lines.
+                                                else s2 = s.Substring(iValue);
                                                 /// multiple values?
-                                                if (bMultiValue) { sReturn += s2 + sMultiValueDelimiter; }
+                                                if (bMultiValue) sReturn += s2 + sMultiValueDelimiter;
                                                 else
                                                 {
                                                     bLoopLine = false;/// stop looping so that the function returns the first value only.
@@ -159,7 +156,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                             else
                                             {
                                                 /// multiple values?
-                                                if (bMultiValue) { sReturn += sMultiValueDelimiter; }
+                                                if (bMultiValue) sReturn += sMultiValueDelimiter;
                                                 else
                                                 {
                                                     bLoopLine = false;/// stop looping so that the function returns the first value only.
@@ -171,7 +168,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                 }
                             }
                         }
-                        else { bContinueRemaining = true; }/// Re-set this flag to true.
+                        else bContinueRemaining = true;/// Re-set this flag to true.
                     }
                     iLine += 1;
                 }
@@ -179,7 +176,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 if ((bAction == false) && bMultiValue)
                 {
                     int idx = sReturn.LastIndexOf(sMultiValueDelimiter);
-                    if (idx > -1) { sReturn = sReturn.Remove(idx); }
+                    if (idx > -1) sReturn = sReturn.Remove(idx);
                 }
                 /// if cannot find the match key.
                 if (bAction && bLoopLine)
@@ -195,13 +192,13 @@ namespace VsCSharpWinForm_sample2.Helpers
                                 iMultiValue += 1;
                             }
                         }
-                        else { s2 = Environment.NewLine + sKey + "=" + sValue; }
+                        else s2 = Environment.NewLine + sKey + "=" + sValue;
                         sArr[iLastLineSection] += s2;
                         sReturn = string.Join(Environment.NewLine, sArr);
                     }
                     else
                     {
-                        if (bSection) { sReturn += "[" + sSection + "]" + Environment.NewLine; }
+                        if (bSection) sReturn += "[" + sSection + "]" + Environment.NewLine;
                         if (bMultiValue)
                         {
                             while (iMultiValue < sArrMultiValue.Length)
@@ -210,7 +207,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                 iMultiValue += 1;
                             }
                         }
-                        else { sReturn += sKey + "=" + sValue + Environment.NewLine; }
+                        else sReturn += sKey + "=" + sValue + Environment.NewLine;
                     }
                 }
             }
@@ -249,7 +246,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (int.TryParse(input, out int i)) { return i; }
+                if (int.TryParse(input, out int i)) return i;
                 else
                 {
                     Logger?.Error("Fail to parse to integer. String = {0}", input);
@@ -266,7 +263,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         public static int? GetInt(string input, int lowerBound)
         {
             int? i = GetInt(input);
-            if (i.HasValue && i.GetValueOrDefault() < lowerBound) { return lowerBound; }
+            if (i.HasValue && i.GetValueOrDefault() < lowerBound) return lowerBound;
             return i;
         }
     }

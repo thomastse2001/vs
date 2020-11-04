@@ -263,7 +263,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 //}
                 //sb.AppendLine();
                 //return sb.ToString();
-                if (array == null) { return null; }
+                if (array == null) return null;
                 string[] array2 = mustQuote ? array.Select(x => GetQuotedFieldForWrite(x)).ToArray() : array.Select(x => CheckAndGetFieldForWrite(x)).ToArray();
                 return string.Join(Delimiter.ToString(), array2) + Environment.NewLine;
             }

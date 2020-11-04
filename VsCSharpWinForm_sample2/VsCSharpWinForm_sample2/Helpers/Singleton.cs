@@ -21,7 +21,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             {
                 lock (_instanceLocker)
                 {
-                    if (_instance == null) { _instance = new Singleton(); }
+                    if (_instance == null) _instance = new Singleton();
                 }
             }
             return _instance;

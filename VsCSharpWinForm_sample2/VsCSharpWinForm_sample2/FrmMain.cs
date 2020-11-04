@@ -1216,22 +1216,35 @@ namespace VsCSharpWinForm_sample2
                 //    CreatedDate = tRef,
                 //    UpdatedDate = tRef
                 //};
+                //Models.Student o = new Models.Student()
+                //{
+                //    UniqueName = "orange.lee",
+                //    DisplayName = "Orange Lee",
+                //    Phone = "22222222",
+                //    Email = "orange.lee@abc.com",
+                //    Gender = 'M',
+                //    EnrollmentFee = 100,
+                //    IsNewlyEnrolled = false,
+                //    CreatedDate = tRef,
+                //    UpdatedDate = tRef
+                //};
                 Models.Student o = new Models.Student()
                 {
-                    UniqueName = "orange.lee",
-                    DisplayName = "Orange Lee",
-                    Phone = "22222222",
-                    Email = "orange.lee@abc.com",
+                    UniqueName = "pear.ho",
+                    DisplayName = "Pear Ho",
+                    Phone = "33333333",
+                    Email = "pear.ho@abc.com",
                     Gender = 'M',
-                    EnrollmentFee = 100,
+                    EnrollmentFee = 130,
                     IsNewlyEnrolled = false,
                     CreatedDate = tRef,
                     UpdatedDate = tRef
                 };
                 LocalLogger(TLog.LogLevel.DEBUG, PrintStudent(o));
-                int i = 0;
-                //i = DbHelper.InsertStudent(o);
-                WriteLogToUI("i = {0}", i);
+                ////int i = DbHelper.InsertStudent(o);
+                ////WriteLogToUI("i = {0}", i);
+                //DbHelper.InsertStudent2(o);
+                //LocalLogger(TLog.LogLevel.DEBUG, "Succeed to add student.");
             }
             catch (Exception ex) { Logger?.Error(ex); }
         }
@@ -1239,13 +1252,24 @@ namespace VsCSharpWinForm_sample2
         private void BtnSqliteSelect1_Click(object sender, EventArgs e)
         {
             List<Models.Student> list = null;
+            IEnumerable<Models.Student> list2 = null;
             try
             {
-                //list = DbHelper.GetStudentList();
-                LocalLogger(TLog.LogLevel.DEBUG, "Student Count = {0}", list?.Count ?? 0);
-                if (list != null)
+                ////list = DbHelper.GetStudentList();
+                ////LocalLogger(TLog.LogLevel.DEBUG, "Student Count = {0}", list?.Count ?? 0);
+                ////if (list != null)
+                ////{
+                ////    foreach (Student o in list)
+                ////    {
+                ////        LocalLogger(TLog.LogLevel.DEBUG, PrintStudent(o));
+                ////    }
+                ////}
+                //DbHelper.InitializeSqliteDb();
+                //list2 = DbHelper.GetStudentList2();
+                LocalLogger(TLog.LogLevel.DEBUG, "Student Count = {0}", list2?.Count() ?? 0);
+                if (list2 != null)
                 {
-                    foreach (Student o in list)
+                    foreach (Student o in list2)
                     {
                         LocalLogger(TLog.LogLevel.DEBUG, PrintStudent(o));
                     }

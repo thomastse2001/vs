@@ -62,6 +62,7 @@
     <Compile Include="Helpers\GeneralT.cs" />
     <Compile Include="Helpers\MailHelper.cs" />
     <Compile Include="Helpers\Singleton.cs" />
+    <Compile Include="Helpers\SQLiteConfiguration.cs" />
     <Compile Include="Helpers\TCsvFile.cs" />
     <Compile Include="Helpers\TIniFile.cs" />
     <Compile Include="Helpers\TLog.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Helpers\TTcpServerSocket.cs" />
     <Compile Include="Helpers\ZipHelper.cs" />
     <Compile Include="Models\MailItem.cs" />
+    <Compile Include="Models\MyDbContext.cs" />
     <Compile Include="Models\Param.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Program.cs" />
