@@ -1252,7 +1252,7 @@ namespace VsCSharpWinForm_sample2
         private void BtnSqliteSelect1_Click(object sender, EventArgs e)
         {
             List<Models.Student> list = null;
-            IEnumerable<Models.Student> list2 = null;
+            IQueryable<Models.Student> list2 = null;
             try
             {
                 ////list = DbHelper.GetStudentList();

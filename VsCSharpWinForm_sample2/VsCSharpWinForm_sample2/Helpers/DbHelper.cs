@@ -863,15 +863,12 @@ namespace VsCSharpWinForm_sample2.Helpers
         //    }
         //}
 
-        //public static IEnumerable<Models.Student> GetStudentList2()
+        //public static IQueryable<Models.Student> GetStudentList2()
         //{
-        //    using (Models.MyDbContext db = new Models.MyDbContext())
-        //    {
-        //        var result = from q in db.Students
-        //                     orderby q.StudentId
-        //                     select q;
-        //        return result.ToList();
-        //    }
+        //    Models.MyDbContext db = new Models.MyDbContext();
+        //    return from q in db.Students
+        //           orderby q.StudentId
+        //           select q;
         //}
 
         //private static void InitializeStudentTableIfNotExists()
