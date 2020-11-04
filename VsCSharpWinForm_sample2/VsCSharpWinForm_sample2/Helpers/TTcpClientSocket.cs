@@ -57,7 +57,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             get { return _HeartbeatData; }
             set
             {
-                if (value == null) { _HeartbeatData = null; }
+                if (value == null) _HeartbeatData = null;
                 else
                 {
                     _HeartbeatData = new byte[value.Length];
@@ -89,7 +89,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// th = target thread that will be aborted.
         private static bool AbortThread(ref System.Threading.Thread th)
         {
-            if (th == null || th.IsAlive == false) { return true; }
+            if (th == null || th.IsAlive == false) return true;
             try
             {
                 Logger?.Debug("Force to abort the thread named {0}", th.Name);
@@ -124,7 +124,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     //IsFinishedReceiving = bIsFinishedReceiving,
                     ByteArray = data
                 };
-                if (IncomingDataQueueLocker == null) { IncomingDataQueue.Enqueue(oData); }
+                if (IncomingDataQueueLocker == null) IncomingDataQueue.Enqueue(oData);
                 else { lock (IncomingDataQueueLocker) { IncomingDataQueue.Enqueue(oData); } }
                 Logger?.Debug("TCP Client adds the received data to IncomingDataQueue. Server socket = {0}, Byte Length = {1}", RemoteEndPoint, data == null ? 0 : data.Length);
                 return true;
@@ -140,7 +140,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// Disconnect.
         public static void Disconnect(ref System.Net.Sockets.Socket o)
         {
-            if (o == null) { return; }
+            if (o == null) return;
             try
             {
                 if (o?.Connected ?? false)
@@ -160,14 +160,14 @@ namespace VsCSharpWinForm_sample2.Helpers
             int iLength = 0;
             try
             {
-                if (data != null) { iLength = data.Length; }
+                if (data != null) iLength = data.Length;
                 if (iLength > maxDataSize)
                 {
                     throw new Exception(string.Format("Exceed the maximum data size {0}. Data size = [1}", maxDataSize, iLength));
                 }
                 byte[] rByte = new byte[4 + iLength];
                 BitConverter.GetBytes(iLength).CopyTo(rByte, 0);
-                if (data != null) { data.CopyTo(rByte, 4); }
+                if (data != null) data.CopyTo(rByte, 4);
                 return rByte;
             }
             catch (Exception ex)
@@ -188,13 +188,13 @@ namespace VsCSharpWinForm_sample2.Helpers
             string localSocket = "";
             try
             {
-                //if (oClientSocket == null || oClientSocket.Connected == false) { return false; }
-                if ((oClientSocket?.Connected ?? false) == false) { return false; }
-                //if (data == null) { data = new byte[0]; }
-                if (isContainLengthAsHeader) { byteData = PackData(maxDataSize, data); }/// Pack data with the length as header.
+                //if (oClientSocket == null || oClientSocket.Connected == false) return false;
+                if ((oClientSocket?.Connected ?? false) == false) return false;
+                //if (data == null) data = new byte[0];
+                if (isContainLengthAsHeader) byteData = PackData(maxDataSize, data);/// Pack data with the length as header.
                 else { byteData = data; }// NOT pack data.
                 /// Checking.
-                if (byteData == null) { return false; }
+                if (byteData == null) return false;
                 /// Send.
                 iSize = byteData.Length;
                 while (iSent < iSize)
@@ -202,7 +202,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 localSocket = oClientSocket?.LocalEndPoint?.ToString();
                 serverSocket = oClientSocket?.RemoteEndPoint?.ToString();
                 Logger?.Debug("TCP Client sends data. Server socket = {0}, local socket = {1}, #Size = {2}, #Sent = {3}", serverSocket, localSocket, iSize, iSent);
-                if (iSent == iSize) { return true; }
+                if (iSent == iSize) return true;
                 else
                 {
                     Logger?.Error("TCP Client sends incomplete data. Server socket = {0}, local socket = {1}, #Size = {2}, #Sent = {3}", serverSocket, localSocket, iSize, iSent);
@@ -234,7 +234,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             string sLocalEndPoint = "";
             try
             {
-                if (ClientSocket == null || ClientSocket.Connected == false) { return; }
+                if (ClientSocket == null || ClientSocket.Connected == false) return;
                 sRemoteEndPoint = RemoteEndPoint;
                 sLocalEndPoint = LocalEndPoint;
                 byteBuffer = new byte[ReceiveTotalBufferSize];/// 10M bytes.
@@ -253,7 +253,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                             /// Add data to the incoming buffer.
                             lock (IncomingBufferQueueLocker)
                             {
-                                if (IncomingBufferQueue == null) { IncomingBufferQueue = new Queue<byte[]>(); }
+                                if (IncomingBufferQueue == null) IncomingBufferQueue = new Queue<byte[]>();
                                 IncomingBufferQueue.Enqueue(byteData);
                             }
                         }
@@ -278,7 +278,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                 /// Add a null data to buffer, to indicate it is the end of data.
                                 lock (IncomingBufferQueueLocker)
                                 {
-                                    if (IncomingBufferQueue == null) { IncomingBufferQueue = new Queue<byte[]>(); }
+                                    if (IncomingBufferQueue == null) IncomingBufferQueue = new Queue<byte[]>();
                                     IncomingBufferQueue.Enqueue(null);
                                 }
                             }
