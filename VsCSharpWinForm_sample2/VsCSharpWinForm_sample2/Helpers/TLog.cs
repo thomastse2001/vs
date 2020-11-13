@@ -1,14 +1,11 @@
 using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
 
 namespace VsCSharpWinForm_sample2.Helpers
 {
     public class TLog
     {
         /// Write log to a text file in a specific format with a specific file name and path.
-        /// Updated date: 2020-11-04
+        /// Updated date: 2020-11-13
         /// Usage.
         /// // 1. Create an instance for it.
         /// TLog Logger = new TLog();
@@ -43,28 +40,18 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// Variables.
         //private static readonly string ClassName = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name;
         private readonly object WriterLocker = new object();
+        private static readonly string DefaultFolder;
         public string FilePathFormat { get; set; } = @"log\{0:yyyy-MM-dd}.log";/// {0} = Date time.
         public string ContentFormat { get; set; } = "{0:yyyy-MM-dd HH:mm:ss.fff} [{1}] {2}";/// {0} = Date time, {1} = Log level, {2} = Log message.
         public LogLevel MinLogLevel { get; set; } = LogLevel.ALL;
 
-        /// Get the default folder. Return the App Home if the input path is null.
-        /// Return value = default folder
-        private static string GetDefaultFolder(string defaultFolder)
-        {
-            if (string.IsNullOrEmpty(defaultFolder)) return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-            else return defaultFolder.Trim().TrimEnd(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
-        }
-
-        /// Get the default absolte path if the input path is a relative path.
+        /// Get the absolte path if the input path is a relative path.
         /// Return value = output.
         /// path = input path
-        /// defaultFolder = default folder
-        private static string GetDefaultAbsolutePathIfRelative(string path, string defaultFolder)
+        private static string GetAbsolutePathIfRelative(string path)
         {
-            if (string.IsNullOrEmpty(path)) return GetDefaultFolder(defaultFolder);
-            path = path.Trim(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
-            if (System.IO.Path.IsPathRooted(path)) return path;
-            else return GetDefaultFolder(defaultFolder) + System.IO.Path.DirectorySeparatorChar + path;
+            path = path?.Trim(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
+            return System.IO.Path.IsPathRooted(path) ? path : DefaultFolder + System.IO.Path.DirectorySeparatorChar + path;
         }
 
         /// Verify if the folder exists or not. If the folder does not exist, create it.
@@ -85,17 +72,35 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// args = arguments of the content format
         /// bAppend = false if overwrite the file. True if append to the file if the file already exists.
         /// https://support.microsoft.com/en-us/help/816149/how-to-read-from-and-write-to-a-text-file-by-using-visual-c
-        private static bool WriteLineToFile(string filepath, string format, params object[] args)
+        private static void WriteLineToFile(string filepath, string format, params object[] args)
         {
+            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filepath, true))/// true for append.
+            {
+                if ((args?.Length ?? 0) < 1) sw.WriteLine(format);
+                else sw.WriteLine(format, args);
+                sw.Flush();
+            }
+        }
+
+        /// https://support.microsoft.com/en-us/help/816149/how-to-read-from-and-write-to-a-text-file-by-using-visual-c
+        private static bool TryToWriteLineToFile(string filepath, string format, params object[] args)
+        {
+            /// To save time, try to write log first. If it fails with DirectoryNotFoundException, then create the directory for the log file.
+            /// It prevents to check whether the folder exists or not every time.
             try
             {
-                using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filepath, true))/// true for append.
+                WriteLineToFile(filepath, format, args);
+                return true;
+            }
+            catch (System.IO.DirectoryNotFoundException)
+            {
+                try
                 {
-                    if ((args?.Length ?? 0) < 1) sw.WriteLine(format);
-                    else sw.WriteLine(format, args);
-                    sw.Flush();
+                    if (!FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath))) return false;
+                    WriteLineToFile(filepath, format, args);
                     return true;
                 }
+                catch { return false; }
             }
             catch { return false; }
         }
@@ -104,24 +109,17 @@ namespace VsCSharpWinForm_sample2.Helpers
         private void WriteLogInFolder(string filepath, string format, params object[] args)
         {
             if (string.IsNullOrEmpty(filepath)) return;
-            filepath = GetDefaultAbsolutePathIfRelative(filepath, null);
-            if (!FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath))) return;
-            /// Write log with current datetime.
-            /// The idea is to wait a few milli-seconds and then try writing again if fail to write log.
-            /// This LOCK block is dedicated here. To prevent the below error.
-            /// [error] The process cannot access the file 'xxx' because it is being used by another process.
+            filepath = GetAbsolutePathIfRelative(filepath);
             lock (WriterLocker)
             {
-                if (!WriteLineToFile(filepath, format, args))
+                if (!TryToWriteLineToFile(filepath, format, args))
                 {
                     int i = 1;
                     int iMax = 7;
                     bool bLoop = true;
-                    string s;
                     while (bLoop && i <= iMax)
                     {
-                        s = string.Format("Re-Write log at {0} as the file is being used.", i);
-                        if (WriteLineToFile(filepath, s + " " + format, args)) bLoop = false;
+                        if (TryToWriteLineToFile(filepath, string.Format("Re-Write log at {0} as the file is being used.", i) + " " + format, args)) bLoop = false;
                         else i += 1;
                     }
                 }
@@ -169,9 +167,13 @@ namespace VsCSharpWinForm_sample2.Helpers
         //{
         //}
 
-        ///// Constructor.
         //public TLog()
         //{
         //}
+
+        static TLog()
+        {
+            DefaultFolder = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        }
     }
 }
