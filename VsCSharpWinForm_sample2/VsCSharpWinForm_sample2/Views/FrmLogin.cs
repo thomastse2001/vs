@@ -31,12 +31,12 @@ namespace VsCSharpWinForm_sample2.Views
 
         private void TxtUsername_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) { BtnOK_Click(null, null); }
+            if (e.KeyCode == Keys.Enter) BtnOK_Click(null, null);
         }
 
         private void TxtPassword_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) { BtnOK_Click(null, null); }
+            if (e.KeyCode == Keys.Enter) BtnOK_Click(null, null);
         }
     }
 }

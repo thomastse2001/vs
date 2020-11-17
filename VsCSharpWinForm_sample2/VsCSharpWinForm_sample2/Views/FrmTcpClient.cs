@@ -32,11 +32,11 @@ namespace VsCSharpWinForm_sample2.Views
         {
             try
             {
-                if (o == null) { return; }
+                if (o == null) return;
                 string s;
                 byte[] decryptedData;
-                if (ChkEncryptData.Checked) { decryptedData = o.ByteArray == null ? o.ByteArray : Helpers.CyptoRijndaelT.Decrypt(o.ByteArray, CryptPassword); }
-                else { decryptedData = o.ByteArray; }
+                if (ChkEncryptData.Checked) decryptedData = o.ByteArray == null ? o.ByteArray : Helpers.CyptoRijndaelT.Decrypt(o.ByteArray, CryptPassword);
+                else decryptedData = o.ByteArray;
                 if ((decryptedData?.Length ?? 0) < 1)
                 {
                     //throw new Exception("Length of decrypted data < 1, which is impossible.");
@@ -93,8 +93,7 @@ namespace VsCSharpWinForm_sample2.Views
             {
                 lock (MyIncomingDataQueueLocker)
                 {
-                    //if ((mIncomingDataQueue?.Count ?? 0) < 1) { return; }
-                    if (MyIncomingDataQueue == null || MyIncomingDataQueue.Count < 1) { return; }
+                    if (MyIncomingDataQueue == null || MyIncomingDataQueue.Count < 1) return;
                     int iMax = 5;
                     int i = 0;
                     tempList = new List<Helpers.TTcpClientSocket.TcpSocketData>();
@@ -236,21 +235,21 @@ namespace VsCSharpWinForm_sample2.Views
                         char[] cArrayTrim = { ' ', '\t', (char)10, (char)13 };
                         string s = (args?.Length ?? 0) < 1 ? format : string.Format(format, args);
                         TxtLog.AppendText(s.Trim(cArrayTrim) + Environment.NewLine);
-                        if (TxtLog.TextLength > iMax) { TxtLog.Text = TxtLog.Text.Substring(TxtLog.Text.Length - iMax); }
+                        if (TxtLog.TextLength > iMax) TxtLog.Text = TxtLog.Text.Substring(TxtLog.Text.Length - iMax);
                         TxtLog.SelectionStart = TxtLog.TextLength;
                         TxtLog.ScrollToCaret();
                     }
                     catch (Exception ex2)
                     {
                         try { Logger?.Error(ex2); }
-                        catch (Exception ex3) { Console.WriteLine("[error] " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". " + ex3.Message); }
+                        catch (Exception ex3) { Console.WriteLine("[error] {0}.{1}. {2}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, ex3.Message); }
                     }
                 }));
             }
             catch (Exception ex)
             {
                 try { Logger?.Error(ex); }
-                catch (Exception ex4) { Console.WriteLine("[error] " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". " + ex4.Message); }
+                catch (Exception ex4) { Console.WriteLine("[error] {0}.{1}. {2}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, ex4.Message); }
             }
         }
 
@@ -392,8 +391,8 @@ namespace VsCSharpWinForm_sample2.Views
                 };
                 tempList.AddRange(data);
                 byte[] encryptedData = null;
-                if (ChkEncryptData.Checked) { encryptedData = Helpers.CyptoRijndaelT.Encrypt(tempList.ToArray(), CryptPassword); }
-                else { encryptedData = tempList.ToArray(); }
+                if (ChkEncryptData.Checked) encryptedData = Helpers.CyptoRijndaelT.Encrypt(tempList.ToArray(), CryptPassword);
+                else encryptedData = tempList.ToArray();
                 return MyClient?.SendByteArray(encryptedData) ?? false;
             }
             catch (Exception ex)
@@ -465,7 +464,7 @@ namespace VsCSharpWinForm_sample2.Views
 
         private void TxtInput_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) { BtnSendText_Click(null, null); }
+            if (e.KeyCode == Keys.Enter) BtnSendText_Click(null, null);
         }
 
         private void BtnSendFile_Click(object sender, EventArgs e)
@@ -489,10 +488,7 @@ namespace VsCSharpWinForm_sample2.Views
                     Logger?.Debug("FrmTcpClient {0} sends file {1}", Id, oDialog.FileName);
                     WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Send file: {1}", DateTime.Now, oDialog.FileName);
                     byte[] data = System.IO.File.ReadAllBytes(oDialog.FileName);
-                    if (TcpClientSend(Models.Param.TcpDataType.File, data))
-                    {
-                    }
-                    else
+                    if (!TcpClientSend(Models.Param.TcpDataType.File, data))
                     {
                         Logger?.Error("FrmTcpClient {0} fails to send file: {1}", Id, oDialog.FileName);
                         WriteLogToUI("Fail to send file: {0}", oDialog.FileName);
@@ -521,18 +517,28 @@ namespace VsCSharpWinForm_sample2.Views
                 DateTime tNow;
                 int interval = 1;
                 Logger?.Debug("FrmTcpClient {0} begins to check connectivity.", Id);
-                bool b = true;
-                while (IsExit == false && b)
+                //bool b = true;
+                //while (IsExit == false && b)
+                //{
+                //    tNow = DateTime.Now;
+                //    if ((int)(tNow - tRef).TotalSeconds >= interval)
+                //    {
+                //        tRef = tNow;
+                //        b = MyClient?.IsConnected ?? false;
+                //    }
+                //    System.Threading.Thread.Sleep(1000);
+                //}
+                //if (!b) DisconnectRoutine();
+                while (IsExit == false && (MyClient?.IsConnected ?? false))
                 {
                     tNow = DateTime.Now;
                     if ((int)(tNow - tRef).TotalSeconds >= interval)
                     {
                         tRef = tNow;
-                        b = MyClient?.IsConnected ?? false;
                     }
                     System.Threading.Thread.Sleep(1000);
                 }
-                if (!b) { DisconnectRoutine(); }
+                if (!(MyClient?.IsConnected ?? false)) DisconnectRoutine();
                 Logger?.Debug("FrmTcpClient {0} stops to check connectivity.", Id);
             }
             catch (Exception ex)

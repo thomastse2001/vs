@@ -126,7 +126,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         Logger?.Error(ex2.ToString());
                         using (System.Net.FtpWebResponse response = (System.Net.FtpWebResponse)ex2.Response)
                         {
-                            if (response.StatusCode == System.Net.FtpStatusCode.ActionNotTakenFileUnavailable) { return false; }
+                            if (response.StatusCode == System.Net.FtpStatusCode.ActionNotTakenFileUnavailable) return false;
                         }
                         return false;
                     }
@@ -371,7 +371,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     //    }
                     //    client.Disconnect();
                     //}
-                    if (stringList.Count > 0) { return stringList.ToArray(); }
+                    if (stringList.Count > 0) return stringList.ToArray();
                     return null;
                 }
                 catch (Exception ex)
