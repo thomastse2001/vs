@@ -10,7 +10,7 @@ namespace VsCSharpWinForm_sample2.Helpers
     {
         /// TCP Server by a synchronous socket in the threading model.
         /// Data unit is byte.
-        /// Updated date: 2020-09-14
+        /// Updated date: 2020-11-17
 
         /// http://csharp.net-informations.com/communications/csharp-server-socket.htm
         /// https://docs.microsoft.com/en-us/dotnet/framework/network-programming/synchronous-server-socket-example
@@ -54,7 +54,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             get { return _HeartbeatData; }
             set
             {
-                if (value == null) { _HeartbeatData = null; }
+                if (value == null) _HeartbeatData = null;
                 else
                 {
                     _HeartbeatData = new byte[value.Length];
@@ -124,7 +124,7 @@ namespace VsCSharpWinForm_sample2.Helpers
 
             private bool AbortThread(ref System.Threading.Thread th)
             {
-                if (th == null) { return true; }
+                if (th == null) return true;
                 try
                 {
                     if (th.IsAlive)
@@ -162,7 +162,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     // }
                     /// TT edited on 2018-08-21 to lock the common resource.
                     bool b = true;
-                    if (IncomingDataQueueLocker == null) { b = IncomingDataQueue == null; }
+                    if (IncomingDataQueueLocker == null) b = IncomingDataQueue == null;
                     else { lock (IncomingDataQueueLocker) { b = IncomingDataQueue == null; } }
                     if (b)
                     {
@@ -178,8 +178,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                         ByteArray = data
                     };
                     int iLength = 0;
-                    if (data != null) { iLength = data.Length; }
-                    if (IncomingDataQueueLocker == null) { IncomingDataQueue.Enqueue(oData); }
+                    if (data != null) iLength = data.Length;
+                    if (IncomingDataQueueLocker == null) IncomingDataQueue.Enqueue(oData);
                     else { lock (IncomingDataQueueLocker) { IncomingDataQueue.Enqueue(oData); } }
                     Logger?.Debug("TCP Server adds the received data to IncomingDataQueue. Client socket = {0}, Byte Length = {1}", ClientSocketString, iLength);
                     return true;
@@ -195,11 +195,11 @@ namespace VsCSharpWinForm_sample2.Helpers
             /// Close and stop the TCP client socket. Set it to nothing.
             public void Disconnect()
             {
-                if (ClientSocket == null) { return; }
+                if (ClientSocket == null) return;
                 try
                 {
                     Logger?.Debug("TCP Server disconnects. Client socket = {0}", ClientSocketString);
-                    if (ClientSocket.Connected) { ClientSocket.Close(); }
+                    if (ClientSocket.Connected) ClientSocket.Close();
                 }
                 catch (Exception ex)
                 {
@@ -215,7 +215,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 try
                 {
                     int iLength = 0;
-                    if (data != null) { iLength = data.Length; }
+                    if (data != null) iLength = data.Length;
                     if (iLength > MaxDataSize)
                     {
                         Logger?.Error("Exceed the maximum data size {0}. Client socket = {1}, Data size = {2}", MaxDataSize, ClientSocketString, iLength);
@@ -223,7 +223,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     }
                     byte[] rByte = new byte[4 + iLength];
                     BitConverter.GetBytes(iLength).CopyTo(rByte, 0);
-                    if (data != null) { data.CopyTo(rByte, 4); }
+                    if (data != null) data.CopyTo(rByte, 4);
                     return rByte;
                 }
                 catch (Exception ex)
@@ -293,17 +293,17 @@ namespace VsCSharpWinForm_sample2.Helpers
                 byte[] byteData = null;
                 try
                 {
-                    if (ClientSocket == null || ClientSocket.Connected == false) { return false; }
-                    if (data == null) { data = new byte[0]; }
+                    if (ClientSocket == null || ClientSocket.Connected == false) return false;
+                    if (data == null) data = new byte[0];
                     System.Net.Sockets.NetworkStream oStream = ClientSocket.GetStream();
                     if (!oStream.CanWrite)
                     {
                         Logger?.Error("TCP Server sends data which cannot write to client {0}", ClientSocketString);
                         return false;
                     }
-                    if (ContainLengthAsHeader) { byteData = PackData(data); }/// Pack data with the length as header.
-                    else { byteData = data; }/// NOT pack data.
-                    if (byteData == null) { return false; }/// Checking.
+                    if (ContainLengthAsHeader) byteData = PackData(data);/// Pack data with the length as header.
+                    else byteData = data;/// NOT pack data.
+                    if (byteData == null) return false;/// Checking.
                     oStream.Write(byteData, 0, byteData.Length);/// Send.
                     oStream.Flush();
                     /// Must not use oStream.Close() at the end. Otherwise, it will affect the "Receive" function that data cannot be received.
@@ -341,8 +341,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                 //TcpSocketData oData;
                 try
                 {
-                    //if (ClientSocket == null || ClientSocket.Connected == false) { return; }
-                    if ((ClientSocket?.Connected ?? false) == false) { return; }
+                    //if (ClientSocket == null || ClientSocket.Connected == false) return;
+                    if ((ClientSocket?.Connected ?? false) == false) return;
                     oStream = ClientSocket.GetStream();
                     if (!oStream.CanRead)
                     {
@@ -353,7 +353,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     {
                         byteBuffer = new byte[ReceiveTotalBufferSize];/// 10M bytes.
                         //i = (int)mTcpClient.ReceiveBufferSize;
-                        //if (i > miReceiveTotalBufferSize) { i = miReceiveTotalBufferSize; }
+                        //if (i > miReceiveTotalBufferSize) i = miReceiveTotalBufferSize;
                         //iUpperLimit = miReceiveTotalBufferSize - i + 1;
                         //byteTemp = new byte[i]; // 65536.
                         // Must use a loop to receive data.
@@ -373,7 +373,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         while (iReceived < byteBuffer.Length && oStream.DataAvailable)
                         { iReceived += oStream.Read(byteBuffer, iReceived, byteBuffer.Length - iReceived); }
                         /// If receive empty bytes, quit this function.
-                        if (iReceived < 1) { return; }
+                        if (iReceived < 1) return;
                         byteData = new byte[iReceived];
                         Array.Copy(byteBuffer, 0, byteData, 0, iReceived);
                         //byteTemp = null;
@@ -385,14 +385,12 @@ namespace VsCSharpWinForm_sample2.Helpers
                             /// Add data to the incoming buffer for analyzing.
                             lock (IncomingBufferQueueLocker)
                             {
-                                if (IncomingBufferQueue == null) { IncomingBufferQueue = new Queue<byte[]>(); }
+                                if (IncomingBufferQueue == null) IncomingBufferQueue = new Queue<byte[]>();
                                 IncomingBufferQueue.Enqueue(byteData);
                             }
                         }
                         else
-                        {
                             AddDataToIncomingDataQueue(DateTime.Now, byteData);/// Add data to the list directly.
-                        }
                         /// Must not use oStream.Close() at the end. Otherwise, data cannot be received.
                     }
                     else
@@ -421,14 +419,12 @@ namespace VsCSharpWinForm_sample2.Helpers
                                 /// Add a null data to buffer, to indicate it is the end of data.
                                 lock (IncomingBufferQueueLocker)
                                 {
-                                    if (IncomingBufferQueue == null) { IncomingBufferQueue = new Queue<byte[]>(); }
+                                    if (IncomingBufferQueue == null) IncomingBufferQueue = new Queue<byte[]>();
                                     IncomingBufferQueue.Enqueue(null);
                                 }
                             }
                             else
-                            {
                                 AddDataToIncomingDataQueue(DateTime.Now, null);/// Add data to the list directly.
-                            }
                         }
                     }
                 }
@@ -513,7 +509,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                             IncomingContentIndex = 0;
                                             IncomingContentSize = 0;
                                             /// Assign 4 bytes to the Length buffer.
-                                            if (IncomingLengthBuffer != null) { IncomingLengthBuffer = null; }
+                                            if (IncomingLengthBuffer != null) IncomingLengthBuffer = null;
                                             IncomingLengthBuffer = new byte[4];
                                         }
                                         /// Determine the number of bytes to be read and copied.
@@ -531,7 +527,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         }
                                         /// Copy.
                                         Logger?.Debug("AnalyzeIncomingBuffer. Copy bytes from queue to length buffer. Client socket = {0}, iIndex1 = {2}, miIncomingLengthIndex = {3}, iCopy = {4}", ClientSocketString, iIndex1, IncomingLengthIndex, iCopy);
-                                        if (iCopy > 0) { Array.Copy(byteDataInQueue, iIndex1, IncomingLengthBuffer, IncomingLengthIndex, iCopy); }
+                                        if (iCopy > 0) Array.Copy(byteDataInQueue, iIndex1, IncomingLengthBuffer, IncomingLengthIndex, iCopy);
                                         IncomingLengthIndex += iCopy;
                                         iIndex1 += iCopy;
                                         /// Check if finish to copy the length.
@@ -542,8 +538,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                                             {
                                                 IncomingContentSize = BitConverter.ToInt32(IncomingLengthBuffer, 0);
                                                 Logger?.Debug("AnalyzeIncomingBuffer. Client socket = {0}, Get content length = {1}", ClientSocketString, IncomingContentSize);
-                                                if (IncomingContentBuffer != null) { IncomingContentBuffer = null; }
-                                                if (IncomingContentSize > 0) { IncomingContentBuffer = new byte[IncomingContentSize]; }
+                                                if (IncomingContentBuffer != null) IncomingContentBuffer = null;
+                                                if (IncomingContentSize > 0) IncomingContentBuffer = new byte[IncomingContentSize];
 
                                                 IsIncomingDataLength = false;/// go to 3rd state.
                                                 IncomingContentIndex = 0;/// reset the index of content again.
@@ -573,7 +569,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         }
                                         /// Copy.
                                         Logger?.Debug("AnalyzeIncomingBuffer. Copy bytes from queue to content buffer. Client socket = {0}, iIndex1 = {1}, miIncomingContentIndex = {2}, iCopy = {3}", ClientSocketString, iIndex1, IncomingLengthIndex, iCopy);
-                                        if (iCopy > 0) { Array.Copy(byteDataInQueue, iIndex1, IncomingContentBuffer, IncomingContentIndex, iCopy); }
+                                        if (iCopy > 0) Array.Copy(byteDataInQueue, iIndex1, IncomingContentBuffer, IncomingContentIndex, iCopy);
                                         IncomingContentIndex += iCopy;
                                         iIndex1 += iCopy;
                                         /// Check if finish to copy the content.
@@ -625,8 +621,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                                     //byte[] byteFinalData = IncomingBufferList.SelectMany(x => x).ToArray();
                                     byte[] byteFinalData = null;
                                     IEnumerable<byte> oIEnumerable = null;
-                                    if (IncomingBufferList != null) { oIEnumerable = IncomingBufferList.SelectMany(x => x); }
-                                    if (oIEnumerable != null) { byteFinalData = oIEnumerable.ToArray(); }
+                                    if (IncomingBufferList != null) oIEnumerable = IncomingBufferList.SelectMany(x => x);
+                                    if (oIEnumerable != null) byteFinalData = oIEnumerable.ToArray();
                                     AddDataToIncomingDataQueue(DateTime.Now, byteFinalData);
                                     /// Release memory of the list.
                                     IncomingBufferList.Clear();
@@ -636,7 +632,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                             else
                             {
                                 /// add data into temp list.
-                                if (IncomingBufferList == null) { IncomingBufferList = new List<byte[]>(); }
+                                if (IncomingBufferList == null) IncomingBufferList = new List<byte[]>();
                                 IncomingBufferList.Add(byteDataInQueue);
                             }
                         }
@@ -671,7 +667,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                             tRefLog = tNow;
                             Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + " is running. Client socket = {0}:{1}", Host, Port);
                         }
-                        if (SleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(SleepingIntervalInMS); }
+                        if (SleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(SleepingIntervalInMS);
                     }
                     Logger?.Debug("TCP Server stops to analyze the incoming buffer. Client socket = {0}", ClientSocketString);
                 }
@@ -691,7 +687,6 @@ namespace VsCSharpWinForm_sample2.Helpers
                     Logger?.Debug("TCP Server begins to receive data. Client socket = {0}", ClientSocketString);
                     tRefLog = DateTime.Now;
                     tRef = tRefLog.AddHours(-1);
-                    //while (IsExit == false && ClientSocket != null && ClientSocket.Connected)
                     while (IsExit == false && (ClientSocket?.Connected ?? false))
                     {
                         tNow = DateTime.Now;
@@ -705,7 +700,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                             tRefLog = tNow;
                             Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + " is running. Client socket = {0}", ClientSocketString);
                         }
-                        if (SleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(SleepingIntervalInMS); }
+                        if (SleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(SleepingIntervalInMS);
                     }
                     // while (mbForceDisconnect == false && mOutterServer.mbForceStop == false && mTcpClient != null && mTcpClient.Connected)
                     // { ReceiveByteArray(); }
@@ -741,22 +736,30 @@ namespace VsCSharpWinForm_sample2.Helpers
             public void ForceDisconnect(int timeoutInSecond, int sleepingIntervalInMS)
             {
                 DateTime tRef;
-                bool b;
+                //bool b;
                 try
                 {
                     Exit();
-                    if (timeoutInSecond < 0) { timeoutInSecond = 0; }
-                    tRef = DateTime.Now; b = true;
-                    // while ((mThreadReceiveData != null) && mThreadReceiveData.IsAlive && ((int)(DateTime.Now-tRef).TotalSeconds<iTimeoutInSecond))
-                    // { if(iSleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(iSleepingIntervalInMS); } }
-                    while (b && (int)(DateTime.Now - tRef).TotalSeconds < timeoutInSecond)
+                    if (timeoutInSecond < 0) timeoutInSecond = 0;
+                    tRef = DateTime.Now;
+                    //b = true;
+                    //// while ((mThreadReceiveData != null) && mThreadReceiveData.IsAlive && ((int)(DateTime.Now-tRef).TotalSeconds<iTimeoutInSecond))
+                    //// { if(iSleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(iSleepingIntervalInMS); }
+                    //while (b && (int)(DateTime.Now - tRef).TotalSeconds < timeoutInSecond)
+                    //{
+                    //    //b = false;
+                    //    ////if (ThreadToReceiveData != null && ThreadToReceiveData.IsAlive) b = true;
+                    //    ////else { if (ThreadToAnalyzeIncomingBuffer != null && ThreadToAnalyzeIncomingBuffer.IsAlive) b = true; }
+                    //    //if (ThreadToReceiveData?.IsAlive ?? false) b = true;
+                    //    //else { if (ThreadToAnalyzeIncomingBuffer?.IsAlive ?? false) b = true; }
+                    //    b = (ThreadToReceiveData?.IsAlive ?? false) || (ThreadToAnalyzeIncomingBuffer?.IsAlive ?? false);
+                    //    if (b && sleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(sleepingIntervalInMS);
+                    //}
+                    while ((int)(DateTime.Now - tRef).TotalSeconds < timeoutInSecond && (
+                        (ThreadToReceiveData?.IsAlive ?? false) || (ThreadToAnalyzeIncomingBuffer?.IsAlive ?? false)
+                        ))
                     {
-                        b = false;
-                        //if (ThreadToReceiveData != null && ThreadToReceiveData.IsAlive) { b = true; }
-                        //else { if (ThreadToAnalyzeIncomingBuffer != null && ThreadToAnalyzeIncomingBuffer.IsAlive) { b = true; } }
-                        if (ThreadToReceiveData?.IsAlive ?? false) { b = true; }
-                        else { if (ThreadToAnalyzeIncomingBuffer?.IsAlive ?? false) { b = true; } }
-                        if (sleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(sleepingIntervalInMS); }
+                        if (sleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(sleepingIntervalInMS);
                     }
                     AbortThread(ref ThreadToReceiveData);
                     AbortThread(ref ThreadToAnalyzeIncomingBuffer);
@@ -793,8 +796,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                             Name = "ProcessReceiveData-" + ClientSocketString
                         };
                     }
-                    if (ThreadToReceiveData == null) { Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". Cannot start the thread of receiving data. Client socket = {0}", ClientSocketString); }
-                    else { if (ThreadToReceiveData.IsAlive == false) { ThreadToReceiveData.Start(); } }
+                    if (ThreadToReceiveData == null) Logger?.Debug("{0}.{1}. Cannot start the thread of receiving data. Client socket = {2}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, ClientSocketString);
+                    else { if (!ThreadToReceiveData.IsAlive) ThreadToReceiveData.Start(); }
                     if (ThreadToAnalyzeIncomingBuffer == null)
                     {
                         ThreadToAnalyzeIncomingBuffer = new System.Threading.Thread(new System.Threading.ThreadStart(ProcessAnalyzeIncomingBuffer))
@@ -802,8 +805,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                             Name = "ProcessAnalyzeIncomingBuffer-" + ClientSocketString
                         };
                     }
-                    if (ThreadToAnalyzeIncomingBuffer == null) { Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". Cannot start the thread of analyzing incoming data. Client socket = {0}", ClientSocketString); }
-                    else { if (ThreadToAnalyzeIncomingBuffer.IsAlive == false) { ThreadToAnalyzeIncomingBuffer.Start(); } }
+                    if (ThreadToAnalyzeIncomingBuffer == null) Logger?.Debug("{0}.{1}. Cannot start the thread of analyzing incoming data. Client socket = {2}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, ClientSocketString);
+                    else { if (!ThreadToAnalyzeIncomingBuffer.IsAlive) ThreadToAnalyzeIncomingBuffer.Start(); }
                 }
                 catch (Exception ex)
                 {
@@ -817,7 +820,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 try
                 {
                     this.ClientSocket = pTcpClient;
-                    if (this.ClientSocket == null || ClientSocket.Connected == false) { return; }
+                    if (this.ClientSocket == null || ClientSocket.Connected == false) return;
                     /// IP and Port.
                     System.Net.IPEndPoint oIPEndPoint = (System.Net.IPEndPoint)ClientSocket.Client.RemoteEndPoint;
                     //this._Host = oIPEndPoint.Address.ToString();
@@ -854,7 +857,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// bIsDebugLog = Whether the log is a debug bug or not.
         private static bool AbortThread(ref System.Threading.Thread th)
         {
-            if (th == null) { return true; }
+            if (th == null) return true;
             try
             {
                 if (th.IsAlive)
@@ -877,18 +880,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                //if (locker == null)
-                //{
-                //    return vQueue == null ? 0 : vQueue.Count;
-                //}
-                //else
-                //{
-                //    lock (locker)
-                //    {
-                //        return vQueue == null ? 0 : vQueue.Count;
-                //    }
-                //}
-                if (locker == null) { return queue?.Count ?? 0; }
+                if (locker == null) return queue?.Count ?? 0;
                 else { lock (locker) { return queue?.Count ?? 0; } }
             }
             catch (Exception ex)
@@ -967,13 +959,12 @@ namespace VsCSharpWinForm_sample2.Helpers
             try
             {
                 array = TcpClientList();
-                //if (sArray == null || sArray.Length < 1) { return "#Items = 0"; }
-                if ((array?.Length ?? 0) < 1) { return "#Items = 0"; }
+                if ((array?.Length ?? 0) < 1) return "#Items = 0";
                 sb = new StringBuilder();
                 sb.Append("#Items = ");
                 if (array != null) { i = array.Length; }
                 sb.Append(i.ToString()).Append(recordSeparator);
-                if (array != null) { sb.Append(string.Join(recordSeparator, array)).Append(recordSeparator); }
+                if (array != null) sb.Append(string.Join(recordSeparator, array)).Append(recordSeparator);
                 string sReturn = sb.ToString();
                 return sReturn;
             }
@@ -993,8 +984,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (host == null) { host = ""; }
-                else { host = host.Trim(); }
+                host = host == null ? "" : host.Trim();
 
                 //int i = 0;
                 //lock (mListInnerClientLocker)
@@ -1041,8 +1031,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (host == null) { host = ""; }
-                else { host = host.Trim(); }
+                host = host == null ? "" : host.Trim();
                 lock (InnerClientListLocker)
                 {
                     return InnerClientList?.Find(x => x != null && port == x.Port && host.Equals(x.Host));
@@ -1080,10 +1069,9 @@ namespace VsCSharpWinForm_sample2.Helpers
             // System.Collections.Generic.List<InnerClientT> vListOfDisconnect = null;
             try
             {
-                if (host == null) { host = ""; }
-                else { host = host.Trim(); }
+                host = host == null ? "" : host.Trim();
 
-                //if (InnerClientList == null || InnerClientList.Count < 1) { return; }
+                //if (InnerClientList == null || InnerClientList.Count < 1) return;
                 // if (string.IsNullOrEmpty(sHost)) { vListOfDisconnect = mListInnerClientT.FindAll(x => x != null && iPort == x.Port && string.IsNullOrEmpty(x.Host)); }
                 // else
                 // {
@@ -1105,14 +1093,13 @@ namespace VsCSharpWinForm_sample2.Helpers
                 lock (InnerClientListLocker)
                 {
                     int i = 0;
-                    //while (InnerClientList != null && i < InnerClientList.Count)
                     while (i < (InnerClientList?.Count ?? 0))
                     {
                         InnerClient oItem = InnerClientList[i];
                         if (oItem != null)
                         {
                             if (oItem.Port == port && host.Equals(oItem.Host))
-                            { oItem.ForceDisconnect(2); }
+                                oItem.ForceDisconnect(2);
                         }
                         i += 1;
                     }
@@ -1137,7 +1124,6 @@ namespace VsCSharpWinForm_sample2.Helpers
                     {
                         InnerClientList.RemoveAll(x => x == null);
                         vListOfDeleted = InnerClientList.FindAll(x => x.IsConnected == false);
-                        //if (vListOfDeleted != null && vListOfDeleted.Count > 0)
                         if ((vListOfDeleted?.Count ?? 0) > 0)
                         {
                             foreach (InnerClient o in vListOfDeleted)
@@ -1145,8 +1131,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                                 if (o != null && InnerClientList != null)
                                 {
                                     if (string.IsNullOrEmpty(o.Host))
-                                    { InnerClientList.RemoveAll(x => x.Port == o.Port && string.IsNullOrEmpty(x.Host)); }
-                                    else { InnerClientList.RemoveAll(x => x.Port == o.Port && o.Host.Equals(x.Host)); }
+                                        InnerClientList.RemoveAll(x => x.Port == o.Port && string.IsNullOrEmpty(x.Host));
+                                    else InnerClientList.RemoveAll(x => x.Port == o.Port && o.Host.Equals(x.Host));
                                     //o.ForceDisconnect();
                                 }
                             }
@@ -1154,11 +1140,10 @@ namespace VsCSharpWinForm_sample2.Helpers
                     }
                 }
                 /// Disconnect the clients out of the LOCK block.
-                //if (vListOfDeleted != null && vListOfDeleted.Count > 0)
                 if ((vListOfDeleted?.Count ?? 0) > 0)
                 {
                     foreach (InnerClient o in vListOfDeleted)
-                    { if (o != null) { o.ForceDisconnect(); } }
+                    { if (o != null) o.ForceDisconnect(); }
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -1183,7 +1168,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 while (!this.IsExit)
                 {
                     TrimList();
-                    if (i >= 0) { System.Threading.Thread.Sleep(i); }
+                    if (i >= 0) System.Threading.Thread.Sleep(i);
                 }
                 Logger?.Debug("TCP Server stops to trim list of clients.");
             }
@@ -1247,11 +1232,11 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (string.IsNullOrEmpty(host)) { return; }
+                if (string.IsNullOrEmpty(host)) return;
                 /// add data to queue.
                 lock (OutgoingDataQueueLocker)
                 {
-                    if (OutgoingDataQueue == null) { OutgoingDataQueue = new Queue<TcpSocketData>(); }
+                    if (OutgoingDataQueue == null) OutgoingDataQueue = new Queue<TcpSocketData>();
                     OutgoingDataQueue.Enqueue(new TcpSocketData()
                     {
                         Timestamp = DateTime.Now,
@@ -1274,10 +1259,10 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (vData == null) { return; }
+                if (vData == null) return;
                 lock (FailedOutgoingDataQueueLocker)
                 {
-                    if (FailedOutgoingDataQueue == null) { FailedOutgoingDataQueue = new Queue<TcpSocketData>(); }
+                    if (FailedOutgoingDataQueue == null) FailedOutgoingDataQueue = new Queue<TcpSocketData>();
                     FailedOutgoingDataQueue.Enqueue(vData);
                 }
             }
@@ -1288,10 +1273,9 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (vData == null) { return; }
-                //if (vData == null || InnerClientList == null) { return; }
+                if (vData == null) return;
                 string sHost = "";
-                if (!string.IsNullOrEmpty(vData.Host)) { sHost = vData.Host.ToUpper(); }
+                if (!string.IsNullOrEmpty(vData.Host)) sHost = vData.Host.ToUpper();
                 //switch (sHost)
                 //{
                 //    case "255.255.255.255":
@@ -1336,7 +1320,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                             foreach (InnerClient o in InnerClientList)
                             {
                                 if (o != null)
-                                { if (!o.SendByteArray(vData.ByteArray)) { QueueToFailedOutgoingData(ref vData); } }
+                                { if (!o.SendByteArray(vData.ByteArray)) QueueToFailedOutgoingData(ref vData); }
                             }
                         }
                     }
@@ -1352,13 +1336,13 @@ namespace VsCSharpWinForm_sample2.Helpers
                             {
                                 if (o != null && o.Port == vData.Port && sHost.Equals(o.Host))
                                 {
-                                    if (!o.SendByteArray(vData.ByteArray)) { QueueToFailedOutgoingData(ref vData); }
+                                    if (!o.SendByteArray(vData.ByteArray)) QueueToFailedOutgoingData(ref vData);
                                     b = false;/// set that it already finds InnerClient.
                                 }
                             }
                         }
                     }
-                    if (b) { Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + "Cannot find the client in the list. Client socket = {0}:{1}", sHost, vData.Port); }
+                    if (b) Logger?.Debug("{0}.{1}. Cannot find the client in the list. Client socket = {2}:{3}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, sHost, vData.Port);
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -1373,7 +1357,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 //while (mListInnerClientT != null && i < mListInnerClientT.Count)
                 //{
                 //    InnerClient oItem = mListInnerClientT[i];
-                //    if (oItem != null) { oItem.SendByteArray(oByteArrayHeartbeat); }
+                //    if (oItem != null) oItem.SendByteArray(oByteArrayHeartbeat);
                 //    i += 1;
                 //}
                 lock (InnerClientListLocker)
@@ -1381,7 +1365,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     if (InnerClientList != null)
                     {
                         foreach (InnerClient o in InnerClientList)
-                        { if (o != null) { o.SendByteArray(oByteArrayHeartbeat); } }
+                        { if (o != null) o.SendByteArray(oByteArrayHeartbeat); }
                     }
                 }
             }
@@ -1454,9 +1438,9 @@ namespace VsCSharpWinForm_sample2.Helpers
                 DateTime tRefHeartbeat = tRefLog.AddHours(-1);
                 //tRefData = tRefHeartbeat;
                 //oByteArrayHeartbeat = new byte[0];
-                // if (mbContainLengthAsHeader) { oByteArrayHeartbeat = new byte[0]; }
-                //else { oByteArrayHeartbeat = System.Text.Encoding.UTF8.GetBytes("~"); }
-                if (!this.ContainLengthAsHeader) { oByteArrayHeartbeat = this.HeartbeatData; }
+                // if (mbContainLengthAsHeader) oByteArrayHeartbeat = new byte[0];
+                //else oByteArrayHeartbeat = System.Text.Encoding.UTF8.GetBytes("~");
+                if (!this.ContainLengthAsHeader) oByteArrayHeartbeat = this.HeartbeatData;
                 while (this.IsExit == false && this.ServerSocket != null)
                 {
                     tNow = DateTime.Now;
@@ -1494,9 +1478,9 @@ namespace VsCSharpWinForm_sample2.Helpers
                     if (this.ProcessVerificationInterval > 0 && (int)(tNow - tRefLog).TotalSeconds >= this.ProcessVerificationInterval)
                     {
                         tRefLog = tNow;
-                        Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + " is running.");
+                        Logger?.Debug("{0}.{1} is running.", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name);
                     }
-                    if (this.SleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(this.SleepingIntervalInMS); }
+                    if (this.SleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(this.SleepingIntervalInMS);
                 }
                 Logger?.Debug("TCP Server stops to send data to clients.");
             }
@@ -1510,9 +1494,9 @@ namespace VsCSharpWinForm_sample2.Helpers
             System.Net.Sockets.TcpClient oClientSocket = null;
             try
             {
-                if (this.IsExit || this.ServerSocket == null) { return; }
+                if (this.IsExit || this.ServerSocket == null) return;
                 oClientSocket = this.ServerSocket.EndAcceptTcpClient(ar);
-                if (oClientSocket == null) { return; }
+                if (oClientSocket == null) return;
                 /// create the client instance.
                 InnerClient oItem = new InnerClient(ref oClientSocket, this.IncomingDataQueue, this.IncomingDataQueueLocker)
                 {
@@ -1528,7 +1512,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 /// add client socket to list.
                 lock (InnerClientListLocker)
                 {
-                    if (InnerClientList == null) { InnerClientList = new List<InnerClient>(); }
+                    if (InnerClientList == null) InnerClientList = new List<InnerClient>();
                     InnerClientList.Add(oItem);
                 }
                 /// set ready to accept client.
@@ -1543,9 +1527,9 @@ namespace VsCSharpWinForm_sample2.Helpers
         //    InnerClientT oItem = null;
         //    try
         //    {
-        //        if (mbForceStop || mServerSocket == null) { return; }
+        //        if (mbForceStop || mServerSocket == null) return;
         //        oClientSocket = mServerSocket.AcceptTcpClient();
-        //        if (oClientSocket == null) { return; }
+        //        if (oClientSocket == null) return;
         //        // create the client instance.
         //        oItem = new InnerClientT(ref oClientSocket, this);
         //        oItem.Logger = mLogger;
@@ -1557,7 +1541,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         //        //oItem.Username = "";
         //        oItem.StartReceivingData();
         //        // add client socket to list.
-        //        if (mListInnerClientT == null) { mListInnerClientT = new System.Collections.Generic.List<InnerClientT>(); }
+        //        if (mListInnerClientT == null) mListInnerClientT = new System.Collections.Generic.List<InnerClientT>();
         //        mListInnerClientT.Add(oItem);
         //        // set ready to accept client.
         //        mbReadyAccept = true;
@@ -1571,7 +1555,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (this.IsExit) { return; }
+                if (this.IsExit) return;
                 Logger?.Debug("TCP Server begins to accept clients.");
                 this.IsReadyAccept = true;/// set ready to accept client.
                 DateTime tRefLog = DateTime.Now;
@@ -1591,16 +1575,14 @@ namespace VsCSharpWinForm_sample2.Helpers
                             this.ServerSocket.BeginAcceptTcpClient(new AsyncCallback(AcceptClientCallback), null);
                         }
                         else
-                        {
-                            Logger?.Warn(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + " Number of Connected Clients exceeds maximum. Number of Connected Clients = " + i.ToString() + ". Max = " + this.MaxClient.ToString());
-                        }
+                            Logger?.Warn("{0}.{1}. Number of Connected Clients exceeds maximum. Number of Connected Clients = {2}. Max = {3}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, i, this.MaxClient);
                     }
                     if (this.ProcessVerificationInterval > 0 && (int)(tNow - tRefLog).TotalSeconds >= this.ProcessVerificationInterval)
                     {
                         tRefLog = tNow;
-                        Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + " is running.");
+                        Logger?.Debug("{0}.{1} is running.", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name);
                     }
-                    if (this.SleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(this.SleepingIntervalInMS); }
+                    if (this.SleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(this.SleepingIntervalInMS);
                 }
                 //while (mbForceStop == false)
                 //{
@@ -1637,7 +1619,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         public void StopListening(int timeoutInSecond, int sleepingIntervalInMS)
         {
             DateTime tRef;
-            bool bLoop;
+            //bool bLoop;
             try
             {
                 this.IsExit = true;/// set to close all clients.
@@ -1646,15 +1628,21 @@ namespace VsCSharpWinForm_sample2.Helpers
                 this.ServerSocket = null;
                 /// close the threads in a time interval.
                 tRef = DateTime.Now;
-                bLoop = true;
-                while (bLoop && (DateTime.Now - tRef).TotalSeconds < timeoutInSecond)
+                //bLoop = true;
+                //while (bLoop && (DateTime.Now - tRef).TotalSeconds < timeoutInSecond)
+                //{
+                //    bLoop = false;
+                //    //if (this.ThreadToAcceptClient != null && this.ThreadToAcceptClient.IsAlive) { bLoop = true; }
+                //    //else if (this.ThreadToSendData != null && this.ThreadToSendData.IsAlive) { bLoop = true; }
+                //    if (ThreadToAcceptClient?.IsAlive ?? false) { bLoop = true; }
+                //    else if (ThreadToSendData?.IsAlive ?? false) { bLoop = true; }
+                //    if (bLoop && sleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(sleepingIntervalInMS);
+                //}
+                while ((DateTime.Now - tRef).TotalSeconds < timeoutInSecond && (
+                    (ThreadToAcceptClient?.IsAlive ?? false) || (ThreadToSendData?.IsAlive ?? false)
+                    ))
                 {
-                    bLoop = false;
-                    //if (this.ThreadToAcceptClient != null && this.ThreadToAcceptClient.IsAlive) { bLoop = true; }
-                    //else if (this.ThreadToSendData != null && this.ThreadToSendData.IsAlive) { bLoop = true; }
-                    if (ThreadToAcceptClient?.IsAlive ?? false) { bLoop = true; }
-                    else if (ThreadToSendData?.IsAlive ?? false) { bLoop = true; }
-                    if (bLoop && sleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(sleepingIntervalInMS); }
+                    if (sleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(sleepingIntervalInMS);
                 }
                 /// abort threads.
                 AbortThread(ref this.ThreadToAcceptClient);
@@ -1665,7 +1653,6 @@ namespace VsCSharpWinForm_sample2.Helpers
                     if (InnerClientList != null)
                     {
                         int i = 0;
-                        //while (InnerClientList != null && i < InnerClientList.Count)
                         while (i < (InnerClientList?.Count ?? 0))
                         {
                             InnerClient oItem = InnerClientList[i];

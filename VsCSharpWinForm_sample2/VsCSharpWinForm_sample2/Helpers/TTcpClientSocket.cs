@@ -10,7 +10,7 @@ namespace VsCSharpWinForm_sample2.Helpers
     {
         /// TCP Client by a synchronous socket in the threading model.
         /// Data unit is byte.
-        /// Updated date: 2020-09-11
+        /// Updated date: 2020-11-17
 
         /// https://docs.microsoft.com/en-us/dotnet/framework/network-programming/asynchronous-client-socket-example
         /// https://docs.microsoft.com/en-us/dotnet/framework/network-programming/synchronous-client-socket-example
@@ -75,11 +75,8 @@ namespace VsCSharpWinForm_sample2.Helpers
         private int _ReceiveTotalBufferSize = 10485760;
         public int ReceiveTotalBufferSize { get { return _ReceiveTotalBufferSize; } set { _ReceiveTotalBufferSize = value < 10485760 ? 10485760 : value; } }/// Total buffer size in bytes for receiving data from client, the minimum value is 10485760.
         public int SleepingIntervalInMS { get; set; } = 100;/// Sleeping interval in milliseconds. This sleeping interval helps to avoid the application too busy. The default value is 100.
-        //public bool IsConnected { get { return ClientSocket == null ? false : ClientSocket.Connected; } }
         public bool IsConnected { get { return ClientSocket?.Connected ?? false; } }
-        //public string LocalEndPoint { get { return ClientSocket == null ? null : ClientSocket.LocalEndPoint == null ? null : ClientSocket.LocalEndPoint.ToString(); } }
         public string LocalEndPoint { get { return ClientSocket?.LocalEndPoint?.ToString(); } }
-        //public string RemoteEndPoint { get { return ClientSocket == null ? null : ClientSocket.RemoteEndPoint == null ? null : ClientSocket.RemoteEndPoint.ToString(); } }
         public string RemoteEndPoint { get { return ClientSocket?.RemoteEndPoint?.ToString(); } }
         public Queue<TcpSocketData> IncomingDataQueue = null;/// queue of TCP incoming data.
         public object IncomingDataQueueLocker = null;
@@ -137,7 +134,6 @@ namespace VsCSharpWinForm_sample2.Helpers
             }
         }
 
-        /// Disconnect.
         public static void Disconnect(ref System.Net.Sockets.Socket o)
         {
             if (o == null) return;
@@ -188,11 +184,10 @@ namespace VsCSharpWinForm_sample2.Helpers
             string localSocket = "";
             try
             {
-                //if (oClientSocket == null || oClientSocket.Connected == false) return false;
                 if ((oClientSocket?.Connected ?? false) == false) return false;
                 //if (data == null) data = new byte[0];
                 if (isContainLengthAsHeader) byteData = PackData(maxDataSize, data);/// Pack data with the length as header.
-                else { byteData = data; }// NOT pack data.
+                else byteData = data;// NOT pack data.
                 /// Checking.
                 if (byteData == null) return false;
                 /// Send.
@@ -220,7 +215,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         public bool SendByteArray(byte[] data)
         {
             bool b = SendByteArray(ref ClientSocket, ContainLengthAsHeader, MaxDataSize, data);
-            if (b) { LastTransferDateTime = DateTime.Now; }
+            if (b) LastTransferDateTime = DateTime.Now;
             return b;
         }
 
@@ -311,7 +306,6 @@ namespace VsCSharpWinForm_sample2.Helpers
             {
                 lock (IncomingBufferQueueLocker)
                 {
-                    //if (IncomingBufferQueue == null || IncomingBufferQueue.Count < 1)
                     if ((IncomingBufferQueue?.Count ?? 0) < 1)
                     {
                         byteOutput = null;
@@ -377,7 +371,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         IncomingContentIndex = 0;
                                         IncomingContentSize = 0;
                                         /// Assign 4 byte to the Length buffer.
-                                        if (IncomingLengthBuffer != null) { IncomingLengthBuffer = null; }
+                                        if (IncomingLengthBuffer != null) IncomingLengthBuffer = null;
                                         IncomingLengthBuffer = new byte[4];
                                     }
                                     /// Determine the number of bytes to be read and copied.
@@ -394,7 +388,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         iCopy = iInputRemaining;
                                     }
                                     /// Copy.
-                                    if (iCopy > 0) { Array.Copy(byteDataInQueue, iIndex1, IncomingLengthBuffer, IncomingLengthIndex, iCopy); }
+                                    if (iCopy > 0) Array.Copy(byteDataInQueue, iIndex1, IncomingLengthBuffer, IncomingLengthIndex, iCopy);
                                     IncomingLengthIndex += iCopy;
                                     iIndex1 += iCopy;
                                     /// Check if finish to copy the length.
@@ -404,8 +398,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         if (IncomingLengthIndex == 4)
                                         {
                                             IncomingContentSize = BitConverter.ToInt32(IncomingLengthBuffer, 0);
-                                            if (IncomingContentBuffer != null) { IncomingContentBuffer = null; }
-                                            if (IncomingContentSize > 0) { IncomingContentBuffer = new byte[IncomingContentSize]; }
+                                            if (IncomingContentBuffer != null) IncomingContentBuffer = null;
+                                            if (IncomingContentSize > 0) IncomingContentBuffer = new byte[IncomingContentSize];
 
                                             IsIncomingDataLength = false;/// go to 3rd state.
                                             IncomingContentIndex = 0;/// reset the index of content again.
@@ -434,7 +428,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         iCopy = iInputRemaining;
                                     }
                                     /// Copy.
-                                    if (iCopy > 0) { Array.Copy(byteDataInQueue, iIndex1, IncomingContentBuffer, IncomingContentIndex, iCopy); }
+                                    if (iCopy > 0) Array.Copy(byteDataInQueue, iIndex1, IncomingContentBuffer, IncomingContentIndex, iCopy);
                                     IncomingContentIndex += iCopy;
                                     iIndex1 += iCopy;
                                     /// Check if finish to copy the content.
@@ -471,7 +465,6 @@ namespace VsCSharpWinForm_sample2.Helpers
                     /// TT edited on 2018-08-21 to lock the common resource.
                     while (TryDequeueAtIncomingBufferQueue(out byteDataInQueue))
                     {
-                        //if (byteDataInQueue == null || byteDataInQueue.Length < 1)
                         if ((byteDataInQueue?.Length ?? 0) < 1)
                         {
                             /// if there is a zero-byte content, assume that it is the end of data.
@@ -492,7 +485,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         else
                         {
                             /// add data into temp list.
-                            if (IncomingBufferList == null) { IncomingBufferList = new List<byte[]>(); }
+                            if (IncomingBufferList == null) IncomingBufferList = new List<byte[]>();
                             IncomingBufferList.Add(byteDataInQueue);
                         }
                     }
@@ -517,7 +510,6 @@ namespace VsCSharpWinForm_sample2.Helpers
                 remoteEndPoint = RemoteEndPoint;
                 localEndPoint = LocalEndPoint;
                 Logger?.Debug("TCP Client begins to analyze the incoming buffer. Server socket = {0}, local socket = {1}", remoteEndPoint, localEndPoint);
-                //while (IsExit == false && ClientSocket != null && ClientSocket.Connected)
                 while (IsExit == false && (ClientSocket?.Connected ?? false))
                 {
                     tNow = DateTime.Now;
@@ -526,7 +518,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         tRef = tNow;
                         if (EnableAnalyzeIncomingData) { AnalyzeIncomingBuffer(); }
                     }
-                    if (SleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(SleepingIntervalInMS); }
+                    if (SleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(SleepingIntervalInMS);
                 }
                 Logger?.Debug("TCP Client stops to analyze the incoming buffer. Server socket = {0}, local socket = {1}", remoteEndPoint, localEndPoint);
             }
@@ -549,7 +541,6 @@ namespace VsCSharpWinForm_sample2.Helpers
                 remoteEndPoint = RemoteEndPoint;
                 localEndPoint = LocalEndPoint;
                 Logger?.Debug("TCP Client begins to receive data. Server socket = {0}, local socket = {1}", remoteEndPoint, localEndPoint);
-                //while (IsExit == false && ClientSocket != null && ClientSocket.Connected)
                 while (IsExit == false && (ClientSocket?.Connected ?? false))
                 {
                     tNow = DateTime.Now;
@@ -558,7 +549,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         tRef = tNow;
                         ReceiveByteArray();
                     }
-                    if (SleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(SleepingIntervalInMS); }
+                    if (SleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(SleepingIntervalInMS);
                 }
                 Logger?.Debug("TCP Client stops to receive data. Server socket = {0}, local socket = {1}", remoteEndPoint, localEndPoint);
             }
@@ -574,7 +565,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (MaxConnectionDuration <= 0) { return; }
+                if (MaxConnectionDuration <= 0) return;
                 if ((int)(tNow - InitialDateTime).TotalSeconds > MaxConnectionDuration)
                 {
                     Logger?.Debug("Disconnect socket as exceeding maximum connection duration {0} second(s). Server socket = {1}. Local socket = {2}", MaxConnectionDuration, RemoteEndPoint, LocalEndPoint);
@@ -592,7 +583,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (MaxIdleDuration < 0) { return; }
+                if (MaxIdleDuration < 0) return;
                 if ((int)(tNow - LastTransferDateTime).TotalSeconds > MaxIdleDuration)
                 {
                     Logger?.Debug("Disconnect socket as exceeding maximum idle duration {0} second(s). Server socket = {1}. Local socket = {2}", MaxIdleDuration, RemoteEndPoint, LocalEndPoint);
@@ -618,7 +609,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 remoteEndPoint = RemoteEndPoint;
                 localEndPoint = LocalEndPoint;
                 Logger?.Debug("TCP Client begins to run other processes. Server socket = {0}, local socket = {1}", remoteEndPoint, localEndPoint);
-                if (!this.ContainLengthAsHeader) { oByteArrayHeartbeat = this.HeartbeatData; }
+                if (!this.ContainLengthAsHeader) oByteArrayHeartbeat = this.HeartbeatData;
                 while (IsExit == false && (ClientSocket?.Connected ?? false))
                 {
                     tNow = DateTime.Now;
@@ -656,7 +647,6 @@ namespace VsCSharpWinForm_sample2.Helpers
             try
             {
                 IPs = System.Net.Dns.GetHostAddresses(serverHost);
-                //if (IPs == null || IPs.Length < 1)
                 if ((IPs?.Length ?? 0) < 1)
                 {
                     Logger?.Error("TCP Client cannot find IP address for {0}", serverHost);
@@ -668,8 +658,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                 {
                     oIP = IPs[i];
                     if (oIP != null && string.IsNullOrEmpty(oIP.ToString()) == false && oIP.ToString().Contains(":") == false)
-                    { bLoop = false; }
-                    else { i += 1; }
+                        bLoop = false;
+                    else i += 1;
                 }
                 if (bLoop)
                 {
@@ -710,7 +700,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         public void StopConnection(int timeoutInSecond, int sleepingIntervalInMS)
         {
             DateTime tRef;
-            bool b;
+            //bool b;
             string remoteEndPoint = "";
             string localEndPoint = "";
             try
@@ -719,16 +709,23 @@ namespace VsCSharpWinForm_sample2.Helpers
                 remoteEndPoint = RemoteEndPoint;
                 localEndPoint = LocalEndPoint;
                 Disconnect(ref ClientSocket);
-                if (timeoutInSecond < 0) { timeoutInSecond = 0; }
+                if (timeoutInSecond < 0) timeoutInSecond = 0;
                 tRef = DateTime.Now;
-                b = true;
-                while (b && (int)(DateTime.Now - tRef).TotalSeconds < timeoutInSecond)
+                //b = true;
+                //while (b && (int)(DateTime.Now - tRef).TotalSeconds < timeoutInSecond)
+                //{
+                //    //b = false;
+                //    //if (ThreadToReceiveData?.IsAlive ?? false) b = true;
+                //    ////else if (ThreadToAnalyzeIncomingBuffer != null || ThreadToAnalyzeIncomingBuffer.IsAlive) b = true;
+                //    //else if (ThreadToAnalyzeIncomingBuffer?.IsAlive ?? false) b = true;
+                //    b = (ThreadToReceiveData?.IsAlive ?? false) || (ThreadToAnalyzeIncomingBuffer?.IsAlive ?? false);
+                //    if (b && sleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(sleepingIntervalInMS);
+                //}
+                while ((int)(DateTime.Now - tRef).TotalSeconds < timeoutInSecond && (
+                    (ThreadToReceiveData?.IsAlive ?? false) || (ThreadToAnalyzeIncomingBuffer?.IsAlive ?? false)
+                    ))
                 {
-                    b = false;
-                    if (ThreadToReceiveData?.IsAlive ?? false) { b = true; }
-                    //else if (ThreadToAnalyzeIncomingBuffer != null || ThreadToAnalyzeIncomingBuffer.IsAlive) { b = true; }
-                    else if (ThreadToAnalyzeIncomingBuffer?.IsAlive ?? false) { b = true; }
-                    if (b && sleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(sleepingIntervalInMS); }
+                    if (sleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(sleepingIntervalInMS);
                 }
                 AbortThread(ref ThreadToReceiveData);
                 AbortThread(ref ThreadToAnalyzeIncomingBuffer);
@@ -812,7 +809,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             try
             {
                 oClientSocket = Connect(serverHost, serverPort);
-                if ((oClientSocket?.Connected ?? false) == false) { return false; }
+                if ((oClientSocket?.Connected ?? false) == false) return false;
                 return SendByteArray(ref oClientSocket, isContainLengthAsHeader, maxDataSize, data);
             }
             catch (Exception ex)
@@ -825,7 +822,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             {
                 try
                 {
-                    if (delayDisconnetInMS >= 0) { System.Threading.Thread.Sleep(delayDisconnetInMS); }
+                    if (delayDisconnetInMS >= 0) System.Threading.Thread.Sleep(delayDisconnetInMS);
                     Disconnect(ref oClientSocket);
                 }
                 catch (Exception ex2)

@@ -78,24 +78,23 @@ namespace VsCSharpWinForm_sample2
                     {
                         int iMax = 100000;
                         char[] cArrayTrim = { ' ', '\t', (char)10, (char)13 };
-                        //string s = args == null || args.Length < 1 ? format : string.Format(format, args);
                         string s = (args?.Length ?? 0) < 1 ? format : string.Format(format, args);
                         TxtLog.AppendText(s.Trim(cArrayTrim) + Environment.NewLine);
-                        if (TxtLog.TextLength > iMax) { TxtLog.Text = TxtLog.Text.Substring(TxtLog.Text.Length - iMax); }
+                        if (TxtLog.TextLength > iMax) TxtLog.Text = TxtLog.Text.Substring(TxtLog.Text.Length - iMax);
                         TxtLog.SelectionStart = TxtLog.TextLength;
                         TxtLog.ScrollToCaret();
                     }
                     catch (Exception ex2)
                     {
                         try { Logger?.Error(ex2); }
-                        catch (Exception ex3) { Console.WriteLine("[error] " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". " + ex3.Message); }
+                        catch (Exception ex3) { Console.WriteLine("[error] {0}.{1}. {2}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, ex3.Message); }
                     }
                 }));
             }
             catch (Exception ex)
             {
                 try { Logger?.Error(ex); }
-                catch (Exception ex4) { Console.WriteLine("[error] " + System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". " + ex4.Message); }
+                catch (Exception ex4) { Console.WriteLine("[error] {0}.{1}. {2}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, ex4.Message); }
             }
         }
 
@@ -142,15 +141,15 @@ namespace VsCSharpWinForm_sample2
                 }
 
                 /// Remove the lock file.
-                if (IsLockFileCreatedNormally) { GeneralT.RemoveLockFile(); }
-                if (IsLoginSuccess) { Logger?.Info("{0} ends. Version = {1}", System.IO.Path.GetFileNameWithoutExtension(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName), Application.ProductVersion); }
+                if (IsLockFileCreatedNormally) GeneralT.RemoveLockFile();
+                if (IsLoginSuccess) Logger?.Info("{0} ends. Version = {1}", System.IO.Path.GetFileNameWithoutExtension(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName), Application.ProductVersion);
                 /// Waiting dialog.
-                if (MyFrmWait != null) { MyFrmWait = null; }
+                if (MyFrmWait != null) MyFrmWait = null;
             }
             catch (Exception ex) { Logger?.Error(ex); }
             finally
             {
-                if (Logger != null) { Logger = null; }
+                if (Logger != null) Logger = null;
             }
         }
 
@@ -162,8 +161,9 @@ namespace VsCSharpWinForm_sample2
                 {
                     /// Before exit, show a dialog box to ask whether really want to exit.
                     /// http://msdn.microsoft.com/en-us/library/system.windows.forms.form.closing(v=vs.110).aspx
+                    /// Cancel the Closing event from closing the form.
                     if (MessageBox.Show("Do you really want to exit this application?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.No)
-                    { e.Cancel = true; }/// Cancel the Closing event from closing the form.
+                        e.Cancel = true;
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -213,11 +213,8 @@ namespace VsCSharpWinForm_sample2
                 if (string.IsNullOrEmpty(sIni))
                 {
                     sIni = GenerateIni();
-                    if (Helpers.GeneralT.WriteTextToFile(path, sIni)) { }
-                    else
-                    {
+                    if (!Helpers.GeneralT.WriteTextToFile(path, sIni))
                         Logger?.Error("{0}.{1}. Cannot save the initial file {2}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, path);
-                    }
                 }
                 else
                 {
@@ -264,7 +261,7 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                if (MyFrmWait == null) { return; }
+                if (MyFrmWait == null) return;
                 MyFrmWait.EndWaiting = true;
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -392,7 +389,7 @@ namespace VsCSharpWinForm_sample2
                         {
                             Param.Login.Username = frmLogin.TxtUsername.Text;
                             Param.Login.Hash = frmLogin.TxtPassword.Text;
-                            if (MyFrmWait == null) { MyFrmWait = new Views.FrmWait(); }
+                            if (MyFrmWait == null) MyFrmWait = new Views.FrmWait();
                             MyFrmWait.EndWaiting = false;
                             /// Authentication.
                             BWorkerLogin.RunWorkerAsync();
@@ -467,7 +464,7 @@ namespace VsCSharpWinForm_sample2
             try
             {
                 string[] files = GeneralT.GetFilesWithPatternAndExpiryDayCountInFolder("log", null, null, ".log", 2);
-                if (files != null && files.Length > 0)
+                if ((files?.Length ?? 0) > 0)
                 {
                     LocalLogger(TLog.LogLevel.INFO, "FileCount = {0}", files.Length);
                     foreach (string f in files)
@@ -508,8 +505,8 @@ namespace VsCSharpWinForm_sample2
                 string sevenZipPath = @"C:\Program Files\7-Zip\7z.exe";
                 string argsText = string.Format("a {0} {1}", targetfile, "log");
                 bool b = GeneralT.SevenZipAction1(sevenZipPath, argsText, out string outputText, out string errorText);
-                if (b) { LocalLogger(TLog.LogLevel.INFO, "7zip success."); }
-                else { LocalLogger(TLog.LogLevel.INFO, "7zip fail."); }
+                if (b) LocalLogger(TLog.LogLevel.INFO, "7zip success.");
+                else LocalLogger(TLog.LogLevel.INFO, "7zip fail.");
                 LocalLogger(TLog.LogLevel.INFO, "output text = {0}", outputText);
                 LocalLogger(TLog.LogLevel.INFO, "error text = {0}", errorText);
             }
@@ -535,7 +532,7 @@ namespace VsCSharpWinForm_sample2
                 NotifyIconHide.Visible = true;
                 this.WindowState = FormWindowState.Minimized;
                 this.ShowInTaskbar = false;
-                if (!ContextMenuStripHide.Enabled) { ContextMenuStripHide.Enabled = true; }
+                if (!ContextMenuStripHide.Enabled) ContextMenuStripHide.Enabled = true;
             }
             catch (Exception ex) { Logger?.Error(ex); }
         }
@@ -645,9 +642,7 @@ namespace VsCSharpWinForm_sample2
                         foreach (Views.FrmTcpClient frmTcpClient in Param.TcpClient.FormList)
                         {
                             if (frmTcpClient != null)
-                            {
                                 frmTcpClient.Close();
-                            }
                         }
                     }
                 }
@@ -670,7 +665,7 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                if (byteArray == null || string.IsNullOrWhiteSpace(path)) { return; }
+                if (byteArray == null || string.IsNullOrWhiteSpace(path)) return;
                 using (System.IO.FileStream stream = new System.IO.FileStream(path, System.IO.FileMode.Append))
                 { stream.Write(byteArray, 0, byteArray.Length); }
             }
@@ -681,12 +676,12 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                if (o == null || string.IsNullOrEmpty(o.Host) || o.ByteArray == null) { return; }
+                if (o == null || string.IsNullOrEmpty(o.Host) || o.ByteArray == null) return;
                 DateTime tRef = DateTime.Now;
                 //if (oData.ByteArray != null) { AppendBytesToFile(IncomingDataFilePath, oData.ByteArray); }
                 byte[] decryptedData;
-                if (ChkTcpServerEncryptData.Checked) { decryptedData = o.ByteArray == null ? null : CyptoRijndaelT.Decrypt(o.ByteArray, Param.TcpServer.CryptPassword); }
-                else { decryptedData = o.ByteArray; }
+                if (ChkTcpServerEncryptData.Checked) decryptedData = o.ByteArray == null ? null : CyptoRijndaelT.Decrypt(o.ByteArray, Param.TcpServer.CryptPassword);
+                else decryptedData = o.ByteArray;
                 if ((decryptedData?.Length ?? 0) < 1)
                 {
                     //throw new Exception("Length of decrypted data < 1, which is impossible.");
@@ -740,7 +735,7 @@ namespace VsCSharpWinForm_sample2
             {
                 lock (Param.TcpServer.IncomingDataQueueLocker)
                 {
-                    if ((Param.TcpServer.IncomingDataQueue?.Count ?? 0) < 1) { return; }
+                    if ((Param.TcpServer.IncomingDataQueue?.Count ?? 0) < 1) return;
                     int iMax = 10;
                     int i = 0;
                     tempList = new List<TTcpServerSocket.TcpSocketData>();
@@ -859,7 +854,7 @@ namespace VsCSharpWinForm_sample2
                         if (iIndex < 0) { ClbTcpClientList.Items.Add(sItem, bChecked); }
                         else
                         {
-                            if (iIndex > ClbTcpClientList.Items.Count) { iIndex = ClbTcpClientList.Items.Count; }
+                            if (iIndex > ClbTcpClientList.Items.Count) iIndex = ClbTcpClientList.Items.Count;
                             ClbTcpClientList.Items.Insert(iIndex, sItem);
                             ClbTcpClientList.SetItemChecked(iIndex, bChecked);
                         }
@@ -890,7 +885,7 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                if (iIndex < 0) { return; }
+                if (iIndex < 0) return;
                 Invoke(new MethodInvoker(delegate
                 {
                     try
@@ -916,8 +911,8 @@ namespace VsCSharpWinForm_sample2
                     while (i > -1)
                     {
                         int idx = tempList.FindIndex(x => ClbTcpClientList.Items[i].ToString().Equals(x));
-                        if (idx < 0) { TcpServerClientListRemoveItem(i); }/// remove it in the CheckedListBox.
-                        else { tempList.RemoveAt(idx); }/// remove it in the list, so that the list remains the new items.
+                        if (idx < 0) TcpServerClientListRemoveItem(i);/// remove it in the CheckedListBox.
+                        else tempList.RemoveAt(idx);/// remove it in the list, so that the list remains the new items.
                         i -= 1;
                     }
                     /// new items.
@@ -1060,9 +1055,7 @@ namespace VsCSharpWinForm_sample2
             try
             {
                 if (ChkTcpServerSelectAllClients.Checked)
-                {
                     TcpClientListSetItemChecked(true);
-                }
             }
             catch (Exception ex) { Logger?.Error(ex); }
         }
@@ -1088,8 +1081,8 @@ namespace VsCSharpWinForm_sample2
                 };
                 tempList.AddRange(data);
                 byte[] encryptedData = null;
-                if (ChkTcpServerEncryptData.Checked) { encryptedData = CyptoRijndaelT.Encrypt(tempList.ToArray(), Param.TcpServer.CryptPassword); }
-                else { encryptedData = tempList.ToArray(); }
+                if (ChkTcpServerEncryptData.Checked) encryptedData = CyptoRijndaelT.Encrypt(tempList.ToArray(), Param.TcpServer.CryptPassword);
+                else encryptedData = tempList.ToArray();
                 if (ClbTcpClientList.Items.Count > 0)
                 {
                     foreach (object o in ClbTcpClientList.CheckedItems)
@@ -1103,9 +1096,7 @@ namespace VsCSharpWinForm_sample2
                                 string host = s.Substring(0, i);
                                 string s1 = s.Substring(i + 1);
                                 if (int.TryParse(s1, out i))
-                                {
                                     Param.TcpServer.ServerSocket?.QueueToSendData(host, i, ref encryptedData);
-                                }
                             }
                         }
                     }
@@ -1151,7 +1142,7 @@ namespace VsCSharpWinForm_sample2
 
         private void TxtTcpServerInput_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) { BtnTcpServerSendText_Click(null, null); }
+            if (e.KeyCode == Keys.Enter) BtnTcpServerSendText_Click(null, null);
         }
 
         private void BtnTcpServerSendFile_Click(object sender, EventArgs e)
@@ -1197,7 +1188,7 @@ namespace VsCSharpWinForm_sample2
         #region SQLiteRegion
         private static string PrintStudent(Models.Student o)
         {
-            if (o == null) { return ""; }
+            if (o == null) return "";
             return string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}", o.StudentId, o.UniqueName, o.DisplayName, o.Phone, o.Email, o.Gender, o.EnrollmentFee, o.IsNewlyEnrolled, o.Birthday, o.CreatedDate, o.UpdatedDate);
         }
 
@@ -1308,7 +1299,7 @@ namespace VsCSharpWinForm_sample2
 
         private void ChangeFilenameByModifiedDateTimeRoutine(string folderpath)
         {
-            if (string.IsNullOrEmpty(folderpath)) { return; }
+            if (string.IsNullOrEmpty(folderpath)) return;
             if (!System.IO.Directory.Exists(folderpath))
             {
                 LocalLogger(TLog.LogLevel.INFO, "Cannot find folder {0}", folderpath);
@@ -1384,7 +1375,7 @@ namespace VsCSharpWinForm_sample2
                 };
                 LocalLogger(TLog.LogLevel.DEBUG, "Source Paths:{0}{1}", Environment.NewLine, string.Join(Environment.NewLine, sourcePaths));
                 if (ZipHelper.DotNet.Zip(zipFilepath, password, sourcePaths))
-                { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to zip items."); }
+                    LocalLogger(TLog.LogLevel.DEBUG, "Succeed to zip items.");
                 else
                 {
                     LocalLogger(TLog.LogLevel.DEBUG, "Fail to zip items.");
@@ -1392,7 +1383,7 @@ namespace VsCSharpWinForm_sample2
                 }
                 string extractedFolder = GeneralT.GetDefaultAbsolutePathIfRelative("extract");
                 if (ZipHelper.DotNet.Unzip(zipFilepath, password, extractedFolder))
-                { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to unzip items."); }
+                    LocalLogger(TLog.LogLevel.DEBUG, "Succeed to unzip items.");
                 else
                 {
                     LocalLogger(TLog.LogLevel.DEBUG, "Fail to unzip items.");
@@ -1402,7 +1393,7 @@ namespace VsCSharpWinForm_sample2
                 LocalLogger(TLog.LogLevel.DEBUG, "Source Paths:{0}{1}", Environment.NewLine, string.Join(Environment.NewLine, sourcePaths));
                 zipFilepath = GeneralT.GetDefaultAbsolutePathIfRelative("a2.zip");
                 if (ZipHelper.SevenZip.Zip(zipFilepath, password, out string output, out string error, sourcePaths))
-                { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to zip items."); }
+                    LocalLogger(TLog.LogLevel.DEBUG, "Succeed to zip items.");
                 else
                 {
                     LocalLogger(TLog.LogLevel.DEBUG, "Fail to zip items.");
@@ -1410,7 +1401,7 @@ namespace VsCSharpWinForm_sample2
                 }
                 extractedFolder = GeneralT.GetDefaultAbsolutePathIfRelative("extract2");
                 if (ZipHelper.SevenZip.Unzip(zipFilepath, password, extractedFolder, out output, out error))
-                { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to unzip items."); }
+                    LocalLogger(TLog.LogLevel.DEBUG, "Succeed to unzip items.");
                 else
                 {
                     LocalLogger(TLog.LogLevel.DEBUG, "Fail to unzip items.");
@@ -1493,7 +1484,7 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                if ((array?.Length ?? 0) < 1) { return; }
+                if ((array?.Length ?? 0) < 1) return;
                 LocalLogger(TLog.LogLevel.DEBUG, "----------Record");
                 int idx = 0;
                 foreach (string s in array)
@@ -1613,8 +1604,8 @@ namespace VsCSharpWinForm_sample2
                     while (i < recordCount2)
                     {
                         if (TCsvFile.WriteToFile(path, arrayOfStringArray[i], false))
-                        { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to write the record {0}", i); }
-                        else { LocalLogger(TLog.LogLevel.DEBUG, "Fail to write the record {0}", i); }
+                            LocalLogger(TLog.LogLevel.DEBUG, "Succeed to write the record {0}", i);
+                        else LocalLogger(TLog.LogLevel.DEBUG, "Fail to write the record {0}", i);
                         i++;
                     }
                 }
@@ -1629,7 +1620,7 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                if (writer == null) { return; }
+                if (writer == null) return;
                 writer.WriteStartElement("Rec");
 
                 string NumberFormat = "0.00";
@@ -1655,7 +1646,7 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                if (writer == null) { return; }
+                if (writer == null) return;
                 writer.WriteStartElement("RSet");
                 writer.WriteAttributeString("per", per.ToString());
 

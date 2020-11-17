@@ -20,9 +20,9 @@ namespace VsCSharpWinForm_sample2.Helpers
         //    {
         //        try
         //        {
-        //            if (string.IsNullOrEmpty(zipPath) || string.IsNullOrEmpty(sourcePath)) { return false; }
-        //            if (System.IO.File.Exists(zipPath)) { System.IO.File.Delete(zipPath); }
-        //            if (System.IO.Directory.Exists(sourcePath)) { ZipFile.CreateFromDirectory(sourcePath, zipPath); }
+        //            if (string.IsNullOrEmpty(zipPath) || string.IsNullOrEmpty(sourcePath)) return false;
+        //            if (System.IO.File.Exists(zipPath)) System.IO.File.Delete(zipPath);
+        //            if (System.IO.Directory.Exists(sourcePath)) ZipFile.CreateFromDirectory(sourcePath, zipPath);
         //            else if (System.IO.File.Exists(sourcePath))
         //            {
         //                using (ZipArchive a = ZipFile.Open(zipPath, ZipArchiveMode.Create))
@@ -82,15 +82,15 @@ namespace VsCSharpWinForm_sample2.Helpers
                     bool b = false;
                     foreach (string s in sourcePaths)
                     {
-                        if (System.IO.File.Exists(s)) { sourceFilepaths.Add(s); }
-                        else if (System.IO.Directory.Exists(s)) { sourceFolderpaths.Add(s); }
+                        if (System.IO.File.Exists(s)) sourceFilepaths.Add(s);
+                        else if (System.IO.Directory.Exists(s)) sourceFolderpaths.Add(s);
                         else
                         {
                             Logger?.Error("Cannot find source {0}", s);
                             b = true;
                         }
                     }
-                    if (b) { return false; }
+                    if (b) return false;
                     /// Delete the file if it exists.
                     if (System.IO.File.Exists(zipFilepath))
                     {
@@ -122,7 +122,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     Logger?.Debug("Zip files or folders to {0}", zipFilepath);
                     //using (Ionic.Zip.ZipFile zip = new Ionic.Zip.ZipFile(zipFilepath, System.Text.Encoding.Default))/// Need to install Ionic.Zip in NuGet Package Manager.
                     //{
-                    //    if (!string.IsNullOrEmpty(password)) { zip.Password = password; }
+                    //    if (!string.IsNullOrEmpty(password)) zip.Password = password;
                     //    foreach (string s in sourceFilepaths)
                     //    {
                     //        zip.AddFile(s, "");
@@ -235,13 +235,13 @@ namespace VsCSharpWinForm_sample2.Helpers
 
             private static string GetPossibleExePath(string exePath)
             {
-                if (!string.IsNullOrWhiteSpace(exePath)) { return exePath; }
+                if (!string.IsNullOrWhiteSpace(exePath)) return exePath;
                 exePath = @"C:\Program Files\7-Zip\7z.exe";
-                if (System.IO.File.Exists(exePath)) { return exePath; }
+                if (System.IO.File.Exists(exePath)) return exePath;
                 exePath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "7z.exe");
-                if (System.IO.File.Exists(exePath)) { return exePath; }
+                if (System.IO.File.Exists(exePath)) return exePath;
                 exePath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "7za.exe");
-                if (System.IO.File.Exists(exePath)) { return exePath; }
+                if (System.IO.File.Exists(exePath)) return exePath;
                 return null;
             }
 

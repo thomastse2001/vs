@@ -16,7 +16,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// This region contains the core methods to access database.
         public static object GetObjectToDb<T>(T input)
         {
-            if (input == null) { return DBNull.Value; }
+            if (input == null) return DBNull.Value;
             return input;
         }
 
@@ -25,7 +25,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             /// Check if the field name exists.
             /// Check if it is equal to DBNull.
             if (string.IsNullOrEmpty(fieldName) || (dr?.Table.Columns.Contains(fieldName) ?? false) == false || DBNull.Value.Equals(dr[fieldName]))
-            { return null; }
+                return null;
             return dr[fieldName];
         }
 
@@ -33,9 +33,9 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             //string s = GetString(dr, fieldName);
             string s = (string)GetObjectFromDb(dr, fieldName);
-            if (string.IsNullOrEmpty(s)) { return null; }
-            if (s.Length > 1) { s = s.Substring(0, 1); }
-            if (char.TryParse(s, out char c)) { return c; }
+            if (string.IsNullOrEmpty(s)) return null;
+            if (s.Length > 1) s = s.Substring(0, 1);
+            if (char.TryParse(s, out char c)) return c;
             return null;
         }
 
@@ -43,16 +43,16 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// https://stackoverflow.com/questions/17363937/generic-method-to-return-nullable-type-values
         //public static T? GetValue<T>(DataRow dr, string fieldName) where T : struct
         //{
-        //    //if (CheckDbNull(dr, fieldName)) { return null; }
+        //    //if (CheckDbNull(dr, fieldName)) return null;
         //    //return (T?)dr[fieldName];
         //    return (T?)GetObject(dr, fieldName);
         //}
 
         //public static int? GetInt(DataRow dr, string fieldName)
         //{
-        //    //if (int.TryParse(GetString(dr, fieldName), out int i)) { return i; }
+        //    //if (int.TryParse(GetString(dr, fieldName), out int i)) return i;
         //    //return vDefault;
-        //    if (CheckDbNull(dr, fieldName)) { return null; }
+        //    if (CheckDbNull(dr, fieldName)) return null;
         //    return (int)dr[fieldName];
         //}
 

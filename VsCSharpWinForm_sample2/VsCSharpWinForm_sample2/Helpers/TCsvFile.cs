@@ -30,16 +30,9 @@ namespace VsCSharpWinForm_sample2.Helpers
             output = continuedField ?? string.Empty;
             if (string.IsNullOrEmpty(input))
             {
-                if (string.IsNullOrEmpty(continuedField))
-                {
-                    /// If it is not a continued field, return empty string and return true.
-                    return true;
-                }
-                else
-                {
-                    /// If it is a continued field, return false.
-                    return false;
-                }
+                /// If it is not a continued field, return empty string and return true.
+                /// If it is a continued field, return false.
+                return string.IsNullOrEmpty(continuedField);
             }
             else
             {
@@ -126,7 +119,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                     {
                                         if (GetFieldForRead(array[i], continuedField, out string output))
                                         {
-                                            if (list == null) { list = new List<string>(); }
+                                            if (list == null) list = new List<string>();
                                             list.Add(output);
                                             continuedField = string.Empty;
                                             /// Handle the last field.
@@ -143,13 +136,9 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         {
                                             /// Handle the last field.
                                             if (i == lastArrayIndex)
-                                            {
                                                 continuedField = output + Environment.NewLine;
-                                            }
                                             else
-                                            {
                                                 continuedField = string.Format("{0}{1}", output, Delimiter);
-                                            }
                                         }
                                         i++;
                                     }
@@ -210,14 +199,12 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// Check field before writing to CSV.
         private static string CheckAndGetFieldForWrite(string input)
         {
-            if (string.IsNullOrWhiteSpace(input)) { return input; }
+            if (string.IsNullOrWhiteSpace(input)) return input;
             if (input.Contains(Delimiter)
                 || input.Contains(TextQualifier)
                 || input.Contains(Environment.NewLine))
-            {
                 return GetQuotedFieldForWrite(input);
-            }
-            else { return input; }
+            else return input;
         }
 
         /// Write a string array to a string.
