@@ -1730,6 +1730,18 @@ namespace VsCSharpWinForm_sample2
                 //}
                 //if (ExcelHelper.OpenXml.ExportFile(path2)) { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to export Excel file {0}", path2); }
                 //else { LocalLogger(TLog.LogLevel.DEBUG, "Fail to export Excel file {0}", path2); }
+
+                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+                //string s = ExcelHelper.ClosedXML.DeleteRows(path, "QMData");
+                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
+
+                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+                //string s = ExcelHelper.EPPlus.DeleteRows(path, "QMData");
+                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
+
+                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+                //string s = ExcelHelper.EPPlusCore.DeleteRows(path, "QMData");
+                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
             }
             catch (Exception ex) { Logger?.Error(ex); }
             finally { BtnExcel.Enabled = true; }
@@ -1756,6 +1768,30 @@ namespace VsCSharpWinForm_sample2
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
             finally { BtnMail.Enabled = true; }
+        }
+
+        /// Get the n repeated <br/> or new-line.
+        private static string GetLineSeparatorString(bool isHtml, int n)
+        {
+            if (n < 1) return null;
+            if (n == 1) return isHtml ? "<br/>" : Environment.NewLine;
+            return isHtml ?
+                string.Concat(Enumerable.Repeat("<br/>", n)) :
+                string.Concat(Enumerable.Repeat(Environment.NewLine, n));
+        }
+
+        private void BtnLineSeparator_Click(object sender, EventArgs e)
+        {
+            BtnLineSeparator.Enabled = false;
+            try
+            {
+                int n = 2;
+                string s = string.Format("n = {0}{1}", n, Environment.NewLine);
+                s += GetLineSeparatorString(false, n);
+                LocalLogger(TLog.LogLevel.DEBUG, s + "---");
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+            finally { BtnLineSeparator.Enabled = true; }
         }
     }
 }

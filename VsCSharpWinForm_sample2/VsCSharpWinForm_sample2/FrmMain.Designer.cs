@@ -34,6 +34,7 @@
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnExcel = new System.Windows.Forms.Button();
             this.BtnXml = new System.Windows.Forms.Button();
             this.BtnJson = new System.Windows.Forms.Button();
             this.BtnReadCsvFile = new System.Windows.Forms.Button();
@@ -98,7 +99,7 @@
             this.BWorkerExitFile = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
-            this.BtnExcel = new System.Windows.Forms.Button();
+            this.BtnLineSeparator = new System.Windows.Forms.Button();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -156,6 +157,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnLineSeparator);
             this.tabPage1.Controls.Add(this.BtnExcel);
             this.tabPage1.Controls.Add(this.BtnXml);
             this.tabPage1.Controls.Add(this.BtnJson);
@@ -180,6 +182,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnExcel
+            // 
+            this.BtnExcel.Location = new System.Drawing.Point(433, 97);
+            this.BtnExcel.Name = "BtnExcel";
+            this.BtnExcel.Size = new System.Drawing.Size(75, 23);
+            this.BtnExcel.TabIndex = 16;
+            this.BtnExcel.Text = "Excel";
+            this.BtnExcel.UseVisualStyleBackColor = true;
+            this.BtnExcel.Click += new System.EventHandler(this.BtnExcel_Click);
             // 
             // BtnXml
             // 
@@ -926,15 +938,15 @@
             // 
             this.BWorkerTcpServerUpdatingClientList.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerTcpServerUpdatingClientList_DoWork);
             // 
-            // BtnExcel
+            // BtnLineSeparator
             // 
-            this.BtnExcel.Location = new System.Drawing.Point(433, 97);
-            this.BtnExcel.Name = "BtnExcel";
-            this.BtnExcel.Size = new System.Drawing.Size(75, 23);
-            this.BtnExcel.TabIndex = 16;
-            this.BtnExcel.Text = "Excel";
-            this.BtnExcel.UseVisualStyleBackColor = true;
-            this.BtnExcel.Click += new System.EventHandler(this.BtnExcel_Click);
+            this.BtnLineSeparator.Location = new System.Drawing.Point(514, 97);
+            this.BtnLineSeparator.Name = "BtnLineSeparator";
+            this.BtnLineSeparator.Size = new System.Drawing.Size(101, 23);
+            this.BtnLineSeparator.TabIndex = 17;
+            this.BtnLineSeparator.Text = "Line Separator";
+            this.BtnLineSeparator.UseVisualStyleBackColor = true;
+            this.BtnLineSeparator.Click += new System.EventHandler(this.BtnLineSeparator_Click);
             // 
             // FrmMain
             // 
@@ -1053,6 +1065,7 @@
         private System.Windows.Forms.Button BtnJson;
         private System.Windows.Forms.Button BtnXml;
         private System.Windows.Forms.Button BtnExcel;
+        private System.Windows.Forms.Button BtnLineSeparator;
     }
 }
 
