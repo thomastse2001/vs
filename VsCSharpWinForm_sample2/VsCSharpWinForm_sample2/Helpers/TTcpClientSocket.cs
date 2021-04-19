@@ -33,7 +33,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         private Queue<byte[]> IncomingBufferQueue = null;/// buffer queue of TCP incoming data.
         private readonly object IncomingBufferQueueLocker = new object();
 
-        public class TcpSocketData
+        public class DataPackage
         {
             public DateTime Timestamp = DateTime.MinValue;
             public string Host = "";
@@ -78,7 +78,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         public bool IsConnected { get { return ClientSocket?.Connected ?? false; } }
         public string LocalEndPoint { get { return ClientSocket?.LocalEndPoint?.ToString(); } }
         public string RemoteEndPoint { get { return ClientSocket?.RemoteEndPoint?.ToString(); } }
-        public Queue<TcpSocketData> IncomingDataQueue = null;/// queue of TCP incoming data.
+        public Queue<DataPackage> IncomingDataQueue = null;/// queue of TCP incoming data.
         public object IncomingDataQueueLocker = null;
 
         /// Abort a specific thread and set it to null.
@@ -113,7 +113,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 {
                     throw new Exception(string.Format("TCP Client cannot put data to IncomingDataQueue as it is not initialized. Server socket = {0}, local socket = {1}", RemoteEndPoint, LocalEndPoint));
                 }
-                TcpSocketData oData = new TcpSocketData()
+                DataPackage oData = new DataPackage()
                 {
                     Timestamp = t,
                     Host = ServerHost,
@@ -516,7 +516,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     if (ReceiveDataInterval == 0 || (ReceiveDataInterval > 0 && (int)(tNow - tRef).TotalSeconds >= ReceiveDataInterval))
                     {
                         tRef = tNow;
-                        if (EnableAnalyzeIncomingData) { AnalyzeIncomingBuffer(); }
+                        if (EnableAnalyzeIncomingData) AnalyzeIncomingBuffer();
                     }
                     if (SleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(SleepingIntervalInMS);
                 }
@@ -623,7 +623,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         tRef = tNow;
                         SendByteArray(oByteArrayHeartbeat);
                     }
-                    if (SleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(SleepingIntervalInMS); }
+                    if (SleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(SleepingIntervalInMS);
                 }
                 Logger?.Debug("TCP Client stops to run other processes. Server socket = {0}, local socket = {1}", remoteEndPoint, localEndPoint);
             }

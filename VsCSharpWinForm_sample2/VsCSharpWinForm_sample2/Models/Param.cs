@@ -34,20 +34,23 @@ namespace VsCSharpWinForm_sample2.Models
                 public static string ServerHost = "127.0.0.1";
                 public static int ServerPort = 8001;
                 public static bool ContainLengthAsHeader = true;
-                public static bool EnableAnalyzeIncomingData = true;
                 public static bool EncryptData = true;
                 public static string CryptPassword = "abc123";
                 public static string IncomingDataFilePath = @"TcpClient\{0:yyyyMMdd_HHmmss}_{1}.dat";// {0} is date time, {1} is Id.
+                public static string IncomingDataFolder = "TcpClient";
             }
         }
 
         public class TcpServer
         {
-            public static Queue<Helpers.TTcpServerSocket.TcpSocketData> IncomingDataQueue = new Queue<Helpers.TTcpServerSocket.TcpSocketData>();
+            //public static Queue<Helpers.TTcpServerSocket.DataPackage> IncomingDataQueue = new Queue<Helpers.TTcpServerSocket.DataPackage>();
+            public static Queue<Helpers.TTcpSocket.DataPackage> IncomingDataQueue = new Queue<Helpers.TTcpSocket.DataPackage>();
             public static readonly object IncomingDataQueueLocker = new object();
-            public static Helpers.TTcpServerSocket ServerSocket = null;
+            //public static Helpers.TTcpServerSocket ServerSocket = null;
+            public static Helpers.TTcpSocket.Server ServerSocket = null;
             public static string CryptPassword = "abc123";
             public static string IncomingDataFilePath = @"TcpServer\{0:yyyyMMdd_HHmmss}_{1}_{2}.dat";// {0} is date time, {1} is host, {2} is port.
+            public static string IncomingDataFolder = "TcpServer";
         }
     }
 }

@@ -5,7 +5,7 @@ namespace VsCSharpWinForm_sample2.Helpers
     public class TLog
     {
         /// Write log to a text file in a specific format with a specific file name and path.
-        /// Updated date: 2020-11-13
+        /// Updated date: 2021-03-31
         /// Usage.
         /// // 1. Create an instance for it.
         /// TLog Logger = new TLog();
@@ -50,7 +50,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// path = input path
         private static string GetAbsolutePathIfRelative(string path)
         {
-            path = path?.Trim(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
+            //path = path?.Trim(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
             return System.IO.Path.IsPathRooted(path) ? path : DefaultFolder + System.IO.Path.DirectorySeparatorChar + path;
         }
 
@@ -59,7 +59,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// folder = folder path
         private static bool FolderExistsOrCreateIt(string folder)
         {
-            folder = folder.TrimEnd((char)9, ' ', System.IO.Path.DirectorySeparatorChar).Trim();
+            //folder = folder.TrimEnd((char)9, ' ', System.IO.Path.DirectorySeparatorChar).Trim();
             if (System.IO.Directory.Exists(folder)) return true;
             System.IO.Directory.CreateDirectory(folder);
             return System.IO.Directory.Exists(folder);

@@ -16,11 +16,13 @@ namespace VsCSharpWinForm_sample2.Views
         public readonly int Id = -1;
         public bool IsExit = false;
         public string CryptPassword { get; set; }
-        private Helpers.TTcpClientSocket MyClient = null;
-        private Queue<Helpers.TTcpClientSocket.TcpSocketData> MyIncomingDataQueue = new Queue<Helpers.TTcpClientSocket.TcpSocketData>();
+        //private Helpers.TTcpClientSocket MyClient = null;
+        //private Queue<Helpers.TTcpClientSocket.DataPackage> MyIncomingDataQueue = new Queue<Helpers.TTcpClientSocket.DataPackage>();
+        private Helpers.TTcpSocket.Client MyClient = null;
+        private Queue<Helpers.TTcpSocket.DataPackage> MyIncomingDataQueue = new Queue<Helpers.TTcpSocket.DataPackage>();
         private readonly object MyIncomingDataQueueLocker = new object();
-        private System.Threading.Thread MyThreadToAnalyzeIncomingDataQueue = null;
-        private int AnalyzeIncomingDataInterval = 1;
+        //private System.Threading.Thread MyThreadToAnalyzeIncomingDataQueue = null;
+        //private int AnalyzeIncomingDataInterval = 1;
 
         public FrmTcpClient(int id)
         {
@@ -28,49 +30,97 @@ namespace VsCSharpWinForm_sample2.Views
             Id = id;
         }
 
-        private void AnalyzeIncomingDataRoutine1(Helpers.TTcpClientSocket.TcpSocketData o)
+        private void AnalyzeIncomingDataRoutine1(Helpers.TTcpSocket.DataPackage o)
         {
             try
             {
                 if (o == null) return;
                 string s;
-                byte[] decryptedData;
-                if (ChkEncryptData.Checked) decryptedData = o.ByteArray == null ? o.ByteArray : Helpers.CyptoRijndaelT.Decrypt(o.ByteArray, CryptPassword);
-                else decryptedData = o.ByteArray;
-                if ((decryptedData?.Length ?? 0) < 1)
+                //byte[] decryptedData;
+                //if (ChkEncryptData.Checked) decryptedData = o.ByteArray == null ? o.ByteArray : Helpers.CyptoRijndaelT.Decrypt(o.ByteArray, CryptPassword);
+                //else decryptedData = o.ByteArray;
+                byte[] decryptedData = ChkEncryptData.Checked ? (o.ByteArray == null ? o.ByteArray : Helpers.CyptoRijndaelT.Decrypt(o.ByteArray, CryptPassword)) : o.ByteArray;
+                ///// Old method.
+                //if ((decryptedData?.Length ?? 0) < 1)
+                //{
+                //    //throw new Exception("Length of decrypted data < 1, which is impossible.");
+                //    Logger?.Debug("FrmTcpClient {0} meets decrypted data with 0 bytes.", Id);
+                //    return;
+                //}
+                //switch (decryptedData[0])
+                //{
+                //    case Models.Param.TcpDataType.Text:
+                //        string text = Encoding.UTF8.GetString(decryptedData, 1, decryptedData.Length - 1);
+                //        Logger?.Debug("FrmTcpClient {3} receives text. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Text = {4}", o.Timestamp, o.Host, o.Port, Id, text);
+                //        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, text);
+                //        break;
+                //    case Models.Param.TcpDataType.File:
+                //        int i = decryptedData.Length - 1;
+                //        if (i < 1)
+                //        {
+                //            s = string.Format("Length of data is {3} < 1. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}", o.Timestamp, o.Host, o.Port, i);
+                //            Logger?.Warn("FrmTcpClient {0}: {1}", Id, s);
+                //            WriteLogToUI(s);
+                //            return;
+                //        }
+                //        byte[] data = new byte[i];
+                //        Array.Copy(decryptedData, 1, data, 0, i);
+                //        string filepath = string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilePath, o.Timestamp, Id);
+                //        filepath = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(filepath);
+                //        if (!Helpers.GeneralT.FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath)))
+                //        {
+                //            WriteLogToUI("Fail to create folder.");
+                //            return;
+                //        }
+                //        System.IO.File.WriteAllBytes(filepath, data);
+                //        Logger?.Debug("FrmTcpClient {3} receives file. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Length = {4}. File = {5}", o.Timestamp, o.Host, o.Port, Id, i, filepath);
+                //        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, i, filepath);
+                //        break;
+                //    default:
+                //        s = string.Format("Unclassified TCP data type. {0}", decryptedData[0]);
+                //        Logger?.Error(s);
+                //        WriteLogToUI(s);
+                //        break;
+                //}
+
+                /// New method.
+                Helpers.TTcpSocket.DeserializedData deserializedData = Helpers.TTcpSocket.Serialization.Deserialize(decryptedData);
+                if (deserializedData == null)
                 {
                     //throw new Exception("Length of decrypted data < 1, which is impossible.");
                     Logger?.Debug("FrmTcpClient {0} meets decrypted data with 0 bytes.", Id);
                     return;
                 }
-                switch (decryptedData[0])
+                switch (deserializedData.DataType)
                 {
-                    case Models.Param.TcpDataType.Text:
-                        string text = Encoding.UTF8.GetString(decryptedData, 1, decryptedData.Length - 1);
-                        Logger?.Debug("FrmTcpClient {3} receives text. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Text = {4}", o.Timestamp, o.Host, o.Port, Id, text);
-                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, text);
+                    case Helpers.TTcpSocket.SerialDataType.Text:
+                        Logger?.Debug("FrmTcpClient {3} receives text. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Text = {4}", o.Timestamp, o.Host, o.Port, Id, deserializedData.Text);
+                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, deserializedData.Text);
                         break;
-                    case Models.Param.TcpDataType.File:
-                        int i = decryptedData.Length - 1;
-                        if (i < 1)
+                    case Helpers.TTcpSocket.SerialDataType.File:
+                        if (!string.IsNullOrEmpty(deserializedData?.ErrorMessage))
                         {
-                            s = string.Format("Length of data is {3} < 1. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}", o.Timestamp, o.Host, o.Port, i);
-                            Logger?.Warn("FrmTcpClient {0}: {1}", Id, s);
-                            WriteLogToUI(s);
-                            return;
+                            Logger?.Debug("FrmTcpClient {3} receives error message. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Error Message = {4}", o.Timestamp, o.Host, o.Port, Id, deserializedData.ErrorMessage);
+                            WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Error Message = {3}", o.Timestamp, o.Host, o.Port, deserializedData.ErrorMessage);
                         }
-                        byte[] data = new byte[i];
-                        Array.Copy(decryptedData, 1, data, 0, i);
-                        string filepath = string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilePath, o.Timestamp, Id);
-                        filepath = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(filepath);
+                        string filepath = System.IO.Path.Combine(Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(Models.Param.TcpClient.DefaultValue.IncomingDataFolder), deserializedData.Filename);
+                        if (string.IsNullOrWhiteSpace(deserializedData?.Filename))
+                        {
+                            Logger?.Debug("FrmTcpClient {3} receives text. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Filename is empty.", o.Timestamp, o.Host, o.Port, Id);
+                            WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Filename is empty.", o.Timestamp, o.Host, o.Port);
+                            filepath = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilePath, o.Timestamp, Id));
+                        }
                         if (!Helpers.GeneralT.FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath)))
                         {
                             WriteLogToUI("Fail to create folder.");
                             return;
                         }
-                        System.IO.File.WriteAllBytes(filepath, data);
-                        Logger?.Debug("FrmTcpClient {3} receives file. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Length = {4}. File = {5}", o.Timestamp, o.Host, o.Port, Id, i, filepath);
-                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, i, filepath);
+                        if ((deserializedData.FileContent?.Length ?? 0) > 0)
+                            System.IO.File.WriteAllBytes(filepath, deserializedData.FileContent);
+                        else
+                            using (System.IO.File.Create(filepath)) { }
+                        Logger?.Debug("FrmTcpClient {3} receives file. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Length = {4}. File = {5}", o.Timestamp, o.Host, o.Port, Id, decryptedData.Length - 1, filepath);
+                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, decryptedData.Length - 1, filepath);
                         break;
                     default:
                         s = string.Format("Unclassified TCP data type. {0}", decryptedData[0]);
@@ -86,71 +136,71 @@ namespace VsCSharpWinForm_sample2.Views
             }
         }
 
-        private void AnalyzeIncomingDataRoutine0()
-        {
-            List<Helpers.TTcpClientSocket.TcpSocketData> tempList = null;
-            try
-            {
-                lock (MyIncomingDataQueueLocker)
-                {
-                    if (MyIncomingDataQueue == null || MyIncomingDataQueue.Count < 1) return;
-                    int iMax = 5;
-                    int i = 0;
-                    tempList = new List<Helpers.TTcpClientSocket.TcpSocketData>();
-                    while ((MyIncomingDataQueue?.Count ?? 0) > 0 && i < iMax)
-                    {
-                        tempList.Add(MyIncomingDataQueue?.Dequeue());/// pass to temp list in order to unlock the list earlier.
-                        i += 1;
-                    }
-                }
-                if (tempList != null)
-                {
-                    foreach (Helpers.TTcpClientSocket.TcpSocketData o in tempList)
-                    {
-                        AnalyzeIncomingDataRoutine1(o);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger?.Error("Id = {0}", Id);
-                Logger?.Error(ex);
-            }
-            finally
-            {
-                if (tempList != null)
-                {
-                    tempList.Clear();
-                    tempList = null;
-                }
-            }
-        }
+        //private void AnalyzeIncomingDataRoutine0()
+        //{
+        //    List<Helpers.TTcpSocket.DataPackage> tempList = null;
+        //    try
+        //    {
+        //        lock (MyIncomingDataQueueLocker)
+        //        {
+        //            if (MyIncomingDataQueue == null || MyIncomingDataQueue.Count < 1) return;
+        //            int iMax = 5;
+        //            int i = 0;
+        //            tempList = new List<Helpers.TTcpSocket.DataPackage>();
+        //            while ((MyIncomingDataQueue?.Count ?? 0) > 0 && i < iMax)
+        //            {
+        //                tempList.Add(MyIncomingDataQueue?.Dequeue());/// pass to temp list in order to unlock the list earlier.
+        //                i += 1;
+        //            }
+        //        }
+        //        if (tempList != null)
+        //        {
+        //            foreach (Helpers.TTcpSocket.DataPackage o in tempList)
+        //            {
+        //                AnalyzeIncomingDataRoutine1(o);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger?.Error("Id = {0}", Id);
+        //        Logger?.Error(ex);
+        //    }
+        //    finally
+        //    {
+        //        if (tempList != null)
+        //        {
+        //            tempList.Clear();
+        //            tempList = null;
+        //        }
+        //    }
+        //}
 
-        private void ProcessAnalyzeIncomingDataQueue()
-        {
-            try
-            {
-                DateTime tNow, tRef;
-                Logger?.Debug("FrmTcpClient {0} begins to analyze the incoming data.", Id);
-                tRef = DateTime.Now.AddHours(-1);
-                while (IsExit == false)
-                {
-                    tNow = DateTime.Now;
-                    if (AnalyzeIncomingDataInterval == 0 || (AnalyzeIncomingDataInterval > 0 && (int)(tNow - tRef).TotalSeconds >= AnalyzeIncomingDataInterval))
-                    {
-                        tRef = tNow;
-                        AnalyzeIncomingDataRoutine0();
-                    }
-                    System.Threading.Thread.Sleep(200);
-                }
-                Logger?.Debug("FrmTcpClient {0} stops to analyze the incoming data.", Id);
-            }
-            catch (Exception ex)
-            {
-                Logger?.Error("Id = {0}", Id);
-                Logger?.Error(ex);
-            }
-        }
+        //private void ProcessAnalyzeIncomingDataQueue()
+        //{
+        //    try
+        //    {
+        //        DateTime tNow, tRef;
+        //        Logger?.Debug("FrmTcpClient {0} begins to analyze the incoming data.", Id);
+        //        tRef = DateTime.Now.AddHours(-1);
+        //        while (IsExit == false)
+        //        {
+        //            tNow = DateTime.Now;
+        //            if (AnalyzeIncomingDataInterval == 0 || (AnalyzeIncomingDataInterval > 0 && (int)(tNow - tRef).TotalSeconds >= AnalyzeIncomingDataInterval))
+        //            {
+        //                tRef = tNow;
+        //                AnalyzeIncomingDataRoutine0();
+        //            }
+        //            System.Threading.Thread.Sleep(200);
+        //        }
+        //        Logger?.Debug("FrmTcpClient {0} stops to analyze the incoming data.", Id);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger?.Error("Id = {0}", Id);
+        //        Logger?.Error(ex);
+        //    }
+        //}
 
         public void FormClosedRoutine()
         {
@@ -160,17 +210,17 @@ namespace VsCSharpWinForm_sample2.Views
                 Logger?.Debug("FrmTcpClient {0} closes.", Id);
                 DisconnectRoutine();
 
-                DateTime tRef = DateTime.Now;
-                while ((MyThreadToAnalyzeIncomingDataQueue?.IsAlive ?? false) && (int)(DateTime.Now - tRef).TotalSeconds < 3)
-                {
-                    System.Threading.Thread.Sleep(100);
-                }
-                if (MyThreadToAnalyzeIncomingDataQueue?.IsAlive ?? false)
-                {
-                    Logger?.Debug("FrmTcpClient {0} aborts MyThreadToAnalyzeIncomingDataQueue", Id);
-                    MyThreadToAnalyzeIncomingDataQueue?.Abort();
-                }
-                MyThreadToAnalyzeIncomingDataQueue = null;
+                //DateTime tRef = DateTime.Now;
+                //while ((MyThreadToAnalyzeIncomingDataQueue?.IsAlive ?? false) && (int)(DateTime.Now - tRef).TotalSeconds < 3)
+                //{
+                //    System.Threading.Thread.Sleep(100);
+                //}
+                //if (MyThreadToAnalyzeIncomingDataQueue?.IsAlive ?? false)
+                //{
+                //    Logger?.Debug("FrmTcpClient {0} aborts MyThreadToAnalyzeIncomingDataQueue", Id);
+                //    MyThreadToAnalyzeIncomingDataQueue?.Abort();
+                //}
+                //MyThreadToAnalyzeIncomingDataQueue = null;
 
                 lock (MyIncomingDataQueueLocker)
                 {
@@ -209,11 +259,11 @@ namespace VsCSharpWinForm_sample2.Views
                 LblVersion.Left = this.Width - LblVersion.Width - 24;/// set the position of label according to its width.
 
                 UiConfig(false);
-                MyThreadToAnalyzeIncomingDataQueue = new System.Threading.Thread(new System.Threading.ThreadStart(ProcessAnalyzeIncomingDataQueue))
-                {
-                    Name = "ProcessAnalyzeIncomingDataQueue-" + Id.ToString()
-                };
-                MyThreadToAnalyzeIncomingDataQueue.Start();
+                //MyThreadToAnalyzeIncomingDataQueue = new System.Threading.Thread(new System.Threading.ThreadStart(ProcessAnalyzeIncomingDataQueue))
+                //{
+                //    Name = "ProcessAnalyzeIncomingDataQueue-" + Id.ToString()
+                //};
+                //MyThreadToAnalyzeIncomingDataQueue.Start();
             }
             catch (Exception ex)
             {
@@ -328,12 +378,26 @@ namespace VsCSharpWinForm_sample2.Views
             try
             {
                 DisconnectRoutine();
-                MyClient = new Helpers.TTcpClientSocket()
+                //MyClient = new Helpers.TTcpClientSocket()
+                //{
+                //    ServerHost = TxtServerHost.Text.Trim(),
+                //    ServerPort = (int)NudServerPort.Value,
+                //    ContainLengthAsHeader = ChkContainLengthAsHeader.Checked,
+                //    EnableAnalyzeIncomingData = Models.Param.TcpClient.DefaultValue.EnableAnalyzeIncomingData,
+                //    HeartbeatInterval = ChkHeartbeatInterval.Checked ? (int)NudHeartbeatInterval.Value : -1,
+                //    MaxConnectionDuration = ChkMaxConnectionDuration.Checked ? (int)NudMaxConnectionDuration.Value : -1,
+                //    MaxIdleDuration = ChkMaxIdleDuration.Checked ? (int)NudMaxIdleDuration.Value : -1,
+                //    MaxDataSize = (int)NudMaxDataSize.Value,
+                //    ReceiveDataInterval = (int)NudReceiveDataInterval.Value,
+                //    ReceiveTotalBufferSize = (int)NudReceiveTotalBufferSize.Value,
+                //    SleepingIntervalInMS = ChkSleepingInterval.Checked ? (int)NudSleepingInterval.Value : -1,
+                //    IncomingDataQueue = MyIncomingDataQueue,
+                //    IncomingDataQueueLocker = MyIncomingDataQueueLocker
+                //};
+                MyClient = new Helpers.TTcpSocket.Client(TxtServerHost.Text.Trim(), (int)NudServerPort.Value, MyIncomingDataQueue, MyIncomingDataQueueLocker)
                 {
-                    ServerHost = TxtServerHost.Text.Trim(),
-                    ServerPort = (int)NudServerPort.Value,
                     ContainLengthAsHeader = ChkContainLengthAsHeader.Checked,
-                    EnableAnalyzeIncomingData = Models.Param.TcpClient.DefaultValue.EnableAnalyzeIncomingData,
+                    EnableAnalyzeIncomingData = true,
                     HeartbeatInterval = ChkHeartbeatInterval.Checked ? (int)NudHeartbeatInterval.Value : -1,
                     MaxConnectionDuration = ChkMaxConnectionDuration.Checked ? (int)NudMaxConnectionDuration.Value : -1,
                     MaxIdleDuration = ChkMaxIdleDuration.Checked ? (int)NudMaxIdleDuration.Value : -1,
@@ -341,8 +405,7 @@ namespace VsCSharpWinForm_sample2.Views
                     ReceiveDataInterval = (int)NudReceiveDataInterval.Value,
                     ReceiveTotalBufferSize = (int)NudReceiveTotalBufferSize.Value,
                     SleepingIntervalInMS = ChkSleepingInterval.Checked ? (int)NudSleepingInterval.Value : -1,
-                    IncomingDataQueue = MyIncomingDataQueue,
-                    IncomingDataQueueLocker = MyIncomingDataQueueLocker
+                    ExternalActToHandleIncomingData = AnalyzeIncomingDataRoutine1
                 };
                 string s = string.Format("FrmTcpClient {0} trys to connect.", Id);
                 Logger?.Info(s);
@@ -380,33 +443,48 @@ namespace VsCSharpWinForm_sample2.Views
             }
         }
 
-        private bool TcpClientSend(byte tcpDataType, byte[] data)
+        //private bool TcpClientSend(byte tcpDataType, byte[] data)
+        //{
+        //    List<byte> tempList = null;
+        //    try
+        //    {
+        //        tempList = new List<byte>()
+        //        {
+        //            tcpDataType
+        //        };
+        //        tempList.AddRange(data);
+        //        //byte[] encryptedData = null;
+        //        //if (ChkEncryptData.Checked) encryptedData = Helpers.CyptoRijndaelT.Encrypt(tempList.ToArray(), CryptPassword);
+        //        //else encryptedData = tempList.ToArray();
+        //        byte[] encryptedData = ChkEncryptData.Checked ? Helpers.CyptoRijndaelT.Encrypt(tempList.ToArray(), CryptPassword) : tempList.ToArray();
+        //        return MyClient?.SendByteArray(encryptedData) ?? false;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger?.Error(ex);
+        //        return false;
+        //    }
+        //    finally
+        //    {
+        //        if (tempList != null)
+        //        {
+        //            tempList.Clear();
+        //            tempList = null;
+        //        }
+        //    }
+        //}
+
+        private bool TcpClientSend(byte[] serializedData)
         {
-            List<byte> tempList = null;
             try
             {
-                tempList = new List<byte>()
-                {
-                    tcpDataType
-                };
-                tempList.AddRange(data);
-                byte[] encryptedData = null;
-                if (ChkEncryptData.Checked) encryptedData = Helpers.CyptoRijndaelT.Encrypt(tempList.ToArray(), CryptPassword);
-                else encryptedData = tempList.ToArray();
+                byte[] encryptedData = ChkEncryptData.Checked ? Helpers.CyptoRijndaelT.Encrypt(serializedData, CryptPassword) : serializedData;
                 return MyClient?.SendByteArray(encryptedData) ?? false;
             }
             catch (Exception ex)
             {
                 Logger?.Error(ex);
                 return false;
-            }
-            finally
-            {
-                if (tempList != null)
-                {
-                    tempList.Clear();
-                    tempList = null;
-                }
             }
         }
 
@@ -419,19 +497,13 @@ namespace VsCSharpWinForm_sample2.Views
                 TxtInput.ReadOnly = true;
                 Logger?.Debug("FrmTcpClient {0} sends text: {1}", Id, TxtInput.Text);
                 WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Send text: {1}", DateTime.Now, TxtInput.Text);
-                //List<byte> tempList = new List<byte>()
-                //{
-                //    Models.Param.TcpDataType.Text
-                //};
-                //tempList.AddRange(Encoding.UTF8.GetBytes(TxtInput.Text));
-                //byte[] encryptedData = null;
-                //if (ChkEncryptData.Checked) { encryptedData = Helpers.CyptoRijndaelT.Encrypt(tempList.ToArray(), CryptPassword); }
-                //else { encryptedData = tempList.ToArray(); }
-                //if (mClient?.SendByteArray(encryptedData) ?? false)
+                ///// Old method.
+                //if (TcpClientSend(Models.Param.TcpDataType.Text, Encoding.UTF8.GetBytes(TxtInput.Text)))
                 //{
                 //    TxtInput.Text = "";
                 //    TxtInput.ReadOnly = false;
                 //    BtnSendText.Enabled = true;
+                //    BtnSendFile.Enabled = true;
                 //    TxtInput.Focus();
                 //}
                 //else
@@ -440,7 +512,8 @@ namespace VsCSharpWinForm_sample2.Views
                 //    WriteLogToUI("Fail to send text: {0}", TxtInput.Text);
                 //    DisconnectRoutine();
                 //}
-                if (TcpClientSend(Models.Param.TcpDataType.Text, Encoding.UTF8.GetBytes(TxtInput.Text)))
+                /// New method.
+                if (TcpClientSend(Helpers.TTcpSocket.Serialization.SerializeText(TxtInput.Text)))
                 {
                     TxtInput.Text = "";
                     TxtInput.ReadOnly = false;
@@ -487,8 +560,16 @@ namespace VsCSharpWinForm_sample2.Views
                 {
                     Logger?.Debug("FrmTcpClient {0} sends file {1}", Id, oDialog.FileName);
                     WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Send file: {1}", DateTime.Now, oDialog.FileName);
-                    byte[] data = System.IO.File.ReadAllBytes(oDialog.FileName);
-                    if (!TcpClientSend(Models.Param.TcpDataType.File, data))
+                    ///// Old method.
+                    //byte[] data = System.IO.File.ReadAllBytes(oDialog.FileName);
+                    //if (!TcpClientSend(Models.Param.TcpDataType.File, data))
+                    //{
+                    //    Logger?.Error("FrmTcpClient {0} fails to send file: {1}", Id, oDialog.FileName);
+                    //    WriteLogToUI("Fail to send file: {0}", oDialog.FileName);
+                    //    DisconnectRoutine();
+                    //}
+                    /// New method.
+                    if (!TcpClientSend(Helpers.TTcpSocket.Serialization.SerializeFile(oDialog.FileName)))
                     {
                         Logger?.Error("FrmTcpClient {0} fails to send file: {1}", Id, oDialog.FileName);
                         WriteLogToUI("Fail to send file: {0}", oDialog.FileName);
@@ -517,18 +598,6 @@ namespace VsCSharpWinForm_sample2.Views
                 DateTime tNow;
                 int interval = 1;
                 Logger?.Debug("FrmTcpClient {0} begins to check connectivity.", Id);
-                //bool b = true;
-                //while (IsExit == false && b)
-                //{
-                //    tNow = DateTime.Now;
-                //    if ((int)(tNow - tRef).TotalSeconds >= interval)
-                //    {
-                //        tRef = tNow;
-                //        b = MyClient?.IsConnected ?? false;
-                //    }
-                //    System.Threading.Thread.Sleep(1000);
-                //}
-                //if (!b) DisconnectRoutine();
                 while (IsExit == false && (MyClient?.IsConnected ?? false))
                 {
                     tNow = DateTime.Now;
