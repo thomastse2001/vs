@@ -521,5 +521,51 @@ namespace VsCSharpWinForm_sample2.Helpers
                 }
             }
         }
+
+        public static byte[] ConvertFileToByteArray(string filepath, int mode)
+        {
+            /// Mode = 2. [File size (4 byptes)][File content]
+            /// Mode = 3. [File name length (4 bytes)][File name][File content]
+            /// Otherwise. [File content]
+            try
+            {
+                byte[] data = System.IO.File.ReadAllBytes(filepath);
+                if (mode == 3)
+                {
+                    int iFileLength = data?.Length ?? 0;
+                    if (iFileLength > int.MaxValue - 8) throw new Exception(string.Format("Exceed the maximum data size {0}. Data size = [1}", int.MaxValue - 8, iFileLength));
+                    string filename = System.IO.Path.GetFileName(filepath);
+                    byte[] nameByteArray = System.Text.Encoding.UTF8.GetBytes(System.IO.Path.GetFileName(filepath));
+                    int iNameLength = nameByteArray?.Length ?? 0;
+                    if (iNameLength > int.MaxValue - 10) throw new Exception(string.Format("Exceed the maximum data size {0}. File name length = [1}", int.MaxValue - 10, iNameLength));
+                    byte[] rByte = new byte[4 + iNameLength + iFileLength];
+                    BitConverter.GetBytes(iNameLength).CopyTo(rByte, 0);
+                    if (iNameLength > 0) nameByteArray.CopyTo(rByte, 4);
+                    if (iFileLength > 0) data.CopyTo(rByte, 4 + iNameLength);
+                    return rByte;
+                }
+                return data;
+                //switch (mode)
+                //{
+                //    case 2:
+                //        int iLength = data?.Length ?? 0;
+                //        if (iLength > int.MaxValue-8) throw new Exception(string.Format("Exceed the maximum data size {0}. Data size = [1}", int.MaxValue-8, iLength));
+                //        byte[] rByte = new byte[4 + iLength];
+                //        BitConverter.GetBytes(iLength).CopyTo(rByte, 0);
+                //        if (iLength > 0) data.CopyTo(rByte, 4);
+                //        return rByte;
+                //    case 3:
+
+                //        break;
+                //    default:
+                //        return data;
+                //}
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error(ex);
+                return null;
+            }
+        }
     }
 }
