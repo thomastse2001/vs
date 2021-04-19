@@ -464,6 +464,108 @@ namespace VsCSharpWinForm_sample2.Helpers
                     return false;
                 }
             }
+
+            public class WinscpMethod
+            {
+                /// Need install "WinSCP" in NuGet.
+                /// https://winscp.net/eng/docs/library
+                public static bool UploadFiles(string uriFolder, int port, string username, string password, string sshHostKeyFingerprint, string proxyHost, int proxyPort, string proxyUsername, string proxyPassword, params string[] filepaths)
+                {
+                    try
+                    {
+                        if ((filepaths?.Length ?? 0) < 1) return true;
+                        /// https://weblog.west-wind.com/posts/2019/Aug/20/UriAbsoluteUri-and-UrlEncoding-of-Local-File-Urls
+                        Uri sftpUri = new Uri(uriFolder);
+                        string host = sftpUri?.Host;// 10.15.255.5
+                        string directory = sftpUri?.AbsolutePath;// /Dunhill_uk/FCDB_TestData
+
+                        //WinSCP.SessionOptions sessionOptions = new WinSCP.SessionOptions
+                        //{
+                        //    Protocol = WinSCP.Protocol.Sftp,
+                        //    HostName = host,
+                        //    PortNumber = port,
+                        //    UserName = username,
+                        //    Password = password,
+                        //    SshHostKeyFingerprint = sshHostKeyFingerprint
+                        //};
+                        //sessionOptions.AddRawSettings("ProxyMethod", "2");
+                        //sessionOptions.AddRawSettings("ProxyHost", proxyHost);
+                        //sessionOptions.AddRawSettings("ProxyPort", proxyPort.ToString());
+                        //sessionOptions.AddRawSettings("ProxyUsername", proxyUsername);
+                        //sessionOptions.AddRawSettings("ProxyPassword", proxyPassword);
+
+                        //using (WinSCP.Session session = new WinSCP.Session())
+                        //{
+                        //    session.Open(sessionOptions);
+                        //    WinSCP.TransferOptions transferOptions = new WinSCP.TransferOptions()
+                        //    {
+                        //        TransferMode = WinSCP.TransferMode.Binary
+                        //    };
+                        //    foreach (var p in filepaths)
+                        //    {
+                        //        WinSCP.TransferOperationResult transferResult = session.PutFiles(p, directory, false, transferOptions);
+                        //        transferResult.Check();
+                        //    }
+                        //    return true;
+                        //}
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger?.Error("URI = {0}", uriFolder);
+                        Logger?.Error("Proxy Host = {0}", proxyHost);
+                        Logger?.Error("Filepath = {0}", string.Join("|", filepaths));
+                        Logger?.Error(ex);
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static byte[] ConvertFileToByteArray(string filepath, int mode)
+        {
+            /// Mode = 2. [File size (4 byptes)][File content]
+            /// Mode = 3. [File name length (4 bytes)][File name][File content]
+            /// Otherwise. [File content]
+            try
+            {
+                byte[] data = System.IO.File.ReadAllBytes(filepath);
+                if (mode == 3)
+                {
+                    int iFileLength = data?.Length ?? 0;
+                    if (iFileLength > int.MaxValue - 8) throw new Exception(string.Format("Exceed the maximum data size {0}. Data size = [1}", int.MaxValue - 8, iFileLength));
+                    string filename = System.IO.Path.GetFileName(filepath);
+                    byte[] nameByteArray = System.Text.Encoding.UTF8.GetBytes(System.IO.Path.GetFileName(filepath));
+                    int iNameLength = nameByteArray?.Length ?? 0;
+                    if (iNameLength > int.MaxValue - 10) throw new Exception(string.Format("Exceed the maximum data size {0}. File name length = [1}", int.MaxValue - 10, iNameLength));
+                    byte[] rByte = new byte[4 + iNameLength + iFileLength];
+                    BitConverter.GetBytes(iNameLength).CopyTo(rByte, 0);
+                    if (iNameLength > 0) nameByteArray.CopyTo(rByte, 4);
+                    if (iFileLength > 0) data.CopyTo(rByte, 4 + iNameLength);
+                    return rByte;
+                }
+                return data;
+                //switch (mode)
+                //{
+                //    case 2:
+                //        int iLength = data?.Length ?? 0;
+                //        if (iLength > int.MaxValue-8) throw new Exception(string.Format("Exceed the maximum data size {0}. Data size = [1}", int.MaxValue-8, iLength));
+                //        byte[] rByte = new byte[4 + iLength];
+                //        BitConverter.GetBytes(iLength).CopyTo(rByte, 0);
+                //        if (iLength > 0) data.CopyTo(rByte, 4);
+                //        return rByte;
+                //    case 3:
+
+                //        break;
+                //    default:
+                //        return data;
+                //}
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error(ex);
+                return null;
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// https://www.codeproject.com/Articles/990474/Scalable-Socket-Server
         /// http://www.tutorialsteacher.com/csharp/array-csharp
 
-        public class TcpSocketData
+        public class DataPackage
         {
             public DateTime Timestamp = DateTime.MinValue;
             public string Host = "";
@@ -37,9 +37,9 @@ namespace VsCSharpWinForm_sample2.Helpers
         private System.Threading.Thread ThreadToSendData = null;
         //private System.Threading.Thread ThreadToTrimList = null;
 
-        private Queue<TcpSocketData> OutgoingDataQueue = null;
+        private Queue<DataPackage> OutgoingDataQueue = null;
         private readonly object OutgoingDataQueueLocker = new object();
-        private Queue<TcpSocketData> FailedOutgoingDataQueue = null;/// queue of TCP outgoing data sent failed.
+        private Queue<DataPackage> FailedOutgoingDataQueue = null;/// queue of TCP outgoing data sent failed.
         private readonly object FailedOutgoingDataQueueLocker = new object();
 
         /// Properties.
@@ -73,7 +73,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         public int ReceiveTotalBufferSize { get; set; } = 10485760;/// Total buffer size in bytes for receiving data from client, the minimum value is 10485760.
         public int SleepingIntervalInMS { get; set; } = 100;/// Sleeping interval in milliseconds. This sleeping interval helps to avoid the application too busy. If it is negative, no sleep. The default value is 100.
 
-        public Queue<TcpSocketData> IncomingDataQueue = null;/// queue of TCP incoming data.
+        public Queue<DataPackage> IncomingDataQueue = null;/// queue of TCP incoming data.
         public object IncomingDataQueueLocker = null;/// lock object for queue of TCP incoming data.
 
         public class InnerClient
@@ -115,7 +115,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             public int ReceiveTotalBufferSize { get; set; } = 10485760;/// Total buffer size in bytes for receiving data from client, the default value is 10485760.
             public int SleepingIntervalInMS { get; set; } = 100;
             public bool IsConnected { get { return ClientSocket?.Connected ?? false; } }//{ get { return ClientSocket == null ? false : ClientSocket.Connected; } }
-            public Queue<TcpSocketData> IncomingDataQueue = null;/// queue to store incoming data.
+            public Queue<DataPackage> IncomingDataQueue = null;/// queue to store incoming data.
             public object IncomingDataQueueLocker = null;
             /// Other parameters.
             public string Username { get; set; }
@@ -169,7 +169,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         Logger?.Error("TCP Server cannot put data to IncomingDataQueue as it is NOT initialized. Client socket = {0}", ClientSocketString);
                         return false;
                     }
-                    TcpSocketData oData = new TcpSocketData()
+                    DataPackage oData = new DataPackage()
                     {
                         Timestamp = t,
                         Host = this.Host,
@@ -468,7 +468,7 @@ namespace VsCSharpWinForm_sample2.Helpers
 
             /// Analyze the incoming buffer.
             /// 3 statuses.
-            /// State, mbIncomingDataFinished, mbIncomingDataIsLength.
+            /// State, IsIncomingDataFinished, IsIncomingDataLength.
             /// 1st state, True, True. The previous data is finished. And if there is an incoming data, should analyze the length first.
             /// 2nd state, False, True. set this state if the current incoming data arrives. And should analyze the length.
             /// 3rd state, False, False. After analyzing the length, set to analyze the content.
@@ -815,7 +815,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 }
             }
 
-            public InnerClient(ref System.Net.Sockets.TcpClient pTcpClient, Queue<TcpSocketData> incomingDataQueue, object incomingDataQueueLocker)
+            public InnerClient(ref System.Net.Sockets.TcpClient pTcpClient, Queue<DataPackage> incomingDataQueue, object incomingDataQueueLocker)
             {
                 try
                 {
@@ -876,7 +876,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         }
 
         /// Get the number of items in the queue.
-        private static int NumberOfItemsInQueue(Queue<TcpSocketData> queue, object locker)
+        private static int NumberOfItemsInQueue(Queue<DataPackage> queue, object locker)
         {
             try
             {
@@ -1175,7 +1175,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             catch (Exception ex) { Logger?.Error(ex); }
         }
 
-        private bool TryDequeueAtOutgoingDataQueue(out TcpSocketData oOutput)
+        private bool TryDequeueAtOutgoingDataQueue(out DataPackage oOutput)
         {
             try
             {
@@ -1201,7 +1201,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             }
         }
 
-        private bool TryDequeueAtFailedOutgoingDataQueue(out TcpSocketData oOutput)
+        private bool TryDequeueAtFailedOutgoingDataQueue(out DataPackage oOutput)
         {
             try
             {
@@ -1236,8 +1236,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                 /// add data to queue.
                 lock (OutgoingDataQueueLocker)
                 {
-                    if (OutgoingDataQueue == null) OutgoingDataQueue = new Queue<TcpSocketData>();
-                    OutgoingDataQueue.Enqueue(new TcpSocketData()
+                    if (OutgoingDataQueue == null) OutgoingDataQueue = new Queue<DataPackage>();
+                    OutgoingDataQueue.Enqueue(new DataPackage()
                     {
                         Timestamp = DateTime.Now,
                         Host = host,
@@ -1255,21 +1255,21 @@ namespace VsCSharpWinForm_sample2.Helpers
         }
 
         /// Queue to failed outgoing data.
-        private void QueueToFailedOutgoingData(ref TcpSocketData vData)
+        private void QueueToFailedOutgoingData(ref DataPackage vData)
         {
             try
             {
                 if (vData == null) return;
                 lock (FailedOutgoingDataQueueLocker)
                 {
-                    if (FailedOutgoingDataQueue == null) FailedOutgoingDataQueue = new Queue<TcpSocketData>();
+                    if (FailedOutgoingDataQueue == null) FailedOutgoingDataQueue = new Queue<DataPackage>();
                     FailedOutgoingDataQueue.Enqueue(vData);
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
         }
 
-        private void ProcessSendData_routine1(TcpSocketData vData)
+        private void ProcessSendData_routine1(DataPackage vData)
         {
             try
             {
@@ -1447,13 +1447,13 @@ namespace VsCSharpWinForm_sample2.Helpers
                     /// Send data to clients.
                     if (this.MaxDataSend < 0)
                     {
-                        TcpSocketData oData = null;
+                        DataPackage oData = null;
                         while (TryDequeueAtOutgoingDataQueue(out oData))
                         { ProcessSendData_routine1(oData); }
                     }
                     else
                     {
-                        TcpSocketData oData = null;
+                        DataPackage oData = null;
                         int i = 0;
                         while (i < this.MaxDataSend && TryDequeueAtOutgoingDataQueue(out oData))
                         {
@@ -1597,11 +1597,11 @@ namespace VsCSharpWinForm_sample2.Helpers
         }
 
         /// Dequeue the outgoing data, which is sent failed.
-        public TcpSocketData DequeueFailedOutgoingData()
+        public DataPackage DequeueFailedOutgoingData()
         {
             try
             {
-                bool b = TryDequeueAtFailedOutgoingDataQueue(out TcpSocketData oOutput);
+                bool b = TryDequeueAtFailedOutgoingDataQueue(out DataPackage oOutput);
                 return oOutput;
             }
             catch (Exception ex)

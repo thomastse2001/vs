@@ -34,6 +34,11 @@
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnTest1 = new System.Windows.Forms.Button();
+            this.BtnRenameFilenamesStop = new System.Windows.Forms.Button();
+            this.BtnRenameFilenames = new System.Windows.Forms.Button();
+            this.BtnLineSeparator = new System.Windows.Forms.Button();
+            this.BtnExcel = new System.Windows.Forms.Button();
             this.BtnXml = new System.Windows.Forms.Button();
             this.BtnJson = new System.Windows.Forms.Button();
             this.BtnReadCsvFile = new System.Windows.Forms.Button();
@@ -98,7 +103,9 @@
             this.BWorkerExitFile = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
-            this.BtnExcel = new System.Windows.Forms.Button();
+            this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
+            this.BtnSerializeText = new System.Windows.Forms.Button();
+            this.BtnSerializeFile = new System.Windows.Forms.Button();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -156,6 +163,12 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnSerializeFile);
+            this.tabPage1.Controls.Add(this.BtnSerializeText);
+            this.tabPage1.Controls.Add(this.BtnTest1);
+            this.tabPage1.Controls.Add(this.BtnRenameFilenamesStop);
+            this.tabPage1.Controls.Add(this.BtnRenameFilenames);
+            this.tabPage1.Controls.Add(this.BtnLineSeparator);
             this.tabPage1.Controls.Add(this.BtnExcel);
             this.tabPage1.Controls.Add(this.BtnXml);
             this.tabPage1.Controls.Add(this.BtnJson);
@@ -180,6 +193,57 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnTest1
+            // 
+            this.BtnTest1.Location = new System.Drawing.Point(665, 68);
+            this.BtnTest1.Name = "BtnTest1";
+            this.BtnTest1.Size = new System.Drawing.Size(75, 23);
+            this.BtnTest1.TabIndex = 20;
+            this.BtnTest1.Text = "Test1";
+            this.BtnTest1.UseVisualStyleBackColor = true;
+            this.BtnTest1.Click += new System.EventHandler(this.BtnTest1_Click);
+            // 
+            // BtnRenameFilenamesStop
+            // 
+            this.BtnRenameFilenamesStop.Enabled = false;
+            this.BtnRenameFilenamesStop.Location = new System.Drawing.Point(122, 126);
+            this.BtnRenameFilenamesStop.Name = "BtnRenameFilenamesStop";
+            this.BtnRenameFilenamesStop.Size = new System.Drawing.Size(150, 23);
+            this.BtnRenameFilenamesStop.TabIndex = 19;
+            this.BtnRenameFilenamesStop.Text = "Stop Renaming Filenames";
+            this.BtnRenameFilenamesStop.UseVisualStyleBackColor = true;
+            this.BtnRenameFilenamesStop.Click += new System.EventHandler(this.BtnRenameFilenamesStop_Click);
+            // 
+            // BtnRenameFilenames
+            // 
+            this.BtnRenameFilenames.Location = new System.Drawing.Point(6, 126);
+            this.BtnRenameFilenames.Name = "BtnRenameFilenames";
+            this.BtnRenameFilenames.Size = new System.Drawing.Size(110, 23);
+            this.BtnRenameFilenames.TabIndex = 18;
+            this.BtnRenameFilenames.Text = "Rename Filenames";
+            this.BtnRenameFilenames.UseVisualStyleBackColor = true;
+            this.BtnRenameFilenames.Click += new System.EventHandler(this.BtnRenameFilenames_Click);
+            // 
+            // BtnLineSeparator
+            // 
+            this.BtnLineSeparator.Location = new System.Drawing.Point(514, 97);
+            this.BtnLineSeparator.Name = "BtnLineSeparator";
+            this.BtnLineSeparator.Size = new System.Drawing.Size(101, 23);
+            this.BtnLineSeparator.TabIndex = 17;
+            this.BtnLineSeparator.Text = "Line Separator";
+            this.BtnLineSeparator.UseVisualStyleBackColor = true;
+            this.BtnLineSeparator.Click += new System.EventHandler(this.BtnLineSeparator_Click);
+            // 
+            // BtnExcel
+            // 
+            this.BtnExcel.Location = new System.Drawing.Point(433, 97);
+            this.BtnExcel.Name = "BtnExcel";
+            this.BtnExcel.Size = new System.Drawing.Size(75, 23);
+            this.BtnExcel.TabIndex = 16;
+            this.BtnExcel.Text = "Excel";
+            this.BtnExcel.UseVisualStyleBackColor = true;
+            this.BtnExcel.Click += new System.EventHandler(this.BtnExcel_Click);
             // 
             // BtnXml
             // 
@@ -926,15 +990,29 @@
             // 
             this.BWorkerTcpServerUpdatingClientList.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerTcpServerUpdatingClientList_DoWork);
             // 
-            // BtnExcel
+            // BWorkerRenameFilenames
             // 
-            this.BtnExcel.Location = new System.Drawing.Point(433, 97);
-            this.BtnExcel.Name = "BtnExcel";
-            this.BtnExcel.Size = new System.Drawing.Size(75, 23);
-            this.BtnExcel.TabIndex = 16;
-            this.BtnExcel.Text = "Excel";
-            this.BtnExcel.UseVisualStyleBackColor = true;
-            this.BtnExcel.Click += new System.EventHandler(this.BtnExcel_Click);
+            this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
+            // 
+            // BtnSerializeText
+            // 
+            this.BtnSerializeText.Location = new System.Drawing.Point(278, 126);
+            this.BtnSerializeText.Name = "BtnSerializeText";
+            this.BtnSerializeText.Size = new System.Drawing.Size(80, 23);
+            this.BtnSerializeText.TabIndex = 21;
+            this.BtnSerializeText.Text = "Serialize Text";
+            this.BtnSerializeText.UseVisualStyleBackColor = true;
+            this.BtnSerializeText.Click += new System.EventHandler(this.BtnSerializeText_Click);
+            // 
+            // BtnSerializeFile
+            // 
+            this.BtnSerializeFile.Location = new System.Drawing.Point(364, 126);
+            this.BtnSerializeFile.Name = "BtnSerializeFile";
+            this.BtnSerializeFile.Size = new System.Drawing.Size(75, 23);
+            this.BtnSerializeFile.TabIndex = 22;
+            this.BtnSerializeFile.Text = "Serialize File";
+            this.BtnSerializeFile.UseVisualStyleBackColor = true;
+            this.BtnSerializeFile.Click += new System.EventHandler(this.BtnSerializeFile_Click);
             // 
             // FrmMain
             // 
@@ -1053,6 +1131,13 @@
         private System.Windows.Forms.Button BtnJson;
         private System.Windows.Forms.Button BtnXml;
         private System.Windows.Forms.Button BtnExcel;
+        private System.Windows.Forms.Button BtnLineSeparator;
+        private System.Windows.Forms.Button BtnRenameFilenames;
+        private System.ComponentModel.BackgroundWorker BWorkerRenameFilenames;
+        private System.Windows.Forms.Button BtnRenameFilenamesStop;
+        private System.Windows.Forms.Button BtnTest1;
+        private System.Windows.Forms.Button BtnSerializeText;
+        private System.Windows.Forms.Button BtnSerializeFile;
     }
 }
 

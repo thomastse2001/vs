@@ -6,6 +6,10 @@ using System.Linq;
 //using DocumentFormat.OpenXml;/// For OpenXml.
 //using DocumentFormat.OpenXml.Spreadsheet;/// For OpenXml.
 //using DocumentFormat.OpenXml.Packaging;/// For OpenXml.
+using System.Data;
+using System.Data.OleDb;
+//using ClosedXML.Excel;/// For ClosedXML.
+//using OfficeOpenXml;/// For EPPlus.
 
 namespace VsCSharpWinForm_sample2.Helpers
 {
@@ -21,7 +25,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         ///// https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/interop/how-to-access-office-onterop-objects
         ///// http://csharp.net-informations.com/excel/csharp-create-excel.htm
         ///// https://stackoverflow.com/questions/2663212/using-microsoft-office-interop-to-save-created-file-with-c-sharp
-        //public class Dll
+        //public class OfficeInterop
         //{
         //    public static bool ExportFile(string path)
         //    {
@@ -73,6 +77,61 @@ namespace VsCSharpWinForm_sample2.Helpers
         //            if (xlApp != null)
         //            {
         //                try { System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp); }
+        //                catch (Exception ex2) { Logger?.Error(ex2); }
+        //                xlApp = null;
+        //            }
+        //        }
+        //    }
+        //
+        //    /// Return value = Error message if fail. Return null if success.
+        //    /// If sheetName is empty, go to the first sheet.
+        //    /// https://stackoverflow.com/questions/12255166/c-sharp-and-excel-deleting-rows
+        //    /// http://csharp.net-informations.com/excel/csharp-read-excel.htm
+        //    public static string RemoveRows(string path, string sheetName)
+        //    {
+        //        Microsoft.Office.Interop.Excel.Application xlApp = null;
+        //        Microsoft.Office.Interop.Excel.Workbook xlWorkbook = null;
+        //        try
+        //        {
+        //            if (!System.IO.File.Exists(path))
+        //                return "Cannot find file";
+        //            xlApp = new Microsoft.Office.Interop.Excel.Application() { Visible = false };
+        //            xlWorkbook = xlApp.Workbooks.Open(path);
+        //            Microsoft.Office.Interop.Excel.Worksheet xlSheet = string.IsNullOrWhiteSpace(sheetName) ?
+        //                (Microsoft.Office.Interop.Excel.Worksheet)xlWorkbook.Worksheets[1] :
+        //                (Microsoft.Office.Interop.Excel.Worksheet)xlWorkbook.Worksheets[sheetName];
+        //            string a1String = (string)(xlSheet.Cells[1, 1] as Microsoft.Office.Interop.Excel.Range).Value;
+        //            string a2String = (string)(xlSheet.Cells[2, 1] as Microsoft.Office.Interop.Excel.Range).Value;
+        //            bool shouldSave = false;
+        //            if (string.IsNullOrWhiteSpace(a2String))
+        //            {
+        //                ((Microsoft.Office.Interop.Excel.Range)xlSheet.Rows[2, Type.Missing]).EntireRow.Delete(Microsoft.Office.Interop.Excel.XlDeleteShiftDirection.xlShiftUp);
+        //                shouldSave = true;
+        //            }
+        //            if (string.Equals("Query for ELMS Upload", a1String, StringComparison.OrdinalIgnoreCase))
+        //            {
+        //                ((Microsoft.Office.Interop.Excel.Range)xlSheet.Rows[1, Type.Missing]).EntireRow.Delete(Microsoft.Office.Interop.Excel.XlDeleteShiftDirection.xlShiftUp);
+        //                shouldSave = true;
+        //            }
+        //            if (shouldSave)
+        //                xlWorkbook.Save();
+        //            return null;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return ex.Message;
+        //        }
+        //        finally
+        //        {
+        //            if (xlWorkbook != null)
+        //            {
+        //                try { xlWorkbook.Close(); System.Runtime.InteropServices.Marshal.ReleaseComObject(xlWorkbook); }
+        //                catch (Exception ex2) { Logger?.Error(ex2); }
+        //                xlWorkbook = null;
+        //            }
+        //            if (xlApp != null)
+        //            {
+        //                try { xlApp.Quit(); System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp); }
         //                catch (Exception ex2) { Logger?.Error(ex2); }
         //                xlApp = null;
         //            }
@@ -538,5 +597,180 @@ namespace VsCSharpWinForm_sample2.Helpers
         //        }
         //    }
         //}
+
+        public class OleDb
+        {
+            /// https://gist.github.com/asurovov/1c13f6bddabaceab423c037494542e26
+            /// https://zxxcc0001.pixnet.net/blog/post/14758489-%5Bc%23-.net%5D--%E5%A6%82%E4%BD%95-%E5%9C%A8c%23-%E4%BD%BF%E7%94%A8-oledb-%E8%AE%80%E5%8F%96-excel-%28%E4%B8%80%29
+            /// https://www.codingame.com/playgrounds/9014/read-write-excel-file-with-oledb-in-c-without-interop
+            /// https://stackoverflow.com/questions/43728201/how-to-read-xlsx-and-xls-files-using-c-sharp-and-oledbconnection
+            public static DataTable ReadExcelToDataTable(string path)
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(path) || System.IO.File.Exists(path) == false)
+                        return null;
+                    string strFileType = System.IO.Path.GetExtension(path).Trim().ToLower();
+                    string connString = "";
+                    if (".xls".Equals(strFileType, StringComparison.OrdinalIgnoreCase))
+                        connString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + path + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
+                    else if (".xlsx".Equals(strFileType, StringComparison.OrdinalIgnoreCase))
+                        connString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=\"Excel 12.0;HDR=No;IMEX=1\"";
+                    else
+                        return null;
+                    using (OleDbConnection conn = new OleDbConnection(connString))
+                    {
+                        conn.Open();
+                        DataTable dtSchema = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+                        if (dtSchema == null || dtSchema.Rows.Count < 1) return null;
+                        string sheetName = (string)dtSchema.Rows[0]["TABLE_NAME"];
+                        using (OleDbDataAdapter da = new OleDbDataAdapter("SELECT top 100000 * FROM [" + sheetName + "]", conn))
+                        {
+                            DataTable dt = new DataTable();
+                            da.Fill(dt);
+                            return dt;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger?.Error("Path = {0}", path);
+                    Logger?.Error(ex);
+                    return null;
+                }
+            }
+        }
+
+        ///// Need to add "ClosedXML" by Francois Botha, Aleksei Pankratev, Manuel de Leon, Amir Ghezelbash in NuGet Package Manager. The below packages will be installed.
+        ///// DocumentFormat.OpenXml.2.7.2
+        ///// ExcelNumberFormat.1.0.10
+        ///// ClosedXML.0.95.3
+        ///// Add "using ClosedXML.Excel;" in the beginning of the code.
+        ///// Fail to open by Spreadsheet compare after saving Excel file.
+        ///// https://github.com/ClosedXML/ClosedXML/wiki
+        //public class ClosedXML
+        //{
+        //    /// Return value = Error message if fail. Return null if success.
+        //    /// If sheetName is empty, go to the first sheet.
+        //    public static string DeleteRows(string path, string sheetName)
+        //    {
+        //        try
+        //        {
+        //            using (IXLWorkbook wb = new XLWorkbook(path))
+        //            {
+        //                if (wb.Worksheets.Count < 1) return "no sheet";
+        //                IXLWorksheet ws = string.IsNullOrWhiteSpace(sheetName) ? wb.Worksheets.FirstOrDefault() : wb.Worksheet(sheetName);
+        //                if (ws == null) return string.Format("Cannot find sheet {0}", sheetName);
+        //                string a1String = (string)ws.Cell("A1").Value;
+        //                string a2String = (string)ws.Cell("A2").Value;
+        //                bool shouldSave = false;
+        //                if (string.IsNullOrWhiteSpace(a2String))
+        //                {
+        //                    ws.Row(2).Delete();
+        //                    shouldSave = true;
+        //                }
+        //                if (string.Equals("Query for ELMS Upload", a1String, StringComparison.OrdinalIgnoreCase))
+        //                {
+        //                    ws.Row(1).Delete();
+        //                    shouldSave = true;
+        //                }
+        //                if (shouldSave)
+        //                    wb.Save();
+        //                wb.Dispose();
+        //            }
+        //            return null;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return ex.Message;
+        //        }
+        //    }
+        //}
+
+        ///// Need to add "EPPlus" by EPPlus Software AB. The below packages will be installed.
+        ///// System.ComponentModel.Annotations.5.0.0
+        ///// EPPlus.5.4.2
+        ///// Not suggest it because need charge for commercial use. Can use "EPPlus.Core" instead.
+        ///// Add "using OfficeOpenXml;" in the beginning of the code.
+        //public class EPPlus
+        //{
+        //    public static string DeleteRows(string path, string sheetName)
+        //    {
+        //        try
+        //        {
+        //            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        //            using (ExcelPackage ep = new ExcelPackage(new System.IO.FileInfo(path)))
+        //            {
+        //                if (ep.Workbook.Worksheets.Count < 1) return "no sheet";
+        //                ExcelWorksheet ws = string.IsNullOrWhiteSpace(sheetName) ? ep.Workbook.Worksheets.FirstOrDefault() : ep.Workbook.Worksheets.Where(s => string.Equals(s.Name, sheetName)).FirstOrDefault();
+        //                if (ws == null) return string.Format("Cannot find sheet {0}", sheetName);
+        //                string a1String = (string)ws.Cells["A1"].Value;
+        //                string a2String = (string)ws.Cells["A2"].Value;
+        //                bool shouldSave = false;
+        //                if (string.IsNullOrWhiteSpace(a2String))
+        //                {
+        //                    ws.DeleteRow(2);
+        //                    shouldSave = true;
+        //                }
+        //                if (string.Equals("Query for ELMS Upload", a1String, StringComparison.OrdinalIgnoreCase))
+        //                {
+        //                    ws.DeleteRow(1);
+        //                    shouldSave = true;
+        //                }
+        //                if (shouldSave)
+        //                    ep.Save();
+        //                ep.Dispose();
+        //            }
+        //            return null;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return ex.Message;
+        //        }
+        //    }
+        //}
+
+        ///// Need to add "EPPlus.Core" by Vahid Nasiri.
+        ///// Add "using OfficeOpenXml;" in the beginning of the code.
+        ///// Can open successfully by Spreadsheet compare after saving Excel file.
+        ///// https://riptutorial.com/epplus
+        //public class EPPlusCore
+        //{
+        //    public static string DeleteRows(string path, string sheetName)
+        //    {
+        //        try
+        //        {
+        //            using (ExcelPackage ep = new ExcelPackage(new System.IO.FileInfo(path)))
+        //            {
+        //                if (ep.Workbook.Worksheets.Count < 1) return "no sheet";
+        //                ExcelWorksheet ws = string.IsNullOrWhiteSpace(sheetName) ? ep.Workbook.Worksheets.FirstOrDefault() : ep.Workbook.Worksheets.Where(s => string.Equals(s.Name, sheetName)).FirstOrDefault();
+        //                if (ws == null) return string.Format("Cannot find sheet {0}", sheetName);
+        //                string a1String = (string)ws.Cells["A1"].Value;
+        //                string a2String = (string)ws.Cells["A2"].Value;
+        //                bool shouldSave = false;
+        //                if (string.IsNullOrWhiteSpace(a2String))
+        //                {
+        //                    ws.DeleteRow(2);
+        //                    shouldSave = true;
+        //                }
+        //                if (string.Equals("Query for ELMS Upload", a1String, StringComparison.OrdinalIgnoreCase))
+        //                {
+        //                    ws.DeleteRow(1);
+        //                    shouldSave = true;
+        //                }
+        //                if (shouldSave)
+        //                    ep.Save();
+        //                ep.Dispose();
+        //            }
+        //            return null;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return ex.Message;
+        //        }
+        //    }
+        //}
+
+
     }
 }

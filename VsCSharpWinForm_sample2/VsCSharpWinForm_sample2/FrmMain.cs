@@ -27,6 +27,15 @@ namespace VsCSharpWinForm_sample2
         private bool IsLockFileCreatedNormally = false;/// Whether the lock file is created normally. The default value is false.
         private bool IsLoginSuccess = false;/// Whether login successful. The default value is false.
         private bool IsWarnIfFormClosing = true;/// Whether show a warning dialog box when form is closing. The default value is true.
+        private bool IsRenameFilenamesEnd = false;/// Whether the process of renaming filenames is end. The default value is false;
+        private string RenameFilenamesDir;
+        private string RenameFilenamesStartText = "{0:";
+        private string RenameFilenamesEndText = "}";
+        private string RenameFilenamesInputTemplate;
+        private string RenameFilenamesOutputTemplate;
+        private string RenameFilenamesInputTemplatePrefix;
+        private string RenameFilenamesInputTemplateSuffix;
+        private string RenameFilenamesInputTemplateDateTimeFormat;
 
         private static Helpers.TLog Logger = new Helpers.TLog();
 
@@ -291,6 +300,8 @@ namespace VsCSharpWinForm_sample2
                 TTcpClientSocket.Logger = Logger;
                 TTcpServerSocket.Logger = Logger;
                 //TTcpServerSocket.InnerClient.Logger = Logger;/// Declare in the static constructor of InnerClient.
+                TTcpSocket.Client.Logger = Logger;
+                TTcpSocket.Server.Logger = Logger;
                 Views.FrmWait.Logger = Logger;
                 Views.FrmTcpClient.Logger = Logger;
                 MailHelper.Logger = Logger;
@@ -384,8 +395,7 @@ namespace VsCSharpWinForm_sample2
                             frmLogin.TxtUsername.SelectionLength = frmLogin.TxtUsername.Text.Length;
                         }
                         frmLogin.TxtPassword.Clear();/// set the password textbox empty.
-                        frmLogin.ShowDialog();
-                        if (frmLogin.DialogResult == DialogResult.OK)
+                        if (frmLogin.ShowDialog() == DialogResult.OK)
                         {
                             Param.Login.Username = frmLogin.TxtUsername.Text;
                             Param.Login.Hash = frmLogin.TxtPassword.Text;
@@ -661,65 +671,113 @@ namespace VsCSharpWinForm_sample2
         #endregion
 
         #region TcpServerRegion
-        public static void AppendBytesToFile(string path, byte[] byteArray)
-        {
-            try
-            {
-                if (byteArray == null || string.IsNullOrWhiteSpace(path)) return;
-                using (System.IO.FileStream stream = new System.IO.FileStream(path, System.IO.FileMode.Append))
-                { stream.Write(byteArray, 0, byteArray.Length); }
-            }
-            catch (Exception ex) { Logger?.Error(ex); }
-        }
+        //public static void AppendBytesToFile(string path, byte[] byteArray)
+        //{
+        //    try
+        //    {
+        //        if (byteArray == null || string.IsNullOrWhiteSpace(path)) return;
+        //        using (System.IO.FileStream stream = new System.IO.FileStream(path, System.IO.FileMode.Append))
+        //        { stream.Write(byteArray, 0, byteArray.Length); }
+        //    }
+        //    catch (Exception ex) { Logger?.Error(ex); }
+        //}
 
-        private void TcpServerIncomingDataHander1(TTcpServerSocket.TcpSocketData o)
+        private void TcpServerIncomingDataHander1(TTcpSocket.DataPackage o)
         {
             try
             {
                 if (o == null || string.IsNullOrEmpty(o.Host) || o.ByteArray == null) return;
                 DateTime tRef = DateTime.Now;
                 //if (oData.ByteArray != null) { AppendBytesToFile(IncomingDataFilePath, oData.ByteArray); }
-                byte[] decryptedData;
-                if (ChkTcpServerEncryptData.Checked) decryptedData = o.ByteArray == null ? null : CyptoRijndaelT.Decrypt(o.ByteArray, Param.TcpServer.CryptPassword);
-                else decryptedData = o.ByteArray;
-                if ((decryptedData?.Length ?? 0) < 1)
+                //byte[] decryptedData;
+                //if (ChkTcpServerEncryptData.Checked) decryptedData = o.ByteArray == null ? null : CyptoRijndaelT.Decrypt(o.ByteArray, Param.TcpServer.CryptPassword);
+                //else decryptedData = o.ByteArray;
+                byte[] decryptedData = ChkTcpServerEncryptData.Checked ? (o.ByteArray == null ? null : CyptoRijndaelT.Decrypt(o.ByteArray, Param.TcpServer.CryptPassword)) : o.ByteArray;
+                ///// Old method.
+                //if ((decryptedData?.Length ?? 0) < 1)
+                //{
+                //    //throw new Exception("Length of decrypted data < 1, which is impossible.");
+                //    Logger?.Debug("TCP server meets decrypted data with 0 bytes.");
+                //    return;
+                //}
+                //string s;
+                //switch (decryptedData[0])
+                //{
+                //    case Param.TcpDataType.Text:
+                //        string text = Encoding.UTF8.GetString(decryptedData, 1, decryptedData.Length - 1);
+                //        Logger?.Debug("Receice text on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, text);
+                //        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Receive text from {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, text);
+                //        break;
+                //    case Param.TcpDataType.File:
+                //        int i = decryptedData.Length - 1;
+                //        if (i < 1)
+                //        {
+                //            s = string.Format("Length of data is {3} < 1. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}", o.Timestamp, o.Host, o.Port, i);
+                //            Logger?.Warn(s);
+                //            WriteLogToUI(s);
+                //            return;
+                //        }
+                //        byte[] data = new byte[i];
+                //        Array.Copy(decryptedData, 1, data, 0, i);
+                //        string filepath = string.Format(Param.TcpServer.IncomingDataFilePath, o.Timestamp, o.Host, o.Port);
+                //        filepath = GeneralT.GetDefaultAbsolutePathIfRelative(filepath);
+                //        if (!GeneralT.FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath)))
+                //        {
+                //            WriteLogToUI("Fail to create folder.");
+                //            return;
+                //        }
+                //        System.IO.File.WriteAllBytes(filepath, data);
+                //        Logger?.Debug("Receive file on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, i, filepath);
+                //        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Receive file from {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, i, filepath);
+                //        break;
+                //    default:
+                //        s = string.Format("Unclassified TCP data type. {0}", decryptedData[0]);
+                //        Logger?.Error(s);
+                //        WriteLogToUI(s);
+                //        break;
+                //}
+
+                /// New method.
+                TTcpSocket.DeserializedData deserializedData = TTcpSocket.Serialization.Deserialize(decryptedData);
+                if (deserializedData == null)
                 {
                     //throw new Exception("Length of decrypted data < 1, which is impossible.");
                     Logger?.Debug("TCP server meets decrypted data with 0 bytes.");
                     return;
                 }
-                string s;
-                switch (decryptedData[0])
+                switch (deserializedData.DataType)
                 {
-                    case Param.TcpDataType.Text:
-                        string text = Encoding.UTF8.GetString(decryptedData, 1, decryptedData.Length - 1);
-                        Logger?.Debug("Receice text on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, text);
-                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Receive text from {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, text);
+                    case TTcpSocket.SerialDataType.Text:
+                        Logger?.Debug("Receice text on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, deserializedData.Text);
+                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Receive text from {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, deserializedData.Text);
                         break;
-                    case Param.TcpDataType.File:
-                        int i = decryptedData.Length - 1;
-                        if (i < 1)
+                    case TTcpSocket.SerialDataType.File:
+                        if (!string.IsNullOrEmpty(deserializedData?.ErrorMessage))
                         {
-                            s = string.Format("Length of data is {3} < 1. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}", o.Timestamp, o.Host, o.Port, i);
-                            Logger?.Warn(s);
-                            WriteLogToUI(s);
-                            return;
+                            Logger?.Debug("Receive file on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Length = {3}. Error Message = {4}", o.Timestamp, o.Host, o.Port, decryptedData.Length - 1, deserializedData.ErrorMessage);
+                            WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Error Message = {3}", o.Timestamp, o.Host, o.Port, deserializedData.ErrorMessage);
                         }
-                        byte[] data = new byte[i];
-                        Array.Copy(decryptedData, 1, data, 0, i);
-                        string filepath = string.Format(Param.TcpServer.IncomingDataFilePath, o.Timestamp, o.Host, o.Port);
-                        filepath = GeneralT.GetDefaultAbsolutePathIfRelative(filepath);
+                        string filepath = System.IO.Path.Combine(GeneralT.GetDefaultAbsolutePathIfRelative(Param.TcpServer.IncomingDataFolder), deserializedData.Filename);
+                        if (string.IsNullOrWhiteSpace(deserializedData?.Filename))
+                        {
+                            Logger?.Debug("Receive file on TCP server.. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Filename is empty.", o.Timestamp, o.Host, o.Port);
+                            WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Filename is empty.", o.Timestamp, o.Host, o.Port);
+                            filepath = GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Param.TcpServer.IncomingDataFilePath, o.Timestamp));
+                        }
                         if (!GeneralT.FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath)))
                         {
                             WriteLogToUI("Fail to create folder.");
                             return;
                         }
-                        System.IO.File.WriteAllBytes(filepath, data);
-                        Logger?.Debug("Receive file on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, i, filepath);
-                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Receive file from {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, i, filepath);
+                        if ((deserializedData.FileContent?.Length ?? 0) > 0)
+                            System.IO.File.WriteAllBytes(filepath, deserializedData.FileContent);
+                        else
+                            using (System.IO.File.Create(filepath)) { }
+                        Logger?.Debug("Receive file on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, decryptedData.Length - 1, filepath);
+                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Receive file from {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, decryptedData.Length - 1, filepath);
                         break;
                     default:
-                        s = string.Format("Unclassified TCP data type. {0}", decryptedData[0]);
+                        string s = string.Format("Unclassified TCP data type. {0}", decryptedData[0]);
                         Logger?.Error(s);
                         WriteLogToUI(s);
                         break;
@@ -728,72 +786,73 @@ namespace VsCSharpWinForm_sample2
             catch (Exception ex) { Logger?.Error(ex); }
         }
 
-        private void TcpServerIncomingDataHandler0()
-        {
-            List<TTcpServerSocket.TcpSocketData> tempList = null;
-            try
-            {
-                lock (Param.TcpServer.IncomingDataQueueLocker)
-                {
-                    if ((Param.TcpServer.IncomingDataQueue?.Count ?? 0) < 1) return;
-                    int iMax = 10;
-                    int i = 0;
-                    tempList = new List<TTcpServerSocket.TcpSocketData>();
-                    while ((Param.TcpServer.IncomingDataQueue?.Count ?? 0) > 0 && i < iMax)
-                    {
-                        tempList.Add(Param.TcpServer.IncomingDataQueue.Dequeue());/// pass to list in order to unlock the list earlier.
-                        i += 1;
-                    }
-                }
-                if (tempList != null)
-                {
-                    foreach (TTcpServerSocket.TcpSocketData o in tempList)
-                    {
-                        TcpServerIncomingDataHander1(o);
-                    }
-                }
-            }
-            catch (Exception ex) { Logger?.Error(ex); }
-            finally
-            {
-                if (tempList != null)
-                {
-                    tempList.Clear();
-                    tempList = null;
-                }
-            }
-        }
+        //private void TcpServerIncomingDataHandler0()
+        //{
+        //    //List<TTcpServerSocket.DataPackage> tempList = null;
+        //    List<TTcpSocket.DataPackage> tempList = null;
+        //    try
+        //    {
+        //        lock (Param.TcpServer.IncomingDataQueueLocker)
+        //        {
+        //            if ((Param.TcpServer.IncomingDataQueue?.Count ?? 0) < 1) return;
+        //            int iMax = 10;
+        //            int i = 0;
+        //            tempList = new List<TTcpSocket.DataPackage>();
+        //            while ((Param.TcpServer.IncomingDataQueue?.Count ?? 0) > 0 && i < iMax)
+        //            {
+        //                tempList.Add(Param.TcpServer.IncomingDataQueue.Dequeue());/// pass to list in order to unlock the list earlier.
+        //                i += 1;
+        //            }
+        //        }
+        //        if (tempList != null)
+        //        {
+        //            foreach (TTcpSocket.DataPackage o in tempList)
+        //            {
+        //                TcpServerIncomingDataHander1(o);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex) { Logger?.Error(ex); }
+        //    finally
+        //    {
+        //        if (tempList != null)
+        //        {
+        //            tempList.Clear();
+        //            tempList = null;
+        //        }
+        //    }
+        //}
 
-        private void ProcessTcpServerIncomingData()
-        {
-            try
-            {
-                Logger?.Debug("Start to handle TCP server incoming data.");
-                DateTime tRef = DateTime.Now.AddHours(-1);
-                DateTime tNow;
-                int interval = 0;
-                while (IsExit == false && Param.TcpServer.ServerSocket != null)
-                {
-                    tNow = DateTime.Now;
-                    if (interval == 0 || (int)(tNow - tRef).TotalSeconds >= interval)
-                    {
-                        tRef = tNow;
-                        TcpServerIncomingDataHandler0();
-                    }
-                    System.Threading.Thread.Sleep(200);
-                }
-                Logger?.Debug("Stop to handle TCP server incoming data.");
-            }
-            catch (Exception ex) { Logger?.Error(ex); }
-        }
+        //private void ProcessTcpServerIncomingData()
+        //{
+        //    try
+        //    {
+        //        Logger?.Debug("Start to handle TCP server incoming data.");
+        //        DateTime tRef = DateTime.Now.AddHours(-1);
+        //        DateTime tNow;
+        //        int interval = 0;
+        //        while (IsExit == false && Param.TcpServer.ServerSocket != null)
+        //        {
+        //            tNow = DateTime.Now;
+        //            if (interval == 0 || (int)(tNow - tRef).TotalSeconds >= interval)
+        //            {
+        //                tRef = tNow;
+        //                TcpServerIncomingDataHandler0();
+        //            }
+        //            System.Threading.Thread.Sleep(200);
+        //        }
+        //        Logger?.Debug("Stop to handle TCP server incoming data.");
+        //    }
+        //    catch (Exception ex) { Logger?.Error(ex); }
+        //}
 
         private void BWorkerTcpServerIncomingDataHandler_DoWork(object sender, DoWorkEventArgs e)
         {
-            try
-            {
-                ProcessTcpServerIncomingData();
-            }
-            catch (Exception ex) { Logger?.Error(ex); }
+            //try
+            //{
+            //    ProcessTcpServerIncomingData();
+            //}
+            //catch (Exception ex) { Logger?.Error(ex); }
         }
 
         private void ChkTcpServerHeartbeatInterval_CheckedChanged(object sender, EventArgs e)
@@ -851,7 +910,7 @@ namespace VsCSharpWinForm_sample2
                 {
                     try
                     {
-                        if (iIndex < 0) { ClbTcpClientList.Items.Add(sItem, bChecked); }
+                        if (iIndex < 0) ClbTcpClientList.Items.Add(sItem, bChecked);
                         else
                         {
                             if (iIndex > ClbTcpClientList.Items.Count) iIndex = ClbTcpClientList.Items.Count;
@@ -976,13 +1035,13 @@ namespace VsCSharpWinForm_sample2
                 }
                 lock (Param.TcpServer.IncomingDataQueueLocker)
                 {
-                    if (Param.TcpServer.IncomingDataQueue == null) { Param.TcpServer.IncomingDataQueue = new Queue<TTcpServerSocket.TcpSocketData>(); }
+                    //if (Param.TcpServer.IncomingDataQueue == null) Param.TcpServer.IncomingDataQueue = new Queue<TTcpServerSocket.DataPackage>();
+                    if (Param.TcpServer.IncomingDataQueue == null) Param.TcpServer.IncomingDataQueue = new Queue<TTcpSocket.DataPackage>();
                 }
                 if (Param.TcpServer.ServerSocket == null)
                 {
-                    Param.TcpServer.ServerSocket = new TTcpServerSocket()
+                    Param.TcpServer.ServerSocket = new TTcpSocket.Server((int)NudTcpServerListeningPort.Value, Param.TcpServer.IncomingDataQueue, Param.TcpServer.IncomingDataQueueLocker)
                     {
-                        ListeningPort = (int)NudTcpServerListeningPort.Value,
                         AcceptInterval = (int)NudTcpServerAcceptInterval.Value,
                         ContainLengthAsHeader = ChkTcpServerContainLengthAsHeader.Checked,
                         EnableAnalyzeIncomingData = true,
@@ -993,8 +1052,7 @@ namespace VsCSharpWinForm_sample2
                         ReceiveDataInterval = (int)NudTcpServerReceiveDataInterval.Value,
                         ReceiveTotalBufferSize = (int)NudTcpServerReceiveTotalBufferSize.Value,
                         SleepingIntervalInMS = (int)NudTcpServerSleepingInterval.Value,
-                        IncomingDataQueue = Param.TcpServer.IncomingDataQueue,
-                        IncomingDataQueueLocker = Param.TcpServer.IncomingDataQueueLocker
+                        ExternalActToHandleIncomingData = TcpServerIncomingDataHander1
                     };
                 }
                 string s;
@@ -1006,7 +1064,7 @@ namespace VsCSharpWinForm_sample2
                     BtnTcpServerStartListening.Enabled = true;
                     return;
                 }
-                BWorkerTcpServerIncomingDataHandler.RunWorkerAsync();
+                //BWorkerTcpServerIncomingDataHandler.RunWorkerAsync();
                 BWorkerTcpServerUpdatingClientList.RunWorkerAsync();
                 s = "Start listening.";
                 Logger?.Debug(s);
@@ -1070,19 +1128,54 @@ namespace VsCSharpWinForm_sample2
             catch (Exception ex) { Logger?.Error(ex); }
         }
 
-        private void TcpServerSend(byte tcpDataType, byte[] data)
+        //private void TcpServerSend(byte tcpDataType, byte[] data)
+        //{
+        //    List<byte> tempList = null;
+        //    try
+        //    {
+        //        tempList = new List<byte>()
+        //        {
+        //            tcpDataType
+        //        };
+        //        tempList.AddRange(data);
+        //        byte[] encryptedData = null;
+        //        if (ChkTcpServerEncryptData.Checked) encryptedData = CyptoRijndaelT.Encrypt(tempList.ToArray(), Param.TcpServer.CryptPassword);
+        //        else encryptedData = tempList.ToArray();
+        //        if (ClbTcpClientList.Items.Count > 0)
+        //        {
+        //            foreach (object o in ClbTcpClientList.CheckedItems)
+        //            {
+        //                string s = (string)o;
+        //                if (!string.IsNullOrEmpty(s))
+        //                {
+        //                    int i = s.LastIndexOf(':');
+        //                    if (i > 0)
+        //                    {
+        //                        string host = s.Substring(0, i);
+        //                        string s1 = s.Substring(i + 1);
+        //                        if (int.TryParse(s1, out i))
+        //                            Param.TcpServer.ServerSocket?.QueueToSendData(host, i, ref encryptedData);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex) { Logger?.Error(ex); }
+        //    finally
+        //    {
+        //        if (tempList != null)
+        //        {
+        //            tempList.Clear();
+        //            tempList = null;
+        //        }
+        //    }
+        //}
+
+        private void TcpServerSend(byte[] serializedData)
         {
-            List<byte> tempList = null;
             try
             {
-                tempList = new List<byte>()
-                {
-                    tcpDataType
-                };
-                tempList.AddRange(data);
-                byte[] encryptedData = null;
-                if (ChkTcpServerEncryptData.Checked) encryptedData = CyptoRijndaelT.Encrypt(tempList.ToArray(), Param.TcpServer.CryptPassword);
-                else encryptedData = tempList.ToArray();
+                byte[] encryptedData = ChkTcpServerEncryptData.Checked ? CyptoRijndaelT.Encrypt(serializedData, Param.TcpServer.CryptPassword) : serializedData;
                 if (ClbTcpClientList.Items.Count > 0)
                 {
                     foreach (object o in ClbTcpClientList.CheckedItems)
@@ -1103,14 +1196,6 @@ namespace VsCSharpWinForm_sample2
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
-            finally
-            {
-                if (tempList != null)
-                {
-                    tempList.Clear();
-                    tempList = null;
-                }
-            }
         }
 
         private void BtnTcpServerSendText_Click(object sender, EventArgs e)
@@ -1127,7 +1212,8 @@ namespace VsCSharpWinForm_sample2
                 TxtTcpServerInput.ReadOnly = true;
                 Logger?.Debug("Send text: {0}", TxtTcpServerInput.Text);
                 WriteLogToUI("Send text: {0}", TxtTcpServerInput.Text);
-                TcpServerSend(Param.TcpDataType.Text, Encoding.UTF8.GetBytes(TxtTcpServerInput.Text));
+                //TcpServerSend(Param.TcpDataType.Text, Encoding.UTF8.GetBytes(TxtTcpServerInput.Text));
+                TcpServerSend(TTcpSocket.Serialization.SerializeText(TxtTcpServerInput.Text));
             }
             catch (Exception ex) { Logger?.Error(ex); }
             finally
@@ -1171,8 +1257,11 @@ namespace VsCSharpWinForm_sample2
                     //MessageBox.Show(oDialog.FileName);
                     Logger?.Debug("Send file: {0}", oDialog.FileName);
                     WriteLogToUI("Send file: {0}", oDialog.FileName);
-                    byte[] data = System.IO.File.ReadAllBytes(oDialog.FileName);
-                    TcpServerSend(Param.TcpDataType.File, data);
+                    /// Old method.
+                    //byte[] data = System.IO.File.ReadAllBytes(oDialog.FileName);
+                    //TcpServerSend(Param.TcpDataType.File, data);
+                    /// New method.
+                    TcpServerSend(TTcpSocket.Serialization.SerializeFile(oDialog.FileName));
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -1730,9 +1819,212 @@ namespace VsCSharpWinForm_sample2
                 //}
                 //if (ExcelHelper.OpenXml.ExportFile(path2)) { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to export Excel file {0}", path2); }
                 //else { LocalLogger(TLog.LogLevel.DEBUG, "Fail to export Excel file {0}", path2); }
+
+                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+                //string s = ExcelHelper.ClosedXML.DeleteRows(path, "QMData");
+                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
+
+                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+                //string s = ExcelHelper.EPPlus.DeleteRows(path, "QMData");
+                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
+
+                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+                //string s = ExcelHelper.EPPlusCore.DeleteRows(path, "QMData");
+                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
             }
             catch (Exception ex) { Logger?.Error(ex); }
             finally { BtnExcel.Enabled = true; }
+        }
+        #endregion
+
+        #region RenameFilenamesRegion
+        private void BtnRenameFilenames_Click(object sender, EventArgs e)
+        {
+            BtnRenameFilenames.Enabled = false;
+            try
+            {
+                using (var oDialog = new FolderBrowserDialog() { ShowNewFolderButton = false })
+                {
+                    if (oDialog.ShowDialog() != DialogResult.OK)
+                    {
+                        BtnRenameFilenames.Enabled = true;
+                        return;
+                    }
+                    RenameFilenamesDir = oDialog.SelectedPath;
+                }
+                LocalLogger(TLog.LogLevel.DEBUG, "Selected Folder = {0}", RenameFilenamesDir);
+                //LocalLogger(TLog.LogLevel.DEBUG, "Date = {0:yyyy-MM-dd}", DateTime.Now);
+
+                using (var frmRename = new Views.FrmRenameFilenames()
+                {
+                    StartText = RenameFilenamesStartText,
+                    EndText = RenameFilenamesEndText
+                })
+                {
+                    frmRename.LblMessage.Text = "";
+                    if (frmRename.ShowDialog() != DialogResult.OK)
+                    {
+                        BtnRenameFilenames.Enabled = true;
+                        return;
+                    }
+                    RenameFilenamesOutputTemplate = frmRename.TxtOutputFilenameTemplate.Text;
+                    RenameFilenamesInputTemplate = frmRename.TxtInputFilenameTemplate.Text;
+                    string s = frmRename.TxtInputFilenameTemplate.Text;
+                    int iStart = s.IndexOf(RenameFilenamesStartText);
+                    int iEnd = s.IndexOf(RenameFilenamesEndText);
+                    RenameFilenamesInputTemplatePrefix = s.Substring(0, iStart);
+                    RenameFilenamesInputTemplateSuffix = s.Substring(iEnd + 1);
+                    RenameFilenamesInputTemplateDateTimeFormat = s.Substring(iStart + RenameFilenamesStartText.Length, iEnd - iStart - RenameFilenamesStartText.Length);
+                    LocalLogger(TLog.LogLevel.DEBUG, "Prefix: {0}", RenameFilenamesInputTemplatePrefix);
+                    LocalLogger(TLog.LogLevel.DEBUG, "Suffix: {0}", RenameFilenamesInputTemplateSuffix);
+                    LocalLogger(TLog.LogLevel.DEBUG, "Date Time Format: {0}", RenameFilenamesInputTemplateDateTimeFormat);
+                }
+                IsRenameFilenamesEnd = false;
+                BtnRenameFilenamesStop.Enabled = true;
+                BWorkerRenameFilenames.RunWorkerAsync();
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnRenameFilenamesStop_Click(object sender, EventArgs e)
+        {
+            IsRenameFilenamesEnd = true;
+        }
+
+        private void ButtonEnabled(Button button, bool enabled)
+        {
+            try
+            {
+                Invoke(new MethodInvoker(delegate
+                {
+                    try
+                    {
+                        button.Enabled = enabled;
+                    }
+                    catch (Exception ex2) { Logger?.Error(ex2); }
+                }));
+            }
+            catch (Exception ex) { Logger?.Error(ex); }
+        }
+
+        private void RenameFilenamesProcess0(string filepath)
+        {
+            string filename = System.IO.Path.GetFileName(filepath);
+            if (string.IsNullOrWhiteSpace(filename)) return;
+            int iPrefix = filename.IndexOf(RenameFilenamesInputTemplatePrefix);
+            if (string.IsNullOrEmpty(RenameFilenamesInputTemplatePrefix) == false && iPrefix != 0) return;
+            int iSuffix = filename.IndexOf(RenameFilenamesInputTemplateSuffix);
+            if (string.IsNullOrEmpty(RenameFilenamesInputTemplateSuffix) == false && iSuffix != filename.Length - RenameFilenamesInputTemplateSuffix.Length) return;
+            if (iSuffix - RenameFilenamesInputTemplatePrefix.Length != RenameFilenamesInputTemplateDateTimeFormat.Length) return;
+            if (!DateTime.TryParseExact(filename.Substring(RenameFilenamesInputTemplatePrefix.Length, RenameFilenamesInputTemplateDateTimeFormat.Length), RenameFilenamesInputTemplateDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime dt)) return;
+            string outputFilepath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filepath), string.Format(RenameFilenamesOutputTemplate, dt));
+            LocalLogger(TLog.LogLevel.DEBUG, "File = {0}; Date Time = {1:yyyy-MM-dd}; Output = {2}", filepath, dt, outputFilepath);
+            System.IO.File.Move(filepath, outputFilepath);
+        }
+
+        private void BWorkerRenameFilenames_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                //int i = 0;
+                //while (i < 5 && IsRenameFilenamesEnd==false)
+                //{
+                //    LocalLogger(TLog.LogLevel.DEBUG, "i = {0}", i);
+                //    System.Threading.Thread.Sleep(10000);
+                //    i++;
+                //}
+
+                string[] fileNameArray = System.IO.Directory.GetFiles(RenameFilenamesDir);
+                int fileCount = fileNameArray?.Length ?? 0;
+                int i = 0;
+                while (IsRenameFilenamesEnd == false && i < fileCount)
+                {
+                    RenameFilenamesProcess0(fileNameArray[i]);
+                    i++;
+                }
+                IsRenameFilenamesEnd = true;
+            }
+            catch (Exception ex) { Logger?.Error(ex); }
+            finally
+            {
+                ButtonEnabled(BtnRenameFilenamesStop, false);
+                ButtonEnabled(BtnRenameFilenames, true);
+            }
+        }
+
+        #endregion
+
+        #region SerializationRegion
+        private void BtnSerializeText_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string text = TxtInput1.Text;
+                byte[] serializedData = TTcpSocket.Serialization.SerializeText(text);
+                LocalLogger(TLog.LogLevel.DEBUG, "Input:");
+                LocalLogger(TLog.LogLevel.DEBUG, text);
+                LocalLogger(TLog.LogLevel.DEBUG, "Length of serialized data: {0}", serializedData?.Length);
+                //
+                TTcpSocket.DeserializedData deserializedData = TTcpSocket.Serialization.Deserialize(serializedData);
+                if (deserializedData == null)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, "Deserialized data is empty.");
+                    return;
+                }
+                if (deserializedData.DataType != TTcpSocket.SerialDataType.Text)
+                {
+                    LocalLogger(TLog.LogLevel.ERROR, "The data type is NOT text.");
+                    return;
+                }
+                LocalLogger(TLog.LogLevel.DEBUG, "Output:");
+                LocalLogger(TLog.LogLevel.DEBUG, deserializedData.Text);
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnSerializeFile_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var oDialog = new OpenFileDialog()
+                {
+                    RestoreDirectory = true,
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    Multiselect = false,
+                    ReadOnlyChecked = true,
+                    ShowReadOnly = true
+                };
+                if (oDialog.ShowDialog() != DialogResult.OK) return;
+                LocalLogger(TLog.LogLevel.DEBUG, oDialog.FileName);
+                byte[] serializedData = TTcpSocket.Serialization.SerializeFile(oDialog.FileName);
+                LocalLogger(TLog.LogLevel.DEBUG, "Length of serialized data: {0}", serializedData?.Length);
+                //
+                TTcpSocket.DeserializedData deserializedData = TTcpSocket.Serialization.Deserialize(serializedData);
+                if (deserializedData == null)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, "Deserialized data is empty.");
+                    return;
+                }
+                if (deserializedData.DataType != TTcpSocket.SerialDataType.File)
+                {
+                    LocalLogger(TLog.LogLevel.ERROR, "The data type is NOT file.");
+                    return;
+                }
+                LocalLogger(TLog.LogLevel.DEBUG, "Output:");
+                LocalLogger(TLog.LogLevel.DEBUG, "Filename: {0}", deserializedData.Filename);
+                LocalLogger(TLog.LogLevel.DEBUG, "Error Message: {0}", deserializedData.ErrorMessage);
+                if (!string.IsNullOrWhiteSpace(deserializedData.Filename))
+                {
+                    string path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), deserializedData.Filename);
+                    if ((deserializedData.FileContent?.Length ?? 0) > 0)
+                        System.IO.File.WriteAllBytes(deserializedData.Filename, deserializedData.FileContent);
+                    else
+                        using (System.IO.File.Create(path)) { }
+                    LocalLogger(TLog.LogLevel.DEBUG, "Output file path: {0}", path);
+                }
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
         #endregion
 
@@ -1756,6 +2048,38 @@ namespace VsCSharpWinForm_sample2
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
             finally { BtnMail.Enabled = true; }
+        }
+
+        /// Get the n repeated <br/> or new-line.
+        private static string GetLineSeparatorString(bool isHtml, int n)
+        {
+            if (n < 1) return null;
+            if (n == 1) return isHtml ? "<br/>" : Environment.NewLine;
+            return isHtml ?
+                string.Concat(Enumerable.Repeat("<br/>", n)) :
+                string.Concat(Enumerable.Repeat(Environment.NewLine, n));
+        }
+
+        private void BtnLineSeparator_Click(object sender, EventArgs e)
+        {
+            BtnLineSeparator.Enabled = false;
+            try
+            {
+                int n = 2;
+                string s = string.Format("n = {0}{1}", n, Environment.NewLine);
+                s += GetLineSeparatorString(false, n);
+                LocalLogger(TLog.LogLevel.DEBUG, s + "---");
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+            finally { BtnLineSeparator.Enabled = true; }
+        }
+
+        private void BtnTest1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
     }
 }
