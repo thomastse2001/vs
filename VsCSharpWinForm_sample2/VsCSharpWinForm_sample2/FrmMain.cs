@@ -688,10 +688,8 @@ namespace VsCSharpWinForm_sample2
             {
                 if (o == null || string.IsNullOrEmpty(o.Host) || o.ByteArray == null) return;
                 DateTime tRef = DateTime.Now;
+                string s;
                 //if (oData.ByteArray != null) { AppendBytesToFile(IncomingDataFilePath, oData.ByteArray); }
-                //byte[] decryptedData;
-                //if (ChkTcpServerEncryptData.Checked) decryptedData = o.ByteArray == null ? null : CyptoRijndaelT.Decrypt(o.ByteArray, Param.TcpServer.CryptPassword);
-                //else decryptedData = o.ByteArray;
                 byte[] decryptedData = ChkTcpServerEncryptData.Checked ? (o.ByteArray == null ? null : CyptoRijndaelT.Decrypt(o.ByteArray, Param.TcpServer.CryptPassword)) : o.ByteArray;
                 ///// Old method.
                 //if ((decryptedData?.Length ?? 0) < 1)
@@ -700,7 +698,6 @@ namespace VsCSharpWinForm_sample2
                 //    Logger?.Debug("TCP server meets decrypted data with 0 bytes.");
                 //    return;
                 //}
-                //string s;
                 //switch (decryptedData[0])
                 //{
                 //    case Param.TcpDataType.Text:
@@ -748,20 +745,26 @@ namespace VsCSharpWinForm_sample2
                 switch (deserializedData.DataType)
                 {
                     case TTcpSocket.SerialDataType.Text:
-                        Logger?.Debug("Receice text on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, deserializedData.Text);
-                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Receive text from {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, deserializedData.Text);
+                        s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, deserializedData.Text);
+                        Logger?.Debug("TCP server receices text. Received Time = {0}", s);
+                        WriteLogToUI(s);
                         break;
                     case TTcpSocket.SerialDataType.File:
+                        s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Piece length = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.FileContent?.Length);
+                        Logger?.Debug("TCP server receives a file piece. Received Time = {0}", s);
+                        WriteLogToUI(s);
                         if (!string.IsNullOrEmpty(deserializedData?.ErrorMessage))
                         {
-                            Logger?.Debug("Receive file on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Length = {3}. Error Message = {4}", o.Timestamp, o.Host, o.Port, decryptedData.Length - 1, deserializedData.ErrorMessage);
-                            WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Error Message = {3}", o.Timestamp, o.Host, o.Port, deserializedData.ErrorMessage);
+                            s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of pieces = {3}. Index of current piece = {4}. Error Message = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.ErrorMessage);
+                            Logger?.Debug("TCP server receices error message. Received Time = {0}", s);
+                            WriteLogToUI(s);
                         }
                         string filepath = System.IO.Path.Combine(GeneralT.GetDefaultAbsolutePathIfRelative(Param.TcpServer.IncomingDataFolder), deserializedData.Filename);
                         if (string.IsNullOrWhiteSpace(deserializedData?.Filename))
                         {
-                            Logger?.Debug("Receive file on TCP server.. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Filename is empty.", o.Timestamp, o.Host, o.Port);
-                            WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Filename is empty.", o.Timestamp, o.Host, o.Port);
+                            s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of pieces = {3}. Index of current piece = {4}. Filename is empty.", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece);
+                            Logger?.Debug("TCP server finds empty filename. Received Time = {0)");
+                            WriteLogToUI(s);
                             filepath = GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Param.TcpServer.IncomingDataFilePath, o.Timestamp));
                         }
                         if (!GeneralT.FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath)))
@@ -769,15 +772,42 @@ namespace VsCSharpWinForm_sample2
                             WriteLogToUI("Fail to create folder.");
                             return;
                         }
-                        if ((deserializedData.FileContent?.Length ?? 0) > 0)
-                            System.IO.File.WriteAllBytes(filepath, deserializedData.FileContent);
+                        //if ((deserializedData.FileContent?.Length ?? 0) > 0)
+                        //    System.IO.File.WriteAllBytes(filepath, deserializedData.FileContent);
+                        //else
+                        //    using (System.IO.File.Create(filepath)) { }
+                        string tempPath = filepath + ".tmp";
+                        int fileContentLength = deserializedData.FileContent?.Length ?? 0;
+                        if (fileContentLength > 0)
+                        {
+                            using (System.IO.FileStream fs = new System.IO.FileStream(tempPath, System.IO.FileMode.Append))
+                            { fs.Write(deserializedData.FileContent, 0, fileContentLength); }
+                        }
                         else
-                            using (System.IO.File.Create(filepath)) { }
-                        Logger?.Debug("Receive file on TCP server. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, decryptedData.Length - 1, filepath);
-                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Receive file from {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, decryptedData.Length - 1, filepath);
+                        {
+                            /// Create an empty file.
+                            if (!System.IO.File.Exists(tempPath)) using (System.IO.File.Create(filepath)) { }
+                        }
+                        if (deserializedData.IndexPiece == deserializedData.LastIndexPiece)
+                        {
+                            if (System.IO.File.Exists(filepath)) System.IO.File.Delete(filepath);
+                            if (System.IO.File.Exists(tempPath))
+                            {
+                                System.IO.File.Move(tempPath, filepath);
+                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, filepath);
+                                Logger?.Debug("TCP server completes to receive file. Received Time = {0}", s);
+                                WriteLogToUI(s);
+                            }
+                            else
+                            {
+                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Temp file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, tempPath);
+                                Logger?.Error("TCP server cannot find temp file. Received Time = {0}", s);
+                                WriteLogToUI(s);
+                            }
+                        }
                         break;
                     default:
-                        string s = string.Format("Unclassified TCP data type. {0}", decryptedData[0]);
+                        s = string.Format("TCP server finds unclassified TCP data type. {0}", decryptedData[0]);
                         Logger?.Error(s);
                         WriteLogToUI(s);
                         break;
@@ -1231,6 +1261,34 @@ namespace VsCSharpWinForm_sample2
             if (e.KeyCode == Keys.Enter) BtnTcpServerSendText_Click(null, null);
         }
 
+        private void TcpServerHandleFile(string filepath)
+        {
+            /// https://stackoverflow.com/questions/2030847/best-way-to-read-a-large-file-into-a-byte-array-in-c
+            /// https://stackoverflow.com/questions/2161895/reading-large-text-files-with-streams-in-c-sharp
+            try
+            {
+                int pieceLength = 10485760;// 10M bytes.
+                long totalLength = (new System.IO.FileInfo(filepath)).Length;
+                int lastIndexPiece = (int)Math.Ceiling(1.0m * totalLength / pieceLength) - 1;
+                int indexPiece = 0;
+                using (System.IO.Stream st = System.IO.File.OpenRead(filepath))
+                {
+                    byte[] buffer = new byte[pieceLength];
+                    int bytesRead;
+                    while ((bytesRead = st.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        byte[] buffer2 = new byte[bytesRead];
+                        System.Buffer.BlockCopy(buffer, 0, buffer2, 0, bytesRead);
+                        TcpServerSend(Helpers.TTcpSocket.Serialization.SerializeFilePiece(System.IO.Path.GetFileName(filepath), lastIndexPiece, indexPiece, buffer2));
+                        indexPiece += 1;
+                        buffer2 = null;
+                    }
+                    buffer = null;
+                }
+            }
+            catch (Exception ex) { Logger?.Error(ex); }
+        }
+
         private void BtnTcpServerSendFile_Click(object sender, EventArgs e)
         {
             try
@@ -1254,14 +1312,15 @@ namespace VsCSharpWinForm_sample2
                 };
                 if (oDialog.ShowDialog() == DialogResult.OK)
                 {
-                    //MessageBox.Show(oDialog.FileName);
                     Logger?.Debug("Send file: {0}", oDialog.FileName);
                     WriteLogToUI("Send file: {0}", oDialog.FileName);
                     /// Old method.
                     //byte[] data = System.IO.File.ReadAllBytes(oDialog.FileName);
                     //TcpServerSend(Param.TcpDataType.File, data);
-                    /// New method.
-                    TcpServerSend(TTcpSocket.Serialization.SerializeFile(oDialog.FileName));
+                    ///// New method.
+                    //TcpServerSend(TTcpSocket.Serialization.SerializeSmallFile(oDialog.FileName));
+                    /// New method again.
+                    TcpServerHandleFile(oDialog.FileName);
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -1951,7 +2010,6 @@ namespace VsCSharpWinForm_sample2
                 ButtonEnabled(BtnRenameFilenames, true);
             }
         }
-
         #endregion
 
         #region SerializationRegion
@@ -1978,6 +2036,34 @@ namespace VsCSharpWinForm_sample2
                 }
                 LocalLogger(TLog.LogLevel.DEBUG, "Output:");
                 LocalLogger(TLog.LogLevel.DEBUG, deserializedData.Text);
+                /// Combine.
+                string s1 = "AAA";
+                string s2 = "BBBBBB";
+                string s3 = null;
+                string s4 = "";
+                string s5 = "DDDDD";
+                List<byte[]> inputList = new List<byte[]>()
+                {
+                    s1 == null ? null : Encoding.UTF8.GetBytes(s1),
+                    Encoding.UTF8.GetBytes(s2),
+                    s3 == null ? null : Encoding.UTF8.GetBytes(s3),
+                    Encoding.UTF8.GetBytes(s4),
+                    Encoding.UTF8.GetBytes(s5)
+                };
+                byte[] output = GeneralT.CombineByteArrays(inputList.ToArray());
+                LocalLogger(TLog.LogLevel.DEBUG, "Combine.");
+                LocalLogger(TLog.LogLevel.DEBUG, "Output length: {0}", output?.Length);
+                LocalLogger(TLog.LogLevel.DEBUG, "Output: {0}", output == null ? null : Encoding.UTF8.GetString(output));
+                /// Split.
+                string s = "A234567890B234567890C234567890D234567890E234567890";
+                List<byte[]> outputList = GeneralT.SplitByteArray(Encoding.UTF8.GetBytes(s), 12);
+                LocalLogger(TLog.LogLevel.DEBUG, "Split.");
+                LocalLogger(TLog.LogLevel.DEBUG, "Input: {0}", s);
+                LocalLogger(TLog.LogLevel.DEBUG, "Output:");
+                foreach (byte[] arr in outputList)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, Encoding.UTF8.GetString(arr));
+                }
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
@@ -1997,7 +2083,7 @@ namespace VsCSharpWinForm_sample2
                 };
                 if (oDialog.ShowDialog() != DialogResult.OK) return;
                 LocalLogger(TLog.LogLevel.DEBUG, oDialog.FileName);
-                byte[] serializedData = TTcpSocket.Serialization.SerializeFile(oDialog.FileName);
+                byte[] serializedData = TTcpSocket.Serialization.SerializeSmallFile(oDialog.FileName);
                 LocalLogger(TLog.LogLevel.DEBUG, "Length of serialized data: {0}", serializedData?.Length);
                 //
                 TTcpSocket.DeserializedData deserializedData = TTcpSocket.Serialization.Deserialize(serializedData);
@@ -2012,17 +2098,83 @@ namespace VsCSharpWinForm_sample2
                     return;
                 }
                 LocalLogger(TLog.LogLevel.DEBUG, "Output:");
-                LocalLogger(TLog.LogLevel.DEBUG, "Filename: {0}", deserializedData.Filename);
                 LocalLogger(TLog.LogLevel.DEBUG, "Error Message: {0}", deserializedData.ErrorMessage);
-                if (!string.IsNullOrWhiteSpace(deserializedData.Filename))
+                LocalLogger(TLog.LogLevel.DEBUG, "Filename: {0}", deserializedData.Filename);
+                if (string.IsNullOrWhiteSpace(deserializedData.Filename))
+                    LocalLogger(TLog.LogLevel.DEBUG, "Empty file path.");
+                else
                 {
                     string path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), deserializedData.Filename);
-                    if ((deserializedData.FileContent?.Length ?? 0) > 0)
-                        System.IO.File.WriteAllBytes(deserializedData.Filename, deserializedData.FileContent);
+                    //if ((deserializedData.FileContent?.Length ?? 0) > 0)
+                    //    System.IO.File.WriteAllBytes(deserializedData.Filename, deserializedData.FileContent);
+                    //else
+                    //    using (System.IO.File.Create(path)) { }
+                    string tempPath = path + ".tmp";
+                    int fileContentLength = deserializedData.FileContent?.Length ?? 0;
+                    if (fileContentLength > 0)
+                    {
+                        using (System.IO.FileStream fs = new System.IO.FileStream(tempPath, System.IO.FileMode.Append))
+                        { fs.Write(deserializedData.FileContent, 0, fileContentLength); }
+                    }
                     else
-                        using (System.IO.File.Create(path)) { }
-                    LocalLogger(TLog.LogLevel.DEBUG, "Output file path: {0}", path);
+                    {
+                        /// Create an empty file.
+                        if (!System.IO.File.Exists(tempPath)) using (System.IO.File.Create(path)) { }
+                    }
+                    if (deserializedData.IndexPiece == deserializedData.LastIndexPiece)
+                    {
+                        if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
+                        if (System.IO.File.Exists(tempPath))
+                        {
+                            System.IO.File.Move(tempPath, path);
+                            LocalLogger(TLog.LogLevel.DEBUG, "Output file path: {0}", path);
+                        }
+                        else LocalLogger(TLog.LogLevel.DEBUG, "Cannot find temp file {0}", tempPath);
+                    }
                 }
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+        #endregion
+
+        #region OAuthMicrosoftRegion
+        /// Gets the OAuth tokens. If the refresh token doesn't exist, get 
+        /// the user's consent and a new access and refresh token.
+        private static CodeGrantOauth GetOauthTokens(string refreshToken, string cliendId, out string storedRefreshToken, out DateTime tokenExpiration)
+        {
+            CodeGrantOauth auth = new CodeGrantOauth(cliendId);
+            if (string.IsNullOrEmpty(refreshToken)) auth.GetAccessToken();
+            else
+            {
+                auth.RefreshAccessToken(refreshToken);
+                /// Refresh tokens can become invalid for several reasons such as the user's password changed.
+                if (!string.IsNullOrEmpty(auth.Error)) auth = GetOauthTokens(null, cliendId, out storedRefreshToken, out tokenExpiration);
+            }
+            /// TODO: Store the new refresh token in secured storage for the logged on user.
+            if (!string.IsNullOrEmpty(auth.Error)) throw new Exception(auth.Error);
+            else
+            {
+                storedRefreshToken = auth.RefreshToken;
+                tokenExpiration = DateTime.Now.AddSeconds(auth.Expiration);
+            }
+            return auth;
+        }
+
+        private void BtnOAuthMicrosoft_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string clientId = "thomas_tse2001@hotmail.com";
+                /// If _storedRefreshToken is null, CodeGrantFlow goes through the entire process of getting the user credentials and permissions.
+                /// If _storedRefreshToken contains the refresh token, CodeGrantFlow returns the new access and refresh tokens.
+                string storedRefreshToken = null;
+                CodeGrantOauth tokens = GetOauthTokens(storedRefreshToken, clientId, out storedRefreshToken, out DateTime tokenExpiration);
+                LocalLogger(TLog.LogLevel.DEBUG, "Client ID = {0}", clientId);
+                LocalLogger(TLog.LogLevel.DEBUG, "access token = {0}...", tokens.AccessToken.Substring(0, 15));
+                LocalLogger(TLog.LogLevel.DEBUG, "refresh token = {0}...", tokens.RefreshToken.Substring(0, 15));
+                LocalLogger(TLog.LogLevel.DEBUG, "token expires = {0}", tokens.Expiration);
+                LocalLogger(TLog.LogLevel.DEBUG, "storedRefreshToken = {0}", storedRefreshToken?.Substring(0, 15));
+                LocalLogger(TLog.LogLevel.DEBUG, "tokenExpiration = {0}", tokenExpiration);
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
@@ -2074,10 +2226,118 @@ namespace VsCSharpWinForm_sample2
             finally { BtnLineSeparator.Enabled = true; }
         }
 
+        #region Encrypt1Region
+        private void EncryptFile1(string filepath, string targetFolder, byte[] headerByteArray)
+        {
+            try
+            {
+                Logger?.Debug("EncryptFile1");
+                string newFilepath = System.IO.Path.Combine(targetFolder, System.IO.Path.GetFileNameWithoutExtension(filepath));
+                using (System.IO.FileStream fw = System.IO.File.OpenWrite(newFilepath))
+                {
+                    fw.Write(headerByteArray, 0, headerByteArray.Length);
+                    using (System.IO.FileStream fr = System.IO.File.OpenRead(filepath))
+                    {
+                        int bufferLength = 52428800;//10485760;
+                        byte[] buffer = new byte[bufferLength];
+                        int byteRead;
+                        while ((byteRead = fr.Read(buffer, 0, bufferLength)) > 0)
+                        {
+                            fw.Write(buffer, 0, byteRead);
+                        }
+                    }
+                    fw.Flush();
+                    fw.Close();
+                }
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void DecryptFile1(string filepath, string targetFolder, byte[] headerByteArray)
+        {
+            try
+            {
+                Logger?.Debug("DecryptFile1");
+                string newFilepath = System.IO.Path.Combine(targetFolder, System.IO.Path.GetFileNameWithoutExtension(filepath) + ".mp4");
+                using (System.IO.FileStream fw = System.IO.File.OpenWrite(newFilepath))
+                {
+                    using (System.IO.FileStream fr = System.IO.File.OpenRead(filepath))
+                    {
+                        int bufferLength = 52428800;// 10485760;
+                        byte[] buffer = new byte[bufferLength];
+                        int byteRead;
+                        byteRead = fr.Read(buffer, 0, headerByteArray.Length);
+                        while ((byteRead = fr.Read(buffer, 0, bufferLength)) > 0)
+                        {
+                            fw.Write(buffer, 0, byteRead);
+                        }
+                    }
+                    fw.Flush();
+                    fw.Close();
+                }
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void EncryptFilesInFolder(string srcFolder, string destFolder, byte[] headerByteArray)
+        {
+            string[] filepaths = System.IO.Directory.GetFiles(srcFolder);
+            if ((filepaths?.Length ?? 0) < 1) return;
+            if (!System.IO.Directory.Exists(destFolder)) System.IO.Directory.Exists(destFolder);
+            if (!System.IO.Directory.Exists(destFolder))
+            {
+                LocalLogger(TLog.LogLevel.DEBUG, "Cannot find folder {0}", destFolder);
+                return;
+            }
+            foreach (string f in filepaths)
+                EncryptFile1(f, destFolder, headerByteArray);
+        }
+
+        private void DecryptFilesInFolder(string srcFolder, string destFolder, byte[] headerByteArray)
+        {
+            string[] filepaths = System.IO.Directory.GetFiles(srcFolder);
+            if ((filepaths?.Length ?? 0) < 1) return;
+            if (!System.IO.Directory.Exists(destFolder)) System.IO.Directory.Exists(destFolder);
+            if (!System.IO.Directory.Exists(destFolder))
+            {
+                LocalLogger(TLog.LogLevel.DEBUG, "Cannot find folder {0}", destFolder);
+                return;
+            }
+            foreach (string f in filepaths)
+                DecryptFile1(f, destFolder, headerByteArray);
+        }
+
+        private void BtnEnDe1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LocalLogger(TLog.LogLevel.DEBUG, "Start process");
+                string header = "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd";
+                byte[] headerByteArray = Encoding.UTF8.GetBytes(header);
+                //EncryptFile1(@"D:\temp\cc\video.mp4", @"D:\temp\ee", headerByteArray);
+                //DecryptFile1(@"D:\temp\ee\video", @"D:\temp\dd", headerByteArray);
+                //EncryptFilesInFolder(@"D:\Thomas\sec\s\bt\swim_or_hot_spring", @"D:\temp\ee", headerByteArray);
+                //DecryptFilesInFolder(@"D:\temp\ee", @"D:\temp\dd", headerByteArray);
+                LocalLogger(TLog.LogLevel.DEBUG, "Done");
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+        #endregion
+
         private void BtnTest1_Click(object sender, EventArgs e)
         {
             try
             {
+                string currentVersion = "2.3.12.0";
+                string mostUpdatedVersion = "2.3.a.0";
+                LocalLogger(TLog.LogLevel.DEBUG, "Current version = {0}", currentVersion);
+                LocalLogger(TLog.LogLevel.DEBUG, "Most updated version = {0}", mostUpdatedVersion);
+                bool? b = GeneralT.IsVersionUpdated(currentVersion, mostUpdatedVersion);
+                string s;
+                if (b == null) s = "Error";
+                else if (b.GetValueOrDefault()) s = "Current version is updated.";
+                else s = "Not updated.";
+                LocalLogger(TLog.LogLevel.DEBUG, s);
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }

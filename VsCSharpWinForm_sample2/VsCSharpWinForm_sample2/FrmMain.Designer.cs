@@ -34,6 +34,9 @@
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnEnDe1 = new System.Windows.Forms.Button();
+            this.BtnSerializeFile = new System.Windows.Forms.Button();
+            this.BtnSerializeText = new System.Windows.Forms.Button();
             this.BtnTest1 = new System.Windows.Forms.Button();
             this.BtnRenameFilenamesStop = new System.Windows.Forms.Button();
             this.BtnRenameFilenames = new System.Windows.Forms.Button();
@@ -104,8 +107,7 @@
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
-            this.BtnSerializeText = new System.Windows.Forms.Button();
-            this.BtnSerializeFile = new System.Windows.Forms.Button();
+            this.BtnOAuthMicrosoft = new System.Windows.Forms.Button();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -163,6 +165,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnOAuthMicrosoft);
+            this.tabPage1.Controls.Add(this.BtnEnDe1);
             this.tabPage1.Controls.Add(this.BtnSerializeFile);
             this.tabPage1.Controls.Add(this.BtnSerializeText);
             this.tabPage1.Controls.Add(this.BtnTest1);
@@ -193,6 +197,36 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnEnDe1
+            // 
+            this.BtnEnDe1.Location = new System.Drawing.Point(621, 98);
+            this.BtnEnDe1.Name = "BtnEnDe1";
+            this.BtnEnDe1.Size = new System.Drawing.Size(75, 23);
+            this.BtnEnDe1.TabIndex = 24;
+            this.BtnEnDe1.Text = "EnDe1";
+            this.BtnEnDe1.UseVisualStyleBackColor = true;
+            this.BtnEnDe1.Click += new System.EventHandler(this.BtnEnDe1_Click);
+            // 
+            // BtnSerializeFile
+            // 
+            this.BtnSerializeFile.Location = new System.Drawing.Point(364, 126);
+            this.BtnSerializeFile.Name = "BtnSerializeFile";
+            this.BtnSerializeFile.Size = new System.Drawing.Size(75, 23);
+            this.BtnSerializeFile.TabIndex = 22;
+            this.BtnSerializeFile.Text = "Serialize File";
+            this.BtnSerializeFile.UseVisualStyleBackColor = true;
+            this.BtnSerializeFile.Click += new System.EventHandler(this.BtnSerializeFile_Click);
+            // 
+            // BtnSerializeText
+            // 
+            this.BtnSerializeText.Location = new System.Drawing.Point(278, 126);
+            this.BtnSerializeText.Name = "BtnSerializeText";
+            this.BtnSerializeText.Size = new System.Drawing.Size(80, 23);
+            this.BtnSerializeText.TabIndex = 21;
+            this.BtnSerializeText.Text = "Serialize Text";
+            this.BtnSerializeText.UseVisualStyleBackColor = true;
+            this.BtnSerializeText.Click += new System.EventHandler(this.BtnSerializeText_Click);
             // 
             // BtnTest1
             // 
@@ -227,7 +261,7 @@
             // 
             // BtnLineSeparator
             // 
-            this.BtnLineSeparator.Location = new System.Drawing.Point(514, 97);
+            this.BtnLineSeparator.Location = new System.Drawing.Point(514, 98);
             this.BtnLineSeparator.Name = "BtnLineSeparator";
             this.BtnLineSeparator.Size = new System.Drawing.Size(101, 23);
             this.BtnLineSeparator.TabIndex = 17;
@@ -237,7 +271,7 @@
             // 
             // BtnExcel
             // 
-            this.BtnExcel.Location = new System.Drawing.Point(433, 97);
+            this.BtnExcel.Location = new System.Drawing.Point(433, 98);
             this.BtnExcel.Name = "BtnExcel";
             this.BtnExcel.Size = new System.Drawing.Size(75, 23);
             this.BtnExcel.TabIndex = 16;
@@ -247,7 +281,7 @@
             // 
             // BtnXml
             // 
-            this.BtnXml.Location = new System.Drawing.Point(352, 97);
+            this.BtnXml.Location = new System.Drawing.Point(352, 98);
             this.BtnXml.Name = "BtnXml";
             this.BtnXml.Size = new System.Drawing.Size(75, 23);
             this.BtnXml.TabIndex = 15;
@@ -257,7 +291,7 @@
             // 
             // BtnJson
             // 
-            this.BtnJson.Location = new System.Drawing.Point(271, 97);
+            this.BtnJson.Location = new System.Drawing.Point(271, 98);
             this.BtnJson.Name = "BtnJson";
             this.BtnJson.Size = new System.Drawing.Size(75, 23);
             this.BtnJson.TabIndex = 14;
@@ -267,7 +301,7 @@
             // 
             // BtnReadCsvFile
             // 
-            this.BtnReadCsvFile.Location = new System.Drawing.Point(168, 97);
+            this.BtnReadCsvFile.Location = new System.Drawing.Point(168, 98);
             this.BtnReadCsvFile.Name = "BtnReadCsvFile";
             this.BtnReadCsvFile.Size = new System.Drawing.Size(97, 23);
             this.BtnReadCsvFile.TabIndex = 13;
@@ -277,7 +311,7 @@
             // 
             // BtnMail
             // 
-            this.BtnMail.Location = new System.Drawing.Point(87, 97);
+            this.BtnMail.Location = new System.Drawing.Point(87, 98);
             this.BtnMail.Name = "BtnMail";
             this.BtnMail.Size = new System.Drawing.Size(75, 23);
             this.BtnMail.TabIndex = 12;
@@ -287,7 +321,7 @@
             // 
             // BtnZip
             // 
-            this.BtnZip.Location = new System.Drawing.Point(6, 97);
+            this.BtnZip.Location = new System.Drawing.Point(6, 98);
             this.BtnZip.Name = "BtnZip";
             this.BtnZip.Size = new System.Drawing.Size(75, 23);
             this.BtnZip.TabIndex = 11;
@@ -698,7 +732,7 @@
             // 
             this.NudTcpServerMaxDataSize.Location = new System.Drawing.Point(165, 128);
             this.NudTcpServerMaxDataSize.Maximum = new decimal(new int[] {
-            2000000000,
+            104857600,
             0,
             0,
             0});
@@ -706,7 +740,7 @@
             this.NudTcpServerMaxDataSize.Size = new System.Drawing.Size(90, 20);
             this.NudTcpServerMaxDataSize.TabIndex = 19;
             this.NudTcpServerMaxDataSize.Value = new decimal(new int[] {
-            2000000000,
+            104857600,
             0,
             0,
             0});
@@ -789,7 +823,7 @@
             this.NudTcpServerMaxIdleDuration.Size = new System.Drawing.Size(60, 20);
             this.NudTcpServerMaxIdleDuration.TabIndex = 17;
             this.NudTcpServerMaxIdleDuration.Value = new decimal(new int[] {
-            20,
+            60,
             0,
             0,
             0});
@@ -885,7 +919,7 @@
             this.ClbTcpClientList.FormattingEnabled = true;
             this.ClbTcpClientList.Location = new System.Drawing.Point(338, 89);
             this.ClbTcpClientList.Name = "ClbTcpClientList";
-            this.ClbTcpClientList.Size = new System.Drawing.Size(200, 49);
+            this.ClbTcpClientList.Size = new System.Drawing.Size(200, 34);
             this.ClbTcpClientList.TabIndex = 26;
             // 
             // BtnTcpServerDeselectAllClients
@@ -994,31 +1028,21 @@
             // 
             this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
-            // BtnSerializeText
+            // BtnOAuthMicrosoft
             // 
-            this.BtnSerializeText.Location = new System.Drawing.Point(278, 126);
-            this.BtnSerializeText.Name = "BtnSerializeText";
-            this.BtnSerializeText.Size = new System.Drawing.Size(80, 23);
-            this.BtnSerializeText.TabIndex = 21;
-            this.BtnSerializeText.Text = "Serialize Text";
-            this.BtnSerializeText.UseVisualStyleBackColor = true;
-            this.BtnSerializeText.Click += new System.EventHandler(this.BtnSerializeText_Click);
-            // 
-            // BtnSerializeFile
-            // 
-            this.BtnSerializeFile.Location = new System.Drawing.Point(364, 126);
-            this.BtnSerializeFile.Name = "BtnSerializeFile";
-            this.BtnSerializeFile.Size = new System.Drawing.Size(75, 23);
-            this.BtnSerializeFile.TabIndex = 22;
-            this.BtnSerializeFile.Text = "Serialize File";
-            this.BtnSerializeFile.UseVisualStyleBackColor = true;
-            this.BtnSerializeFile.Click += new System.EventHandler(this.BtnSerializeFile_Click);
+            this.BtnOAuthMicrosoft.Location = new System.Drawing.Point(445, 126);
+            this.BtnOAuthMicrosoft.Name = "BtnOAuthMicrosoft";
+            this.BtnOAuthMicrosoft.Size = new System.Drawing.Size(100, 23);
+            this.BtnOAuthMicrosoft.TabIndex = 25;
+            this.BtnOAuthMicrosoft.Text = "OAuth Microsoft";
+            this.BtnOAuthMicrosoft.UseVisualStyleBackColor = true;
+            this.BtnOAuthMicrosoft.Click += new System.EventHandler(this.BtnOAuthMicrosoft_Click);
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 462);
+            this.ClientSize = new System.Drawing.Size(784, 461);
             this.Controls.Add(this.BtnHideMainDialog);
             this.Controls.Add(this.TControlMain);
             this.Controls.Add(this.TxtLog);
@@ -1138,6 +1162,8 @@
         private System.Windows.Forms.Button BtnTest1;
         private System.Windows.Forms.Button BtnSerializeText;
         private System.Windows.Forms.Button BtnSerializeFile;
+        private System.Windows.Forms.Button BtnEnDe1;
+        private System.Windows.Forms.Button BtnOAuthMicrosoft;
     }
 }
 
