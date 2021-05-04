@@ -36,8 +36,8 @@ namespace VsCSharpWinForm_sample2.Models
                 public static bool ContainLengthAsHeader = true;
                 public static bool EncryptData = true;
                 public static string CryptPassword = "abc123";
-                public static string IncomingDataFilePath = @"TcpClient\{0:yyyyMMdd_HHmmss}_{1}.dat";// {0} is date time, {1} is Id.
-                public static string IncomingDataFolder = "TcpClient";
+                public static string IncomingDataFilePath = @"TcpClient{1}\{0:yyyyMMdd_HHmmss}_{1}.dat";// {0} is date time, {1} is Id.
+                public static string IncomingDataFolder = "TcpClient{0}";
             }
         }
 

@@ -9,8 +9,10 @@ namespace VsCSharpWinForm_sample2.Helpers
     public class TTcpSocket
     {
         /// TCP Client and Server by a synchronous socket in the threading model.
+        /// Able to send file with 100M bytes, and even 200M bytes, but not very good to send 200 M bytes. Cannot send 500M bytes file.
         /// Data unit is byte.
-        /// Updated date: 2021-04-15
+        /// Updated date: 2021-04-30
+        /// 
         /// AddDataToIncomingDataQueue
         /// PackData
         /// TryDequeueAtIncomingBufferQueue
@@ -89,8 +91,8 @@ namespace VsCSharpWinForm_sample2.Helpers
             public int HeartbeatInterval { get; set; } = -1;/// Time interval in seconds that the local host sends heartbeat to the remote host. If it is negative, there is no heartbeat. Sending heartbeat is used to check if the connection still occurs. The default value is -1.
             public int MaxConnectionDuration { get; set; } = 600;/// Maximum connection duration in seconds between the local host and remote host. If the time exceeds, it will disconnect automatically even the connection is normal. If it is negative, there is no maximum connection duration, hence the connection can preserve forever. The default value is 600.
             public int MaxIdleDuration { get; set; } = -1;/// Maximum idle duration in seconds between the local host and remote host. If the time exceeds, it will disconnect automatically. If it is negative, there is no maximum idle duration, hence it will not check the idle duration. The default value is -1.
-            private int _MaxDataSize = 2000000000;
-            public int MaxDataSize { get { return _MaxDataSize; } set { _MaxDataSize = value < 0 ? 0 : value; } }/// Maximum size of data in bytes. The default value is 2000000000.
+            private int _MaxDataSize = 104857600;
+            public int MaxDataSize { get { return _MaxDataSize; } set { _MaxDataSize = value < 0 ? 0 : value; } }/// Maximum size of data in bytes. The default value is 104857600.
 
             public int ProcessVerificationInterval { get; set; } = 600;
             public int ReceiveDataInterval { get; set; } = 0;/// Time interval in seconds to receive data. If it is 0, the process will do immediately without waiting. If it is negative, no data is received. The default value is 0.
@@ -1024,8 +1026,8 @@ namespace VsCSharpWinForm_sample2.Helpers
             public int MaxConnectionDuration { get; set; } = 600;/// Maximum connection duration in seconds between the local host and remote host. If the time exceeds, it will disconnect automatically even the connection is normal. If it is negative, there is no maximum connection duration, hence the connection can preserve forever. The default value is 600.
             public int MaxIdleDuration { get; set; } = -1;/// Maximum idle duration in seconds between the local host and remote host. If the time exceeds, it will disconnect automatically. If it is negative, there is no maximum idle duration, hence it will not check the idle duration. The default value is -1.
             public int MaxDataSend { get; set; } = -1;/// Maximum unit of data sent from the local host each time. If it is 0, no data is sent. If it is negative, the process will send all data in the queue without waiting. The default value is -1.
-            private int _MaxDataSize = 2000000000;
-            public int MaxDataSize { get { return _MaxDataSize; } set { _MaxDataSize = value < 0 ? 0 : value; } }/// Maximum size of data in bytes. The default value is 2000000000.
+            private int _MaxDataSize = 104857600;
+            public int MaxDataSize { get { return _MaxDataSize; } set { _MaxDataSize = value < 0 ? 0 : value; } }/// Maximum size of data in bytes. The default value is 104857600.
             public int ProcessVerificationInterval { get; set; } = 600;/// Time interval in seconds to verify the process is still running or not. If it is running, a log is written. If the value is negative or zero, it does not verify. The default value is 600.
             public int ReceiveDataInterval { get; set; } = 0;/// Time interval in seconds to receive Data. If it is 0, the process will do immediately without waiting. If it is negative, no data is received. The default value is 0.
             private int _ReceiveTotalBufferSize = 10485760;
@@ -1990,59 +1992,98 @@ namespace VsCSharpWinForm_sample2.Helpers
         public class DeserializedData
         {
             public SerialDataType DataType;
+            public string ErrorMessage;
             public string Text;
             public string Filename;
+            public int LastIndexPiece;
+            public int IndexPiece;
             public byte[] FileContent;
-            public string ErrorMessage;
         }
 
         public static class Serialization
         {
+            /// This class is to convert a text or file to a byte array, and convert a byte array back to a text or file.
+            /// 
             /// Format:
             /// [Serial Data Type][Data in byte array]
             /// 
             /// Text:
-            /// 1[Data in byte array]
+            /// [1][Data in byte array]
             /// 
             /// File:
-            /// 2[Length of byte array of file name (4 bytes)][File name in byte array][File content in byte array]
-            private static byte[] Serialize(SerialDataType serialDataType, byte[] data)
-            {
-                List<byte> tempList = tempList = new List<byte>()
-                {
-                    (byte)serialDataType
-                };
-                tempList.AddRange(data);
-                return tempList.ToArray();
-            }
+            /// [2][Length of filename (4 bytes)][Filename in byte array][Last index of pieces (4 bytes)][Index of pieces starting from 0 (4 bytes)][File content]
+
+            /// 101M bytes
+            //public const int MaxByteLength = 105906176;
 
             public static byte[] SerializeText(string text)
             {
-                return Serialize(SerialDataType.Text, Encoding.UTF8.GetBytes(text));
+                if ((text?.Length ?? 0) < 1) return new byte[1] { (byte)SerialDataType.Text };
+                byte[] textByteArray = Encoding.UTF8.GetBytes(text);
+                //List<byte> tempList = tempList = new List<byte>()
+                //{
+                //    (byte)SerialDataType.Text
+                //};
+                //tempList.AddRange(textByteArray);
+                //return tempList.ToArray();
+                byte[] output = new byte[1 + textByteArray.Length];
+                System.Buffer.SetByte(output, 0, (byte)SerialDataType.Text);
+                System.Buffer.BlockCopy(textByteArray, 0, output, 1, textByteArray.Length);
+                return output;
             }
 
-            public static byte[] SerializeFile(string filename, byte[] fileContent)
+            public static byte[] SerializeFilePiece(string filename, int lastIndexPiece, int indexPiece, byte[] piece)
             {
+                if (string.IsNullOrWhiteSpace(filename)) return null;
                 byte[] filenameByteArray = Encoding.UTF8.GetBytes(filename);
-                List<byte> tempList = new List<byte>();
-                tempList.AddRange(BitConverter.GetBytes(filenameByteArray.Length));
-                tempList.AddRange(filenameByteArray);
-                tempList.AddRange(fileContent);
-                return Serialize(SerialDataType.File, tempList.ToArray());
+                int fileContentLength = piece?.Length ?? 0;
+                byte[] output = new byte[1 + filenameByteArray.Length + 12 + fileContentLength];
+                System.Buffer.SetByte(output, 0, (byte)SerialDataType.File);
+                System.Buffer.BlockCopy(BitConverter.GetBytes(filenameByteArray.Length), 0, output, 1, 4);
+                System.Buffer.BlockCopy(filenameByteArray, 0, output, 5, filenameByteArray.Length);
+                int dstOffset = 5 + filenameByteArray.Length;
+                System.Buffer.BlockCopy(BitConverter.GetBytes(lastIndexPiece), 0, output, dstOffset, 4);
+                dstOffset += 4;
+                System.Buffer.BlockCopy(BitConverter.GetBytes(indexPiece), 0, output, dstOffset, 4);
+                dstOffset += 4;
+                if (fileContentLength > 0) System.Buffer.BlockCopy(piece, 0, output, dstOffset, piece.Length);
+                return output;
             }
 
-            public static byte[] SerializeFile(string filepath)
+            //public static byte[] SerializeSmallFile(string filename, byte[] fileContent)
+            //{
+            //    byte[] filenameByteArray = Encoding.UTF8.GetBytes(filename);
+            //    //List<byte> tempList = new List<byte>();
+            //    //tempList.AddRange(BitConverter.GetBytes(filenameByteArray.Length));
+            //    //tempList.AddRange(filenameByteArray);
+            //    //tempList.AddRange(fileContent);
+            //    //return Serialize(SerialDataType.File, tempList.ToArray());
+            //    byte[] filenameLengthByteArray = BitConverter.GetBytes(filenameByteArray.Length);
+            //    int fileContentLength = fileContent?.Length ?? 0;
+            //    byte[] output = new byte[filenameLengthByteArray.Length + filenameByteArray.Length + fileContentLength];
+            //    System.Buffer.BlockCopy(filenameLengthByteArray, 0, output, 0, filenameLengthByteArray.Length);
+            //    System.Buffer.BlockCopy(filenameByteArray, 0, output, filenameLengthByteArray.Length, filenameByteArray.Length);
+            //    if (fileContentLength > 0) System.Buffer.BlockCopy(fileContent, 0, output, filenameLengthByteArray.Length + filenameByteArray.Length, fileContentLength);
+            //    return Serialize(SerialDataType.File, output);
+            //}
+
+            /// Serialize small file with size not more than 50M bytes.
+            public static byte[] SerializeSmallFile(string filepath)
             {
-                return SerializeFile(System.IO.Path.GetFileName(filepath), System.IO.File.ReadAllBytes(filepath));
+                //return SerializeSmallFile(System.IO.Path.GetFileName(filepath), System.IO.File.ReadAllBytes(filepath));
+                if (string.IsNullOrWhiteSpace(filepath)) return null;
+                return SerializeFilePiece(System.IO.Path.GetFileName(filepath), 0, 0, System.IO.File.ReadAllBytes(filepath));
             }
 
             /// Deserialize a byte array and output text or file.
             /// Output = DeserializedData
             /// DeserializedData.DataType indicates the type of the data whether it is text, file or heartbeat.
+            /// DeserializedData.ErrorMessage stores the error message during running this function.
             /// DeserializedData.Text stores the text if the data type is text. Otherwise it is empty.
             /// DeserializedData.Filename stores the filename if the data type is file. Otherwise it is empty.
+            /// DeserializedData.LastIndexPiece stores the last index of pieces of file.
+            /// DeserializedData.IndexPiece stores the index of current pieces.
             /// DeserializedData.FileContent stores the file content if the data type is file. Otherwise it is empty.
-            /// DeserializedData.ErrorMessage stores the error message during running this function.
             public static DeserializedData Deserialize(byte[] data)
             {
                 if ((data?.Length ?? 0) < 1) return null;
@@ -2056,44 +2097,36 @@ namespace VsCSharpWinForm_sample2.Helpers
                         };
                         //break;
                     case (byte)SerialDataType.File:
-                        int totalLength = data.Length - 1;
-                        if (totalLength < 4)
+                        int filenameLength = BitConverter.ToInt32(data, 1);
+                        if (filenameLength + 13 > data.Length)
                         {
                             return new DeserializedData()
                             {
                                 DataType = SerialDataType.File,
-                                ErrorMessage = string.Format("Length of byte array is less than 4. Length = {0}", totalLength)
-                            };
-                        }
-                        byte[] filenameLengthByteArray = new byte[4];
-                        Array.Copy(data, 1, filenameLengthByteArray, 0, 4);
-                        int filenameLength = BitConverter.ToInt32(filenameLengthByteArray, 0);
-                        if (filenameLength > totalLength)
-                        {
-                            return new DeserializedData()
-                            {
-                                DataType = SerialDataType.File,
-                                ErrorMessage = string.Format("Filename length is larger than that of byte array length. Filename length = {0}, byte array length = {1}", filenameLength, totalLength)
+                                ErrorMessage = string.Format("Length of unique ID + 13 is larger than piece length. Length of unique ID = {0}, piece length = {1}", filenameLength, data.Length)
                             };
                         }
                         byte[] filenameByteArray = null;
                         if (filenameLength > 0)
                         {
                             filenameByteArray = new byte[filenameLength];
-                            Array.Copy(data, 5, filenameByteArray, 0, filenameLength);
+                            System.Buffer.BlockCopy(data, 5, filenameByteArray, 0, filenameLength);
                         }
-                        byte[] fileContentByteArray = null;
-                        int fileContentLength = totalLength - 4 - filenameLength;
-                        if (fileContentLength > 0)
+                        int srcOffset = 13 + filenameLength;
+                        int contentLength = data.Length - srcOffset;
+                        byte[] contentByteArray = null;
+                        if (contentLength > 0)
                         {
-                            fileContentByteArray = new byte[fileContentLength];
-                            Array.Copy(data, 5 + filenameLength, fileContentByteArray, 0, fileContentLength);
+                            contentByteArray = new byte[contentLength];
+                            System.Buffer.BlockCopy(data, srcOffset, contentByteArray, 0, contentLength);
                         }
                         return new DeserializedData()
                         {
                             DataType = SerialDataType.File,
                             Filename = filenameByteArray == null ? null : Encoding.UTF8.GetString(filenameByteArray),
-                            FileContent = fileContentByteArray
+                            LastIndexPiece = BitConverter.ToInt32(data, 5 + filenameLength),
+                            IndexPiece = BitConverter.ToInt32(data, 9 + filenameLength),
+                            FileContent = contentByteArray
                         };
                         //break;
                     default:
@@ -2101,6 +2134,72 @@ namespace VsCSharpWinForm_sample2.Helpers
                         //break;
                 }
             }
+
+            ///// Deserialize a byte array and output text or file.
+            ///// Output = DeserializedData
+            ///// DeserializedData.DataType indicates the type of the data whether it is text, file or heartbeat.
+            ///// DeserializedData.Text stores the text if the data type is text. Otherwise it is empty.
+            ///// DeserializedData.Filename stores the filename if the data type is file. Otherwise it is empty.
+            ///// DeserializedData.FileContent stores the file content if the data type is file. Otherwise it is empty.
+            ///// DeserializedData.ErrorMessage stores the error message during running this function.
+            //public static DeserializedData Deserialize1(byte[] data)
+            //{
+            //    if ((data?.Length ?? 0) < 1) return null;
+            //    switch (data[0])
+            //    {
+            //        case (byte)SerialDataType.Text:
+            //            return new DeserializedData()
+            //            {
+            //                DataType = SerialDataType.Text,
+            //                Text = Encoding.UTF8.GetString(data, 1, data.Length - 1)
+            //            };
+            //        //break;
+            //        case (byte)SerialDataType.File:
+            //            int totalLength = data.Length - 1;
+            //            if (totalLength < 4)
+            //            {
+            //                return new DeserializedData()
+            //                {
+            //                    DataType = SerialDataType.File,
+            //                    ErrorMessage = string.Format("Length of byte array is less than 4. Length = {0}", totalLength)
+            //                };
+            //            }
+            //            byte[] filenameLengthByteArray = new byte[4];
+            //            Array.Copy(data, 1, filenameLengthByteArray, 0, 4);
+            //            int filenameLength = BitConverter.ToInt32(filenameLengthByteArray, 0);
+            //            if (filenameLength > totalLength)
+            //            {
+            //                return new DeserializedData()
+            //                {
+            //                    DataType = SerialDataType.File,
+            //                    ErrorMessage = string.Format("Filename length is larger than that of byte array length. Filename length = {0}, byte array length = {1}", filenameLength, totalLength)
+            //                };
+            //            }
+            //            byte[] filenameByteArray = null;
+            //            if (filenameLength > 0)
+            //            {
+            //                filenameByteArray = new byte[filenameLength];
+            //                Array.Copy(data, 5, filenameByteArray, 0, filenameLength);
+            //            }
+            //            byte[] fileContentByteArray = null;
+            //            int fileContentLength = totalLength - 4 - filenameLength;
+            //            if (fileContentLength > 0)
+            //            {
+            //                fileContentByteArray = new byte[fileContentLength];
+            //                Array.Copy(data, 5 + filenameLength, fileContentByteArray, 0, fileContentLength);
+            //            }
+            //            return new DeserializedData()
+            //            {
+            //                DataType = SerialDataType.File,
+            //                Filename = filenameByteArray == null ? null : Encoding.UTF8.GetString(filenameByteArray),
+            //                FileContent = fileContentByteArray
+            //            };
+            //        //break;
+            //        default:
+            //            return null;
+            //            //break;
+            //    }
+            //}
         }
     }
 }

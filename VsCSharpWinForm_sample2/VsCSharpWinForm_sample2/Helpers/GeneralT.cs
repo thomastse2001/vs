@@ -9,7 +9,7 @@ namespace VsCSharpWinForm_sample2.Helpers
     public class GeneralT
     {
         /// General functions.
-        /// Updated date: 2020-09-04
+        /// Updated date: 2021-04-22
         /// To zip or unzip file, need to install Ionic.Zip in NuGet Package Manager.
 
         public static TLog Logger { get; set; }
@@ -880,6 +880,85 @@ namespace VsCSharpWinForm_sample2.Helpers
                     }
                 }
                 return list.ToArray();
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error(ex);
+                return null;
+            }
+        }
+
+        /// Combine a number of byte arrays into one byte array.
+        /// https://stackoverflow.com/questions/415291/best-way-to-combine-two-or-more-byte-arrays-in-c-sharp
+        /// https://www.techiedelight.com/concatenate-byte-arrays-csharp/
+        public static byte[] CombineByteArrays(params byte[][] arrays)
+        {
+            byte[] output = new byte[arrays.Sum(a => (a?.Length ?? 0))];
+            int offset = 0;
+            foreach (byte[] array in arrays)
+            {
+                if ((array?.Length ?? 0) > 0)
+                {
+                    System.Buffer.BlockCopy(array, 0, output, offset, array.Length);
+                    offset += array.Length;
+                }
+            }
+            return output;
+        }
+
+        /// https://stackoverflow.com/questions/1163921/c-sharp-split-byte-array
+        public static List<byte[]> SplitByteArray(byte[] input, int maxLengthPerArray)
+        {
+            if (maxLengthPerArray <= 0 || input == null) return null;
+            List<byte[]> output = new List<byte[]>();
+            for (int i = 0; i < input.Length; i += maxLengthPerArray)
+            {
+                int currentArrayLength = input.Length - i;
+                if (currentArrayLength > maxLengthPerArray) currentArrayLength = maxLengthPerArray;
+                byte[] buffer = new byte[currentArrayLength];
+                System.Buffer.BlockCopy(input, i, buffer, 0, currentArrayLength);
+                output.Add(buffer);
+            }
+            return output;
+        }
+
+        /// versionText should be in the format of X.X.X.X, where X is an non-negative integer. E.g. 12.0.6.83
+        /// Return null if wrong format or cannot parse to integer.
+        /// https://www.techiedelight.com/convert-string-array-to-int-array-csharp/
+        private static int[] GetVersionNumberArray(string versionText)
+        {
+            if (string.IsNullOrWhiteSpace(versionText)) return null;
+            try { return Array.ConvertAll(versionText.Split('.'), s => int.Parse(s)); }
+            catch { return null; }
+        }
+
+        /// Version should be in the format of X.X.X.X, where X is an non-negative integer. E.g. 12.0.6.83
+        /// Return value = True if the current version is up-to-date. False if the current version is outdated. Null if error.
+        public static bool? IsVersionUpdated(string currentVersion, string mostUpdatedVersion)
+        {
+            try
+            {
+                int[] currentVersionNumbers = GetVersionNumberArray(currentVersion);
+                if ((currentVersionNumbers?.Length ?? 0) < 1)
+                {
+                    Logger?.Error("Current version is in a wrong format. {0}", currentVersion);
+                    return null;
+                }
+                int[] mostUpdatedVersionNumbers = GetVersionNumberArray(mostUpdatedVersion);
+                if ((mostUpdatedVersionNumbers?.Length ?? 0) < 1)
+                {
+                    Logger?.Error("The most updated version is in a wrong format. {0}", mostUpdatedVersion);
+                    return null;
+                }
+                if (currentVersionNumbers.Length != mostUpdatedVersionNumbers.Length)
+                {
+                    Logger?.Error("The format of current version is different from that of the most updated version. Current version: {0}, most updated version: {1}", currentVersion, mostUpdatedVersion);
+                    return null;
+                }
+                int i = 0;
+                while (i < currentVersionNumbers.Length && currentVersionNumbers[i] == mostUpdatedVersionNumbers[i])
+                { i++; }
+                return i == currentVersionNumbers.Length || currentVersionNumbers[i] > mostUpdatedVersionNumbers[i];
             }
             catch (Exception ex)
             {

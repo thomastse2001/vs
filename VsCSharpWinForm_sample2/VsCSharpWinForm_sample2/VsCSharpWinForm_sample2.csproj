@@ -63,6 +63,9 @@
     <Compile Include="FrmMain.Designer.cs">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\CodeGrantOauth.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Helpers\CyptoRijndaelT.cs" />
     <Compile Include="Helpers\DbHelper.cs" />
     <Compile Include="Helpers\ExcelHelper.cs" />
