@@ -39,9 +39,14 @@ Convert data in byte array into its original form, such as text, file, heartbeat
 TTcpSocket is a combination of TTcpClientSocket and TTcpServerSocket.
 2021-04-15 Can specify the ExternalActToHandleIncomingData parameter for external function to handle the incoming data.
 
-To do:
+Text Serialization
+[1][Content]
+
+File Serialization
+[2][Length of filename (4 bytes)][Filename in byte array][Last index of pieces (4 bytes)][Index of pieces starting from 0 (4 bytes)][File content]
+
 [Done] * Merge the socket server and client into one file.
 [Done] * Convert file to byte array, including filename, and reverse.
-* Split a longer byte array into several byte arrays, and merge them into a single byte array.
+[Done in file, no need in text] * Split a longer byte array into several byte arrays, and merge them into a single byte array.
 * OAuth
 

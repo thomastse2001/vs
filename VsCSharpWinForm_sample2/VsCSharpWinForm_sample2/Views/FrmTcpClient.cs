@@ -36,9 +36,6 @@ namespace VsCSharpWinForm_sample2.Views
             {
                 if (o == null) return;
                 string s;
-                //byte[] decryptedData;
-                //if (ChkEncryptData.Checked) decryptedData = o.ByteArray == null ? o.ByteArray : Helpers.CyptoRijndaelT.Decrypt(o.ByteArray, CryptPassword);
-                //else decryptedData = o.ByteArray;
                 byte[] decryptedData = ChkEncryptData.Checked ? (o.ByteArray == null ? o.ByteArray : Helpers.CyptoRijndaelT.Decrypt(o.ByteArray, CryptPassword)) : o.ByteArray;
                 ///// Old method.
                 //if ((decryptedData?.Length ?? 0) < 1)
@@ -94,36 +91,47 @@ namespace VsCSharpWinForm_sample2.Views
                 switch (deserializedData.DataType)
                 {
                     case Helpers.TTcpSocket.SerialDataType.Text:
-                        Logger?.Debug("FrmTcpClient {3} receives text. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Text = {4}", o.Timestamp, o.Host, o.Port, Id, deserializedData.Text);
-                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, deserializedData.Text);
+                        s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Text = {3}", o.Timestamp, o.Host, o.Port, deserializedData.Text);
+                        Logger?.Debug("FrmTcpClient {0} receives text. Received Time = {1}", Id, s);
+                        WriteLogToUI(s);
                         break;
                     case Helpers.TTcpSocket.SerialDataType.File:
-                        if (!string.IsNullOrEmpty(deserializedData?.ErrorMessage))
+                        s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Piece length = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.FileContent?.Length);
+                        Logger?.Debug("FrmTcpClient {0} receives a file piece. Received Time = {1}", Id, s);
+                        WriteLogToUI(s);
+                        if (!string.IsNullOrEmpty(deserializedData.ErrorMessage))
                         {
-                            Logger?.Debug("FrmTcpClient {3} receives error message. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Error Message = {4}", o.Timestamp, o.Host, o.Port, Id, deserializedData.ErrorMessage);
-                            WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Error Message = {3}", o.Timestamp, o.Host, o.Port, deserializedData.ErrorMessage);
+                            s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Error Message = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.ErrorMessage);
+                            Logger?.Debug("FrmTcpClient {0} receives error message. Received Time = {1}", Id, s);
+                            WriteLogToUI(s);
                         }
-                        string filepath = System.IO.Path.Combine(Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(Models.Param.TcpClient.DefaultValue.IncomingDataFolder), deserializedData.Filename);
-                        if (string.IsNullOrWhiteSpace(deserializedData?.Filename))
+                        deserializedData.DestFolder = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFolder, Id));
+                        if (string.IsNullOrWhiteSpace(deserializedData.Filename))
                         {
-                            Logger?.Debug("FrmTcpClient {3} receives text. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Filename is empty.", o.Timestamp, o.Host, o.Port, Id);
-                            WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Filename is empty.", o.Timestamp, o.Host, o.Port);
-                            filepath = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilePath, o.Timestamp, Id));
+                            s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Filename is empty.", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece);
+                            Logger?.Debug("FrmTcpClient {0} receives file piece. Received Time = {1}", Id, s);
+                            WriteLogToUI(s);
+                            deserializedData.Filename = string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilename, o.Timestamp, Id);
                         }
-                        if (!Helpers.GeneralT.FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath)))
+                        s = Helpers.TTcpSocket.Serialization.AppendDeserializedDataToFile(deserializedData);
+                        if (string.IsNullOrEmpty(s))
                         {
-                            WriteLogToUI("Fail to create folder.");
-                            return;
+                            if (deserializedData.IndexPiece == deserializedData.LastIndexPiece)
+                            {
+                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.DestFilepath);
+                                Logger?.Debug("FrmTcpClient {0} completes to receive file. Received Time = {1}", Id, s);
+                                WriteLogToUI(s);
+                            }
                         }
-                        if ((deserializedData.FileContent?.Length ?? 0) > 0)
-                            System.IO.File.WriteAllBytes(filepath, deserializedData.FileContent);
                         else
-                            using (System.IO.File.Create(filepath)) { }
-                        Logger?.Debug("FrmTcpClient {3} receives file. Received Time = {0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Length = {4}. File = {5}", o.Timestamp, o.Host, o.Port, Id, decryptedData.Length - 1, filepath);
-                        WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Length = {3}. File = {4}", o.Timestamp, o.Host, o.Port, decryptedData.Length - 1, filepath);
+                        {
+                            s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}. Error = {6}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.DestFilepath, s);
+                            Logger?.Error("FrmTcpClient {0} has error when receiving file. Received Time = {1}", Id, s);
+                            WriteLogToUI(s);
+                        }
                         break;
                     default:
-                        s = string.Format("Unclassified TCP data type. {0}", decryptedData[0]);
+                        s = string.Format("FrmTcpClient {0} finds unclassified TCP data type. {1}", Id, decryptedData[0]);
                         Logger?.Error(s);
                         WriteLogToUI(s);
                         break;
@@ -476,16 +484,9 @@ namespace VsCSharpWinForm_sample2.Views
 
         private bool TcpClientSend(byte[] serializedData)
         {
-            try
-            {
-                byte[] encryptedData = ChkEncryptData.Checked ? Helpers.CyptoRijndaelT.Encrypt(serializedData, CryptPassword) : serializedData;
-                return MyClient?.SendByteArray(encryptedData) ?? false;
-            }
-            catch (Exception ex)
-            {
-                Logger?.Error(ex);
-                return false;
-            }
+            return MyClient?.SendByteArray(
+                ChkEncryptData.Checked ? Helpers.CyptoRijndaelT.Encrypt(serializedData, CryptPassword) : serializedData
+                ) ?? false;
         }
 
         private void BtnSendText_Click(object sender, EventArgs e)
@@ -497,23 +498,12 @@ namespace VsCSharpWinForm_sample2.Views
                 TxtInput.ReadOnly = true;
                 Logger?.Debug("FrmTcpClient {0} sends text: {1}", Id, TxtInput.Text);
                 WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Send text: {1}", DateTime.Now, TxtInput.Text);
+                bool isSuccessful;
                 ///// Old method.
-                //if (TcpClientSend(Models.Param.TcpDataType.Text, Encoding.UTF8.GetBytes(TxtInput.Text)))
-                //{
-                //    TxtInput.Text = "";
-                //    TxtInput.ReadOnly = false;
-                //    BtnSendText.Enabled = true;
-                //    BtnSendFile.Enabled = true;
-                //    TxtInput.Focus();
-                //}
-                //else
-                //{
-                //    Logger?.Error("FrmTcpClient {0} fails to send text: {1}", Id, TxtInput.Text);
-                //    WriteLogToUI("Fail to send text: {0}", TxtInput.Text);
-                //    DisconnectRoutine();
-                //}
+                // isSuccessful = TcpClientSend(Models.Param.TcpDataType.Text, Encoding.UTF8.GetBytes(TxtInput.Text));
                 /// New method.
-                if (TcpClientSend(Helpers.TTcpSocket.Serialization.SerializeText(TxtInput.Text)))
+                isSuccessful = TcpClientSend(Helpers.TTcpSocket.Serialization.SerializeText(TxtInput.Text));
+                if (isSuccessful)
                 {
                     TxtInput.Text = "";
                     TxtInput.ReadOnly = false;
@@ -540,6 +530,53 @@ namespace VsCSharpWinForm_sample2.Views
             if (e.KeyCode == Keys.Enter) BtnSendText_Click(null, null);
         }
 
+        private bool HandleFile(string filepath)
+        {
+            /// https://stackoverflow.com/questions/2030847/best-way-to-read-a-large-file-into-a-byte-array-in-c
+            /// https://stackoverflow.com/questions/2161895/reading-large-text-files-with-streams-in-c-sharp
+            try
+            {
+                bool isSuccessful = true;
+                int pieceLength = 52428800;//50M bytes.//10485760;// 10M bytes.
+                long totalLength = (new System.IO.FileInfo(filepath)).Length;
+                int lastIndexPiece = (int)Math.Ceiling(1.0m * totalLength / pieceLength) - 1;
+                int indexPiece = 0;
+                using (System.IO.Stream st = System.IO.File.OpenRead(filepath))
+                {
+                    byte[] buffer = new byte[pieceLength];
+                    int bytesRead;
+                    while (isSuccessful && (bytesRead = st.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        byte[] buffer2 = new byte[bytesRead];
+                        System.Buffer.BlockCopy(buffer, 0, buffer2, 0, bytesRead);
+                        isSuccessful = TcpClientSend(Helpers.TTcpSocket.Serialization.SerializeFilePiece(System.IO.Path.GetFileName(filepath), lastIndexPiece, indexPiece, buffer2));
+                        indexPiece += 1;
+                        buffer2 = null;
+                    }
+                    buffer = null;
+                }
+                string s;
+                if (isSuccessful)
+                {
+                    s = string.Format("Client {0} succeeds to send file {1}", Id, filepath);
+                    Logger?.Debug(s);
+                }
+                else
+                {
+                    s = string.Format("Client {0} fails to send file {1}", Id, filepath);
+                    Logger?.Warn(s);
+                }
+                WriteLogToUI(s);
+                return isSuccessful;
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error("Id = {0}", Id);
+                Logger?.Error(ex);
+                return false;
+            }
+        }
+
         private void BtnSendFile_Click(object sender, EventArgs e)
         {
             try
@@ -560,16 +597,14 @@ namespace VsCSharpWinForm_sample2.Views
                 {
                     Logger?.Debug("FrmTcpClient {0} sends file {1}", Id, oDialog.FileName);
                     WriteLogToUI("{0:yyyy-MM-dd HH:mm:ss} Send file: {1}", DateTime.Now, oDialog.FileName);
+                    bool isSuccessful;
                     ///// Old method.
-                    //byte[] data = System.IO.File.ReadAllBytes(oDialog.FileName);
-                    //if (!TcpClientSend(Models.Param.TcpDataType.File, data))
-                    //{
-                    //    Logger?.Error("FrmTcpClient {0} fails to send file: {1}", Id, oDialog.FileName);
-                    //    WriteLogToUI("Fail to send file: {0}", oDialog.FileName);
-                    //    DisconnectRoutine();
-                    //}
-                    /// New method.
-                    if (!TcpClientSend(Helpers.TTcpSocket.Serialization.SerializeFile(oDialog.FileName)))
+                    //isSuccessful = TcpClientSend(Models.Param.TcpDataType.File, System.IO.File.ReadAllBytes(oDialog.FileName));
+                    ///// New method.
+                    //isSuccessful = TcpClientSend(Helpers.TTcpSocket.Serialization.SerializeSmallFile(oDialog.FileName));
+                    /// New method again.
+                    isSuccessful = HandleFile(oDialog.FileName);
+                    if (!isSuccessful)
                     {
                         Logger?.Error("FrmTcpClient {0} fails to send file: {1}", Id, oDialog.FileName);
                         WriteLogToUI("Fail to send file: {0}", oDialog.FileName);

@@ -75,40 +75,40 @@
             // LblVersion
             // 
             this.LblVersion.AutoSize = true;
-            this.LblVersion.Location = new System.Drawing.Point(302, 9);
+            this.LblVersion.Location = new System.Drawing.Point(309, 9);
             this.LblVersion.Name = "LblVersion";
-            this.LblVersion.Size = new System.Drawing.Size(120, 12);
+            this.LblVersion.Size = new System.Drawing.Size(113, 13);
             this.LblVersion.TabIndex = 0;
             this.LblVersion.Text = "Version: XX.XX.XX.XX";
             // 
             // LblServerHost
             // 
             this.LblServerHost.AutoSize = true;
-            this.LblServerHost.Location = new System.Drawing.Point(6, 10);
+            this.LblServerHost.Location = new System.Drawing.Point(6, 11);
             this.LblServerHost.Name = "LblServerHost";
-            this.LblServerHost.Size = new System.Drawing.Size(59, 12);
+            this.LblServerHost.Size = new System.Drawing.Size(63, 13);
             this.LblServerHost.TabIndex = 0;
             this.LblServerHost.Text = "Server Host";
             // 
             // TxtServerHost
             // 
-            this.TxtServerHost.Location = new System.Drawing.Point(140, 6);
+            this.TxtServerHost.Location = new System.Drawing.Point(140, 7);
             this.TxtServerHost.Name = "TxtServerHost";
-            this.TxtServerHost.Size = new System.Drawing.Size(150, 22);
+            this.TxtServerHost.Size = new System.Drawing.Size(150, 20);
             this.TxtServerHost.TabIndex = 1;
             // 
             // LblServerPort
             // 
             this.LblServerPort.AutoSize = true;
-            this.LblServerPort.Location = new System.Drawing.Point(6, 37);
+            this.LblServerPort.Location = new System.Drawing.Point(6, 40);
             this.LblServerPort.Name = "LblServerPort";
-            this.LblServerPort.Size = new System.Drawing.Size(57, 12);
+            this.LblServerPort.Size = new System.Drawing.Size(60, 13);
             this.LblServerPort.TabIndex = 2;
             this.LblServerPort.Text = "Server Port";
             // 
             // NudServerPort
             // 
-            this.NudServerPort.Location = new System.Drawing.Point(140, 34);
+            this.NudServerPort.Location = new System.Drawing.Point(140, 37);
             this.NudServerPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -120,29 +120,29 @@
             0,
             0});
             this.NudServerPort.Name = "NudServerPort";
-            this.NudServerPort.Size = new System.Drawing.Size(150, 22);
+            this.NudServerPort.Size = new System.Drawing.Size(150, 20);
             this.NudServerPort.TabIndex = 3;
             this.NudServerPort.Value = new decimal(new int[] {
-            1024,
+            8888,
             0,
             0,
             0});
             // 
             // TxtLog
             // 
-            this.TxtLog.Location = new System.Drawing.Point(12, 24);
+            this.TxtLog.Location = new System.Drawing.Point(12, 26);
             this.TxtLog.Multiline = true;
             this.TxtLog.Name = "TxtLog";
             this.TxtLog.ReadOnly = true;
             this.TxtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.TxtLog.Size = new System.Drawing.Size(410, 60);
+            this.TxtLog.Size = new System.Drawing.Size(410, 65);
             this.TxtLog.TabIndex = 1;
             // 
             // BtnConnect
             // 
-            this.BtnConnect.Location = new System.Drawing.Point(347, 90);
+            this.BtnConnect.Location = new System.Drawing.Point(347, 98);
             this.BtnConnect.Name = "BtnConnect";
-            this.BtnConnect.Size = new System.Drawing.Size(75, 21);
+            this.BtnConnect.Size = new System.Drawing.Size(75, 23);
             this.BtnConnect.TabIndex = 3;
             this.BtnConnect.Text = "Connect";
             this.BtnConnect.UseVisualStyleBackColor = true;
@@ -150,9 +150,9 @@
             // 
             // BtnDisconnect
             // 
-            this.BtnDisconnect.Location = new System.Drawing.Point(347, 117);
+            this.BtnDisconnect.Location = new System.Drawing.Point(347, 127);
             this.BtnDisconnect.Name = "BtnDisconnect";
-            this.BtnDisconnect.Size = new System.Drawing.Size(75, 21);
+            this.BtnDisconnect.Size = new System.Drawing.Size(75, 23);
             this.BtnDisconnect.TabIndex = 4;
             this.BtnDisconnect.Text = "Disconnect";
             this.BtnDisconnect.UseVisualStyleBackColor = true;
@@ -160,17 +160,17 @@
             // 
             // TxtInput
             // 
-            this.TxtInput.Location = new System.Drawing.Point(12, 227);
+            this.TxtInput.Location = new System.Drawing.Point(12, 246);
             this.TxtInput.Name = "TxtInput";
-            this.TxtInput.Size = new System.Drawing.Size(320, 22);
+            this.TxtInput.Size = new System.Drawing.Size(320, 20);
             this.TxtInput.TabIndex = 6;
             this.TxtInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtInput_KeyUp);
             // 
             // BtnSendText
             // 
-            this.BtnSendText.Location = new System.Drawing.Point(347, 228);
+            this.BtnSendText.Location = new System.Drawing.Point(347, 247);
             this.BtnSendText.Name = "BtnSendText";
-            this.BtnSendText.Size = new System.Drawing.Size(75, 21);
+            this.BtnSendText.Size = new System.Drawing.Size(75, 23);
             this.BtnSendText.TabIndex = 7;
             this.BtnSendText.Text = "Send Text";
             this.BtnSendText.UseVisualStyleBackColor = true;
@@ -179,9 +179,9 @@
             // ChkContainLengthAsHeader
             // 
             this.ChkContainLengthAsHeader.AutoSize = true;
-            this.ChkContainLengthAsHeader.Location = new System.Drawing.Point(6, 62);
+            this.ChkContainLengthAsHeader.Location = new System.Drawing.Point(6, 67);
             this.ChkContainLengthAsHeader.Name = "ChkContainLengthAsHeader";
-            this.ChkContainLengthAsHeader.Size = new System.Drawing.Size(148, 16);
+            this.ChkContainLengthAsHeader.Size = new System.Drawing.Size(151, 17);
             this.ChkContainLengthAsHeader.TabIndex = 4;
             this.ChkContainLengthAsHeader.Text = "Contain Length As Header";
             this.ChkContainLengthAsHeader.UseVisualStyleBackColor = true;
@@ -189,18 +189,18 @@
             // ChkEncryptData
             // 
             this.ChkEncryptData.AutoSize = true;
-            this.ChkEncryptData.Location = new System.Drawing.Point(174, 62);
+            this.ChkEncryptData.Location = new System.Drawing.Point(174, 67);
             this.ChkEncryptData.Name = "ChkEncryptData";
-            this.ChkEncryptData.Size = new System.Drawing.Size(83, 16);
+            this.ChkEncryptData.Size = new System.Drawing.Size(86, 17);
             this.ChkEncryptData.TabIndex = 5;
             this.ChkEncryptData.Text = "Encrypt data";
             this.ChkEncryptData.UseVisualStyleBackColor = true;
             // 
             // BtnSendFile
             // 
-            this.BtnSendFile.Location = new System.Drawing.Point(347, 199);
+            this.BtnSendFile.Location = new System.Drawing.Point(347, 216);
             this.BtnSendFile.Name = "BtnSendFile";
-            this.BtnSendFile.Size = new System.Drawing.Size(75, 23);
+            this.BtnSendFile.Size = new System.Drawing.Size(75, 25);
             this.BtnSendFile.TabIndex = 5;
             this.BtnSendFile.Text = "Send File";
             this.BtnSendFile.UseVisualStyleBackColor = true;
@@ -209,9 +209,9 @@
             // ChkHeartbeatInterval
             // 
             this.ChkHeartbeatInterval.AutoSize = true;
-            this.ChkHeartbeatInterval.Location = new System.Drawing.Point(6, 7);
+            this.ChkHeartbeatInterval.Location = new System.Drawing.Point(6, 8);
             this.ChkHeartbeatInterval.Name = "ChkHeartbeatInterval";
-            this.ChkHeartbeatInterval.Size = new System.Drawing.Size(122, 16);
+            this.ChkHeartbeatInterval.Size = new System.Drawing.Size(125, 17);
             this.ChkHeartbeatInterval.TabIndex = 10;
             this.ChkHeartbeatInterval.Text = "Heartbeat Interval (s)";
             this.ChkHeartbeatInterval.UseVisualStyleBackColor = true;
@@ -219,7 +219,7 @@
             // 
             // NudHeartbeatInterval
             // 
-            this.NudHeartbeatInterval.Location = new System.Drawing.Point(208, 6);
+            this.NudHeartbeatInterval.Location = new System.Drawing.Point(208, 7);
             this.NudHeartbeatInterval.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -231,7 +231,7 @@
             0,
             -2147483648});
             this.NudHeartbeatInterval.Name = "NudHeartbeatInterval";
-            this.NudHeartbeatInterval.Size = new System.Drawing.Size(50, 22);
+            this.NudHeartbeatInterval.Size = new System.Drawing.Size(50, 20);
             this.NudHeartbeatInterval.TabIndex = 11;
             this.NudHeartbeatInterval.Value = new decimal(new int[] {
             15,
@@ -242,15 +242,15 @@
             // LblReceiveDataInterval
             // 
             this.LblReceiveDataInterval.AutoSize = true;
-            this.LblReceiveDataInterval.Location = new System.Drawing.Point(6, 120);
+            this.LblReceiveDataInterval.Location = new System.Drawing.Point(6, 130);
             this.LblReceiveDataInterval.Name = "LblReceiveDataInterval";
-            this.LblReceiveDataInterval.Size = new System.Drawing.Size(120, 12);
+            this.LblReceiveDataInterval.Size = new System.Drawing.Size(125, 13);
             this.LblReceiveDataInterval.TabIndex = 18;
             this.LblReceiveDataInterval.Text = "Receive Data Interval (s)";
             // 
             // NudReceiveDataInterval
             // 
-            this.NudReceiveDataInterval.Location = new System.Drawing.Point(208, 118);
+            this.NudReceiveDataInterval.Location = new System.Drawing.Point(208, 128);
             this.NudReceiveDataInterval.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -262,22 +262,22 @@
             0,
             -2147483648});
             this.NudReceiveDataInterval.Name = "NudReceiveDataInterval";
-            this.NudReceiveDataInterval.Size = new System.Drawing.Size(50, 22);
+            this.NudReceiveDataInterval.Size = new System.Drawing.Size(50, 20);
             this.NudReceiveDataInterval.TabIndex = 19;
             // 
             // NudMaxDataSize
             // 
-            this.NudMaxDataSize.Location = new System.Drawing.Point(168, 90);
+            this.NudMaxDataSize.Location = new System.Drawing.Point(168, 98);
             this.NudMaxDataSize.Maximum = new decimal(new int[] {
-            2000000000,
+            104857600,
             0,
             0,
             0});
             this.NudMaxDataSize.Name = "NudMaxDataSize";
-            this.NudMaxDataSize.Size = new System.Drawing.Size(90, 22);
+            this.NudMaxDataSize.Size = new System.Drawing.Size(90, 20);
             this.NudMaxDataSize.TabIndex = 17;
             this.NudMaxDataSize.Value = new decimal(new int[] {
-            2000000000,
+            104857600,
             0,
             0,
             0});
@@ -285,15 +285,15 @@
             // LblMaxDataSize
             // 
             this.LblMaxDataSize.AutoSize = true;
-            this.LblMaxDataSize.Location = new System.Drawing.Point(6, 92);
+            this.LblMaxDataSize.Location = new System.Drawing.Point(6, 100);
             this.LblMaxDataSize.Name = "LblMaxDataSize";
-            this.LblMaxDataSize.Size = new System.Drawing.Size(107, 12);
+            this.LblMaxDataSize.Size = new System.Drawing.Size(110, 13);
             this.LblMaxDataSize.TabIndex = 16;
             this.LblMaxDataSize.Text = "Max Data Size (bytes)";
             // 
             // NudMaxIdleDuration
             // 
-            this.NudMaxIdleDuration.Location = new System.Drawing.Point(208, 62);
+            this.NudMaxIdleDuration.Location = new System.Drawing.Point(208, 67);
             this.NudMaxIdleDuration.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -305,7 +305,7 @@
             0,
             -2147483648});
             this.NudMaxIdleDuration.Name = "NudMaxIdleDuration";
-            this.NudMaxIdleDuration.Size = new System.Drawing.Size(50, 22);
+            this.NudMaxIdleDuration.Size = new System.Drawing.Size(50, 20);
             this.NudMaxIdleDuration.TabIndex = 15;
             this.NudMaxIdleDuration.Value = new decimal(new int[] {
             60,
@@ -316,9 +316,9 @@
             // ChkMaxIdleDuration
             // 
             this.ChkMaxIdleDuration.AutoSize = true;
-            this.ChkMaxIdleDuration.Location = new System.Drawing.Point(6, 63);
+            this.ChkMaxIdleDuration.Location = new System.Drawing.Point(6, 68);
             this.ChkMaxIdleDuration.Name = "ChkMaxIdleDuration";
-            this.ChkMaxIdleDuration.Size = new System.Drawing.Size(125, 16);
+            this.ChkMaxIdleDuration.Size = new System.Drawing.Size(123, 17);
             this.ChkMaxIdleDuration.TabIndex = 14;
             this.ChkMaxIdleDuration.Text = "Max Idle Duration (s)";
             this.ChkMaxIdleDuration.UseVisualStyleBackColor = true;
@@ -326,7 +326,7 @@
             // 
             // NudMaxConnectionDuration
             // 
-            this.NudMaxConnectionDuration.Location = new System.Drawing.Point(208, 34);
+            this.NudMaxConnectionDuration.Location = new System.Drawing.Point(208, 37);
             this.NudMaxConnectionDuration.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -338,7 +338,7 @@
             0,
             -2147483648});
             this.NudMaxConnectionDuration.Name = "NudMaxConnectionDuration";
-            this.NudMaxConnectionDuration.Size = new System.Drawing.Size(50, 22);
+            this.NudMaxConnectionDuration.Size = new System.Drawing.Size(50, 20);
             this.NudMaxConnectionDuration.TabIndex = 13;
             this.NudMaxConnectionDuration.Value = new decimal(new int[] {
             600,
@@ -349,9 +349,9 @@
             // ChkMaxConnectionDuration
             // 
             this.ChkMaxConnectionDuration.AutoSize = true;
-            this.ChkMaxConnectionDuration.Location = new System.Drawing.Point(6, 35);
+            this.ChkMaxConnectionDuration.Location = new System.Drawing.Point(6, 38);
             this.ChkMaxConnectionDuration.Name = "ChkMaxConnectionDuration";
-            this.ChkMaxConnectionDuration.Size = new System.Drawing.Size(161, 16);
+            this.ChkMaxConnectionDuration.Size = new System.Drawing.Size(160, 17);
             this.ChkMaxConnectionDuration.TabIndex = 12;
             this.ChkMaxConnectionDuration.Text = "Max Connection Duration (s)";
             this.ChkMaxConnectionDuration.UseVisualStyleBackColor = true;
@@ -361,10 +361,10 @@
             // 
             this.TControlParameters.Controls.Add(this.TPageMainParameters);
             this.TControlParameters.Controls.Add(this.TPageOtherParameters);
-            this.TControlParameters.Location = new System.Drawing.Point(12, 90);
+            this.TControlParameters.Location = new System.Drawing.Point(12, 98);
             this.TControlParameters.Name = "TControlParameters";
             this.TControlParameters.SelectedIndex = 0;
-            this.TControlParameters.Size = new System.Drawing.Size(320, 130);
+            this.TControlParameters.Size = new System.Drawing.Size(320, 141);
             this.TControlParameters.TabIndex = 2;
             // 
             // TPageMainParameters
@@ -379,7 +379,7 @@
             this.TPageMainParameters.Location = new System.Drawing.Point(4, 22);
             this.TPageMainParameters.Name = "TPageMainParameters";
             this.TPageMainParameters.Padding = new System.Windows.Forms.Padding(3);
-            this.TPageMainParameters.Size = new System.Drawing.Size(312, 104);
+            this.TPageMainParameters.Size = new System.Drawing.Size(312, 115);
             this.TPageMainParameters.TabIndex = 0;
             this.TPageMainParameters.Text = "Main Parameters";
             this.TPageMainParameters.UseVisualStyleBackColor = true;
@@ -404,14 +404,14 @@
             this.TPageOtherParameters.Location = new System.Drawing.Point(4, 22);
             this.TPageOtherParameters.Name = "TPageOtherParameters";
             this.TPageOtherParameters.Padding = new System.Windows.Forms.Padding(3);
-            this.TPageOtherParameters.Size = new System.Drawing.Size(312, 104);
+            this.TPageOtherParameters.Size = new System.Drawing.Size(312, 115);
             this.TPageOtherParameters.TabIndex = 1;
             this.TPageOtherParameters.Text = "Other Parameters";
             this.TPageOtherParameters.UseVisualStyleBackColor = true;
             // 
             // NudSleepingInterval
             // 
-            this.NudSleepingInterval.Location = new System.Drawing.Point(208, 174);
+            this.NudSleepingInterval.Location = new System.Drawing.Point(208, 189);
             this.NudSleepingInterval.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -423,7 +423,7 @@
             0,
             -2147483648});
             this.NudSleepingInterval.Name = "NudSleepingInterval";
-            this.NudSleepingInterval.Size = new System.Drawing.Size(50, 22);
+            this.NudSleepingInterval.Size = new System.Drawing.Size(50, 20);
             this.NudSleepingInterval.TabIndex = 23;
             this.NudSleepingInterval.Value = new decimal(new int[] {
             100,
@@ -436,9 +436,9 @@
             this.ChkSleepingInterval.AutoSize = true;
             this.ChkSleepingInterval.Checked = true;
             this.ChkSleepingInterval.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ChkSleepingInterval.Location = new System.Drawing.Point(6, 175);
+            this.ChkSleepingInterval.Location = new System.Drawing.Point(6, 190);
             this.ChkSleepingInterval.Name = "ChkSleepingInterval";
-            this.ChkSleepingInterval.Size = new System.Drawing.Size(127, 16);
+            this.ChkSleepingInterval.Size = new System.Drawing.Size(127, 17);
             this.ChkSleepingInterval.TabIndex = 22;
             this.ChkSleepingInterval.Text = "Sleeping Interval (ms)";
             this.ChkSleepingInterval.UseVisualStyleBackColor = true;
@@ -446,14 +446,14 @@
             // 
             // NudReceiveTotalBufferSize
             // 
-            this.NudReceiveTotalBufferSize.Location = new System.Drawing.Point(188, 146);
+            this.NudReceiveTotalBufferSize.Location = new System.Drawing.Point(188, 158);
             this.NudReceiveTotalBufferSize.Maximum = new decimal(new int[] {
             1000000000,
             0,
             0,
             0});
             this.NudReceiveTotalBufferSize.Name = "NudReceiveTotalBufferSize";
-            this.NudReceiveTotalBufferSize.Size = new System.Drawing.Size(70, 22);
+            this.NudReceiveTotalBufferSize.Size = new System.Drawing.Size(70, 20);
             this.NudReceiveTotalBufferSize.TabIndex = 21;
             this.NudReceiveTotalBufferSize.Value = new decimal(new int[] {
             10485760,
@@ -464,9 +464,9 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 151);
+            this.label1.Location = new System.Drawing.Point(6, 164);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(160, 12);
+            this.label1.Size = new System.Drawing.Size(162, 13);
             this.label1.TabIndex = 20;
             this.label1.Text = "Receive Total Buffer Size (bytes)";
             // 
@@ -474,11 +474,11 @@
             // 
             this.BWorkerCheckConnected.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerCheckConnected_DoWork);
             // 
-            // GboxParameters
+            // FrmTcpClient
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(434, 261);
+            this.ClientSize = new System.Drawing.Size(434, 283);
             this.Controls.Add(this.TControlParameters);
             this.Controls.Add(this.BtnSendFile);
             this.Controls.Add(this.BtnSendText);
@@ -489,7 +489,7 @@
             this.Controls.Add(this.LblVersion);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.Name = "GboxParameters";
+            this.Name = "FrmTcpClient";
             this.Text = "FrmTcpClient";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmTcpClient_FormClosed);
             this.Load += new System.EventHandler(this.FrmTcpClient_Load);
