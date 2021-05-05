@@ -5,6 +5,7 @@ It is a Visual Studio C Sharp Windows Form sample code version 2, which demonstr
 DbHelper
 ExcelHelper
 FileTransferHelper
+GeneralT
 MailHelper
 Singleton
 TCsvFile
