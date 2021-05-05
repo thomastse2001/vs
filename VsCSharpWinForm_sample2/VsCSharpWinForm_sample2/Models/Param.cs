@@ -36,7 +36,7 @@ namespace VsCSharpWinForm_sample2.Models
                 public static bool ContainLengthAsHeader = true;
                 public static bool EncryptData = true;
                 public static string CryptPassword = "abc123";
-                public static string IncomingDataFilePath = @"TcpClient{1}\{0:yyyyMMdd_HHmmss}_{1}.dat";// {0} is date time, {1} is Id.
+                public static string IncomingDataFilename = "{0:yyyyMMdd_HHmmss}_{1}.dat";// {0} is date time, {1} is Id.
                 public static string IncomingDataFolder = "TcpClient{0}";
             }
         }
@@ -49,7 +49,7 @@ namespace VsCSharpWinForm_sample2.Models
             //public static Helpers.TTcpServerSocket ServerSocket = null;
             public static Helpers.TTcpSocket.Server ServerSocket = null;
             public static string CryptPassword = "abc123";
-            public static string IncomingDataFilePath = @"TcpServer\{0:yyyyMMdd_HHmmss}_{1}_{2}.dat";// {0} is date time, {1} is host, {2} is port.
+            public static string IncomingDataFilename = "{0:yyyyMMdd_HHmmss}_{1}_{2}.dat";// {0} is date time, {1} is host, {2} is port.
             public static string IncomingDataFolder = "TcpServer";
         }
     }

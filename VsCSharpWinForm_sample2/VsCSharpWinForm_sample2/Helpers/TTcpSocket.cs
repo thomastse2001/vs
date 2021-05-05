@@ -11,7 +11,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// TCP Client and Server by a synchronous socket in the threading model.
         /// Able to send file with 100M bytes, and even 200M bytes, but not very good to send 200 M bytes. Cannot send 500M bytes file.
         /// Data unit is byte.
-        /// Updated date: 2021-04-30
+        /// Updated date: 2021-05-05
         /// 
         /// AddDataToIncomingDataQueue
         /// PackData
@@ -1998,6 +1998,9 @@ namespace VsCSharpWinForm_sample2.Helpers
             public int LastIndexPiece;
             public int IndexPiece;
             public byte[] FileContent;
+            /// Destination setting.
+            public string DestFolder;
+            public string DestFilepath { get { return System.IO.Path.Combine(DestFolder, Filename); } }
         }
 
         public static class Serialization
@@ -2133,6 +2136,44 @@ namespace VsCSharpWinForm_sample2.Helpers
                         return null;
                         //break;
                 }
+            }
+
+            /// Append the deserialized data to file.
+            /// Return value = error string. Null if success.
+            /// deserializedData = object of deserialized data.
+            /// deserializedData.Filename = file path. If it is not full path, the file will be saved in the current directory by default.
+            public static string AppendDeserializedDataToFile(DeserializedData deserializedData)
+            {
+                if (deserializedData == null) return "Empty object of deserialized data";
+                if (string.IsNullOrWhiteSpace(deserializedData.DestFilepath)) return "Empty destination filen path";
+                string tempPath = deserializedData.DestFilepath + ".tmp";
+                int fileContentLength = deserializedData.FileContent?.Length ?? 0;
+                if (System.IO.File.Exists(tempPath))
+                { if (deserializedData.IndexPiece == 0) System.IO.File.Delete(tempPath); }
+                else
+                {
+                    string destFolder = deserializedData.DestFolder;
+                    if (string.IsNullOrEmpty(destFolder)) destFolder = System.IO.Directory.GetCurrentDirectory();
+                    if (!System.IO.Directory.Exists(destFolder)) System.IO.Directory.CreateDirectory(destFolder);
+                    if (!System.IO.Directory.Exists(destFolder)) return string.Format("Fail to create folder {0}", destFolder);
+                }
+                if (fileContentLength > 0)
+                {
+                    using (System.IO.FileStream fs = new System.IO.FileStream(tempPath, System.IO.FileMode.Append))
+                    { fs.Write(deserializedData.FileContent, 0, fileContentLength); }
+                }
+                else
+                {
+                    /// Create an empty file.
+                    if (!System.IO.File.Exists(tempPath)) using (System.IO.File.Create(tempPath)) { }
+                }
+                if (deserializedData.IndexPiece == deserializedData.LastIndexPiece)
+                {
+                    if (System.IO.File.Exists(deserializedData.DestFilepath)) System.IO.File.Delete(deserializedData.DestFilepath);
+                    if (System.IO.File.Exists(tempPath)) System.IO.File.Move(tempPath, deserializedData.DestFilepath);
+                    else return string.Format("Cannot find temp file {0}", tempPath);
+                }
+                return null;
             }
 
             ///// Deserialize a byte array and output text or file.

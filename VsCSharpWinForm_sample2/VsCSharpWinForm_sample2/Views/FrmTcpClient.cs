@@ -105,55 +105,29 @@ namespace VsCSharpWinForm_sample2.Views
                             Logger?.Debug("FrmTcpClient {0} receives error message. Received Time = {1}", Id, s);
                             WriteLogToUI(s);
                         }
-                        string filepath = System.IO.Path.Combine(Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFolder, Id)), deserializedData.Filename);
+                        deserializedData.DestFolder = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFolder, Id));
                         if (string.IsNullOrWhiteSpace(deserializedData.Filename))
                         {
                             s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Filename is empty.", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece);
                             Logger?.Debug("FrmTcpClient {0} receives file piece. Received Time = {1}", Id, s);
                             WriteLogToUI(s);
-                            filepath = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilePath, o.Timestamp, Id));
+                            deserializedData.Filename = string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilename, o.Timestamp, Id);
                         }
-                        if (!Helpers.GeneralT.FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath)))
+                        s = Helpers.TTcpSocket.Serialization.AppendDeserializedDataToFile(deserializedData);
+                        if (string.IsNullOrEmpty(s))
                         {
-                            WriteLogToUI("Fail to create folder.");
-                            return;
-                        }
-                        //if ((deserializedData.FileContent?.Length ?? 0) > 0)
-                        //    System.IO.File.WriteAllBytes(filepath, deserializedData.FileContent);
-                        //else
-                        //    using (System.IO.File.Create(filepath)) { }
-                        string tempPath = filepath + ".tmp";
-                        int fileContentLength = deserializedData.FileContent?.Length ?? 0;
-                        if (deserializedData.IndexPiece == 0)
-                        {
-                            if (System.IO.File.Exists(tempPath)) System.IO.File.Delete(tempPath);
-                        }
-                        if (fileContentLength > 0)
-                        {
-                            using (System.IO.FileStream fs = new System.IO.FileStream(tempPath, System.IO.FileMode.Append))
-                            { fs.Write(deserializedData.FileContent, 0, fileContentLength); }
-                        }
-                        else
-                        {
-                            /// Create an empty file.
-                            if (!System.IO.File.Exists(tempPath)) using (System.IO.File.Create(filepath)) { }
-                        }
-                        if (deserializedData.IndexPiece == deserializedData.LastIndexPiece)
-                        {
-                            if (System.IO.File.Exists(filepath)) System.IO.File.Delete(filepath);
-                            if (System.IO.File.Exists(tempPath))
+                            if (deserializedData.IndexPiece == deserializedData.LastIndexPiece)
                             {
-                                System.IO.File.Move(tempPath, filepath);
-                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, filepath);
+                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.DestFilepath);
                                 Logger?.Debug("FrmTcpClient {0} completes to receive file. Received Time = {1}", Id, s);
                                 WriteLogToUI(s);
                             }
-                            else
-                            {
-                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss} {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Temp file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, tempPath);
-                                Logger?.Error("FrmTcpClient {0} cannot find temp file. Received Time = {1}", Id, s);
-                                WriteLogToUI(s);
-                            }
+                        }
+                        else
+                        {
+                            s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}. Error = {6}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.DestFilepath, s);
+                            Logger?.Error("FrmTcpClient {0} has error when receiving file. Received Time = {1}", Id, s);
+                            WriteLogToUI(s);
                         }
                         break;
                     default:
@@ -563,7 +537,7 @@ namespace VsCSharpWinForm_sample2.Views
             try
             {
                 bool isSuccessful = true;
-                int pieceLength = 10485760;// 10M bytes.
+                int pieceLength = 52428800;//50M bytes.//10485760;// 10M bytes.
                 long totalLength = (new System.IO.FileInfo(filepath)).Length;
                 int lastIndexPiece = (int)Math.Ceiling(1.0m * totalLength / pieceLength) - 1;
                 int indexPiece = 0;

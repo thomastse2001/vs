@@ -753,57 +753,35 @@ namespace VsCSharpWinForm_sample2
                         s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Piece length = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.FileContent?.Length);
                         Logger?.Debug("TCP server receives a file piece. Received Time = {0}", s);
                         WriteLogToUI(s);
-                        if (!string.IsNullOrEmpty(deserializedData?.ErrorMessage))
+                        if (!string.IsNullOrEmpty(deserializedData.ErrorMessage))
                         {
                             s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of pieces = {3}. Index of current piece = {4}. Error Message = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.ErrorMessage);
                             Logger?.Debug("TCP server receices error message. Received Time = {0}", s);
                             WriteLogToUI(s);
                         }
-                        string filepath = System.IO.Path.Combine(GeneralT.GetDefaultAbsolutePathIfRelative(Param.TcpServer.IncomingDataFolder), deserializedData.Filename);
-                        if (string.IsNullOrWhiteSpace(deserializedData?.Filename))
+                        deserializedData.DestFolder = GeneralT.GetDefaultAbsolutePathIfRelative(Param.TcpServer.IncomingDataFolder);
+                        if (string.IsNullOrWhiteSpace(deserializedData.Filename))
                         {
                             s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of pieces = {3}. Index of current piece = {4}. Filename is empty.", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece);
                             Logger?.Debug("TCP server finds empty filename. Received Time = {0)");
                             WriteLogToUI(s);
-                            filepath = GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Param.TcpServer.IncomingDataFilePath, o.Timestamp));
+                            deserializedData.Filename = string.Format(Param.TcpServer.IncomingDataFilename, o.Timestamp, o.Host, o.Port);
                         }
-                        if (!GeneralT.FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath)))
+                        s = TTcpSocket.Serialization.AppendDeserializedDataToFile(deserializedData);
+                        if (string.IsNullOrEmpty(s))
                         {
-                            WriteLogToUI("Fail to create folder.");
-                            return;
-                        }
-                        //if ((deserializedData.FileContent?.Length ?? 0) > 0)
-                        //    System.IO.File.WriteAllBytes(filepath, deserializedData.FileContent);
-                        //else
-                        //    using (System.IO.File.Create(filepath)) { }
-                        string tempPath = filepath + ".tmp";
-                        int fileContentLength = deserializedData.FileContent?.Length ?? 0;
-                        if (fileContentLength > 0)
-                        {
-                            using (System.IO.FileStream fs = new System.IO.FileStream(tempPath, System.IO.FileMode.Append))
-                            { fs.Write(deserializedData.FileContent, 0, fileContentLength); }
-                        }
-                        else
-                        {
-                            /// Create an empty file.
-                            if (!System.IO.File.Exists(tempPath)) using (System.IO.File.Create(filepath)) { }
-                        }
-                        if (deserializedData.IndexPiece == deserializedData.LastIndexPiece)
-                        {
-                            if (System.IO.File.Exists(filepath)) System.IO.File.Delete(filepath);
-                            if (System.IO.File.Exists(tempPath))
+                            if (deserializedData.IndexPiece == deserializedData.LastIndexPiece)
                             {
-                                System.IO.File.Move(tempPath, filepath);
-                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, filepath);
+                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.DestFilepath);
                                 Logger?.Debug("TCP server completes to receive file. Received Time = {0}", s);
                                 WriteLogToUI(s);
                             }
-                            else
-                            {
-                                s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Temp file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, tempPath);
-                                Logger?.Error("TCP server cannot find temp file. Received Time = {0}", s);
-                                WriteLogToUI(s);
-                            }
+                        }
+                        else
+                        {
+                            s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Output file path = {5}", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece, deserializedData.DestFilepath, s);
+                            Logger?.Error("TCP server has error when receiving file. Received Time = {0}", s);
+                            WriteLogToUI(s);
                         }
                         break;
                     default:
@@ -1267,7 +1245,7 @@ namespace VsCSharpWinForm_sample2
             /// https://stackoverflow.com/questions/2161895/reading-large-text-files-with-streams-in-c-sharp
             try
             {
-                int pieceLength = 10485760;// 10M bytes.
+                int pieceLength = 52428800;//50M bytes.//10485760;// 10M bytes.
                 long totalLength = (new System.IO.FileInfo(filepath)).Length;
                 int lastIndexPiece = (int)Math.Ceiling(1.0m * totalLength / pieceLength) - 1;
                 int indexPiece = 0;
@@ -2338,6 +2316,12 @@ namespace VsCSharpWinForm_sample2
                 else if (b.GetValueOrDefault()) s = "Current version is updated.";
                 else s = "Not updated.";
                 LocalLogger(TLog.LogLevel.DEBUG, s);
+                s = @"abc.doc";
+                string s2 = System.IO.Path.GetDirectoryName(s);
+                LocalLogger(TLog.LogLevel.DEBUG, "Filename = {0}", s);
+                LocalLogger(TLog.LogLevel.DEBUG, "Folder = {0}", s2);
+                string s3 = System.IO.Path.Combine("", s);
+                LocalLogger(TLog.LogLevel.DEBUG, "Filepath = {0}", s3);
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
