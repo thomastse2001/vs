@@ -19,7 +19,7 @@ Login Process
 
 Data transfer process in TTcpClientSocket, TTcpServerSocket and TTcpSocket:
 Sender:
-Convert data in byte array no matter which data is, such as text, file, heartbeat.
+Convert data in byte array no matter which data is, such as text, file, or heartbeat.
 Encrypt data as an encrypted data in byte array.
 Socket packs the encrypted data into a data package.
 Socket sends the data package in byte array to another socket.
