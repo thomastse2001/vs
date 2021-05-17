@@ -9,7 +9,7 @@ namespace VsCSharpWinForm_sample2.Helpers
     public class GeneralT
     {
         /// General functions.
-        /// Updated date: 2021-04-22
+        /// Updated date: 2021-05-14
         /// To zip or unzip file, need to install Ionic.Zip in NuGet Package Manager.
 
         public static TLog Logger { get; set; }
@@ -20,9 +20,8 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (string.IsNullOrEmpty(defaultFolder))
-                { return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); }
-                else { return defaultFolder.Trim().TrimEnd(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar }); }
+                if (string.IsNullOrEmpty(defaultFolder)) return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                else return defaultFolder.Trim().TrimEnd(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
             }
             catch (Exception ex)
             {
@@ -42,10 +41,10 @@ namespace VsCSharpWinForm_sample2.Helpers
             char[] cArrayTrim = { (char)9, ' ', System.IO.Path.DirectorySeparatorChar };
             try
             {
-                if (string.IsNullOrEmpty(path)) { return GetDefaultFolder(defaultFolder); }
+                if (string.IsNullOrEmpty(path)) return GetDefaultFolder(defaultFolder);
                 path = path.Trim(cArrayTrim);
-                if (System.IO.Path.IsPathRooted(path)) { return path; }
-                else { return GetDefaultFolder(defaultFolder) + System.IO.Path.DirectorySeparatorChar + path; }
+                if (System.IO.Path.IsPathRooted(path)) return path;
+                else return GetDefaultFolder(defaultFolder) + System.IO.Path.DirectorySeparatorChar + path;
             }
             catch (Exception ex)
             {
@@ -63,9 +62,9 @@ namespace VsCSharpWinForm_sample2.Helpers
             try
             {
                 folder = folder.TrimEnd((char)9, ' ', System.IO.Path.DirectorySeparatorChar).Trim();
-                if (System.IO.Directory.Exists(folder)) { return true; }
+                if (System.IO.Directory.Exists(folder)) return true;
                 System.IO.Directory.CreateDirectory(folder);
-                if (System.IO.Directory.Exists(folder)) { return true; }
+                if (System.IO.Directory.Exists(folder)) return true;
                 Logger.Warn("Cannot create the folder {0}", folder);
                 return false;
             }
@@ -85,7 +84,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (!System.IO.File.Exists(filepath)) { return null; }
+                if (!System.IO.File.Exists(filepath)) return null;
                 string sReturn = "";
                 using (System.IO.StreamReader sr = new System.IO.StreamReader(filepath))
                 {
@@ -148,7 +147,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     sb.Length = 0;
                     sb.Capacity = 0;
                 }
-                if (System.IO.File.Exists(path)) { return false; }
+                if (System.IO.File.Exists(path)) return false;
                 else
                 {
                     if (string.IsNullOrEmpty(content))
@@ -193,7 +192,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     System.IO.File.Delete(path);
                     return !System.IO.File.Exists(path);
                 }
-                else { return true; }
+                else return true;
             }
             catch (Exception ex)
             {
@@ -277,10 +276,10 @@ namespace VsCSharpWinForm_sample2.Helpers
             System.IO.DriveInfo oDrive;
             try
             {
-                if (string.IsNullOrEmpty(path) == false) { path = path.Trim(new char[]{ (char)9, ' ', (char)10, (char)13 }); }
-                if (string.IsNullOrEmpty(path)) { return -2; }
+                if (string.IsNullOrEmpty(path) == false) path = path.Trim(new char[]{ (char)9, ' ', (char)10, (char)13 });
+                if (string.IsNullOrEmpty(path)) return -2;
                 sDrive = System.IO.Path.GetPathRoot(path);
-                if (string.IsNullOrEmpty(sDrive)) { return -3; }
+                if (string.IsNullOrEmpty(sDrive)) return -3;
                 oDrive = new System.IO.DriveInfo(sDrive);
                 return 100.0 * oDrive.TotalFreeSpace / oDrive.TotalSize;
             }
@@ -306,11 +305,11 @@ namespace VsCSharpWinForm_sample2.Helpers
             output = "";
             try
             {
-                if (args == null) { return bReturn; }
+                if (args == null) return bReturn;
                 if (sSwitch.Length > 0)
                 {
                     i = 0;
-                    while ((bReturn == false) && (i < args.Length))
+                    while (bReturn == false && i < args.Length)
                     {
                         s = args[i];
                         if (s.Length >= sSwitch.Length)
@@ -318,7 +317,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                             if (s.Substring(0, sSwitch.Length).ToLower().Equals(sSwitch.ToLower()))
                             {
                                 bReturn = true;/// stop looping.
-                                if (s.Length > sSwitch.Length) { output = s.Substring(sSwitch.Length); }
+                                if (s.Length > sSwitch.Length) output = s.Substring(sSwitch.Length);
                             }
                         }
                         i += 1;
@@ -346,7 +345,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 /// still being written to
                 /// or being processed by another thread
                 /// or does not exist (has already been processed)
-                if (isEnableDebugLog) { Logger?.Debug("File is locked. {0}", file); }
+                if (isEnableDebugLog) Logger?.Debug("File is locked. {0}", file);
                 bReturn = true;
             }
             finally
@@ -390,10 +389,10 @@ namespace VsCSharpWinForm_sample2.Helpers
                 i = 0;
                 while (IsFileLocked(sSrcPath, false) && i < iMaxTry)
                 {
-                    if (iSleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(iSleepingIntervalInMS); }
+                    if (iSleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(iSleepingIntervalInMS);
                     i += 1;
                 }
-                if (IsFileLocked(sSrcPath)) { return null; }
+                if (IsFileLocked(sSrcPath)) return null;
 
                 //if (sSrcPath.Contains(sSrcFolder)) { sRelativePath = sSrcPath.Substring(sSrcFolder.Length).Trim(cArrayTrim); }
                 sSrcFolder = GetDefaultAbsolutePathIfRelative(sSrcFolder);
@@ -413,7 +412,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         i = 0;
                         while (System.IO.File.Exists(sDestPath) && i < iMaxTry)
                         {
-                            if (iSleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(iSleepingIntervalInMS); }
+                            if (iSleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(iSleepingIntervalInMS);
                             i += 1;
                         }
                         if (System.IO.File.Exists(sDestPath))
@@ -441,7 +440,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     i = 0;
                     while (IsFileLocked(sSrcPath, false) && i < iMaxTry)
                     {
-                        if (iSleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(iSleepingIntervalInMS); }
+                        if (iSleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(iSleepingIntervalInMS);
                         i += 1;
                     }
                     System.IO.File.Copy(sSrcPath, sDestPath, true);
@@ -458,7 +457,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     i = 0;
                     while (IsFileLocked(sSrcPath, false) && i < iMaxTry)
                     {
-                        if (iSleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(iSleepingIntervalInMS); }
+                        if (iSleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(iSleepingIntervalInMS);
                         i += 1;
                     }
                     System.IO.File.Move(sSrcPath, sDestPath);
@@ -489,7 +488,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         {
             try
             {
-                if (!System.IO.File.Exists(sPath)) { return true; }
+                if (!System.IO.File.Exists(sPath)) return true;
                 System.IO.File.Delete(sPath);
                 return true;
             }
@@ -512,14 +511,14 @@ namespace VsCSharpWinForm_sample2.Helpers
             DateTime t;
             try
             {
-                if (!System.IO.File.Exists(sPath)) { return true; }
+                if (!System.IO.File.Exists(sPath)) return true;
                 b = true; t = DateTime.Now;
                 do
                 {
-                    if (FileDeletionReturnBool(sPath)) { b = false; }
+                    if (FileDeletionReturnBool(sPath)) b = false;
                     else { if (iSleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(iSleepingIntervalInMS); } }
                 } while (b && (int)(DateTime.Now - t).TotalMilliseconds < iTimeoutInMS);
-                if (System.IO.File.Exists(sPath)) { return false; }
+                if (System.IO.File.Exists(sPath)) return false;
                 return true;
             }
             catch (Exception ex)
@@ -539,7 +538,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             try
             {
-                if (filesRequired == null || filesRequired.Length < 1) { return true; }
+                if (filesRequired == null || filesRequired.Length < 1) return true;
                 sDefaultFolder = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
                 bReturn = true;
                 foreach (string s in filesRequired)
@@ -568,7 +567,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             bool bReturn;
             try
             {
-                if (servicesRequired == null || servicesRequired.Length < 1) { return true; }
+                if (servicesRequired == null || servicesRequired.Length < 1) return true;
                 bReturn = true;
                 // foreach (string s in sArrayServicesRequired)
                 // {
@@ -601,7 +600,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". Detect.");
                     return true;
                 }
-                else { return false; }
+                else return false;
             }
             catch (Exception ex)
             {
@@ -656,7 +655,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// pThread = target thread that will be aborted.
         public static bool AbortThread(ref System.Threading.Thread pThread)
         {
-            if (pThread == null) { return true; }
+            if (pThread == null) return true;
             try
             {
                 if (pThread.IsAlive)
@@ -832,8 +831,8 @@ namespace VsCSharpWinForm_sample2.Helpers
         //{
         //    try
         //    {
-        //        if (string.IsNullOrWhiteSpace(folderPath) || string.IsNullOrWhiteSpace(searchPattern)) { return null; }
-        //        if (!System.IO.Directory.Exists(folderPath)) { return null; }// Cannot find folder.
+        //        if (string.IsNullOrWhiteSpace(folderPath) || string.IsNullOrWhiteSpace(searchPattern)) return null;
+        //        if (!System.IO.Directory.Exists(folderPath)) return null;// Cannot find folder.
         //        // Get all files with search pattern in the folder.
         //        return System.IO.Directory.GetFiles(folderPath, searchPattern);
         //    }
@@ -844,11 +843,12 @@ namespace VsCSharpWinForm_sample2.Helpers
         //    }
         //}
 
-        public static string[] GetFilesWithPatternAndExpiryDayCountInFolder(string folderPath, string fileNamePrefix, string fileNameSuffix, string fileExtension, int expiryDayCount)
+        /// datetimeFormat = Date time format. e.g. "yyyy-MM-dd"
+        public static string[] GetFilesWithPatternAndExpiryDayCountInFolder(string folderPath, string fileNamePrefix, string fileNameSuffix, string fileExtension, int expiryDayCount, string datetimeFormat)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(folderPath) || System.IO.Directory.Exists(folderPath) == false) { return null; }
+                if (string.IsNullOrWhiteSpace(folderPath) || System.IO.Directory.Exists(folderPath) == false) return null;
                 string filenameFormat = string.Format("{0}*{1}{2}", fileNamePrefix, fileNameSuffix, fileExtension);
                 string[] filepaths = System.IO.Directory.GetFiles(folderPath, filenameFormat);
                 List<string> list = new List<string>();
@@ -859,16 +859,13 @@ namespace VsCSharpWinForm_sample2.Helpers
                         string s = System.IO.Path.GetFileNameWithoutExtension(p);
                         if (!string.IsNullOrEmpty(s))
                         {
-                            if (string.IsNullOrEmpty(fileNamePrefix) == false && fileNamePrefix.Length < s.Length) { s = s.Substring(fileNamePrefix.Length); }
-                            if (string.IsNullOrEmpty(fileNameSuffix) == false && fileNameSuffix.Length < s.Length) { s = s.Substring(0, s.Length - fileNameSuffix.Length); }
+                            if (string.IsNullOrEmpty(fileNamePrefix) == false && fileNamePrefix.Length < s.Length) s = s.Substring(fileNamePrefix.Length);
+                            if (string.IsNullOrEmpty(fileNameSuffix) == false && fileNameSuffix.Length < s.Length) s = s.Substring(0, s.Length - fileNameSuffix.Length);
                             if (string.IsNullOrEmpty(s) == false && s.Length > 0)
                             {
-                                if (DateTime.TryParseExact(s, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime t))
+                                if (DateTime.TryParseExact(s, datetimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime t))
                                 {
-                                    if ((int)(DateTime.Now - t).TotalDays > expiryDayCount)
-                                    {
-                                        list.Add(p);
-                                    }
+                                    if ((int)(DateTime.Now - t).TotalDays > expiryDayCount) list.Add(p);
                                 }
                             }
                         }
