@@ -473,7 +473,7 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                string[] files = GeneralT.GetFilesWithPatternAndExpiryDayCountInFolder("log", null, null, ".log", 2);
+                string[] files = GeneralT.GetFilesWithPatternAndExpiryDayCountInFolder("log", null, null, ".log", 2, "yyyy-MM-dd");
                 if ((files?.Length ?? 0) > 0)
                 {
                     LocalLogger(TLog.LogLevel.INFO, "FileCount = {0}", files.Length);
@@ -2302,6 +2302,52 @@ namespace VsCSharpWinForm_sample2
         }
         #endregion
 
+        private void BtnUri_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Uri uri = new Uri("sftp://10.15.255.5/Dunhill_uk/FCDB_TestData/SFCI_APAC_P_*.csv");
+                string host = uri?.Host;/// 10.10.255.255
+                string remotePath = uri?.AbsolutePath;/// /abc_folder/sub_folder/abc.zip
+                LocalLogger(TLog.LogLevel.DEBUG, "AbsolutePath = {0}", uri?.AbsolutePath);
+                LocalLogger(TLog.LogLevel.DEBUG, "AbsoluteUri = {0}", uri?.AbsoluteUri);
+                LocalLogger(TLog.LogLevel.DEBUG, "Fragment = {0}", uri?.Fragment);
+                LocalLogger(TLog.LogLevel.DEBUG, "Host = {0}", uri?.Host);
+                LocalLogger(TLog.LogLevel.DEBUG, "HostNameType = {0}", uri?.HostNameType);
+                LocalLogger(TLog.LogLevel.DEBUG, "LocalPath = {0}", uri?.LocalPath);
+                LocalLogger(TLog.LogLevel.DEBUG, "OriginalString = {0}", uri?.OriginalString);
+                LocalLogger(TLog.LogLevel.DEBUG, "PathAndQuery = {0}", uri?.PathAndQuery);
+                LocalLogger(TLog.LogLevel.DEBUG, "Port = {0}", uri?.Port);
+                LocalLogger(TLog.LogLevel.DEBUG, "Query = {0}", uri?.Query);
+                LocalLogger(TLog.LogLevel.DEBUG, "Scheme = {0}", uri?.Scheme);
+                LocalLogger(TLog.LogLevel.DEBUG, "Segments = {0}", uri?.Segments);
+                LocalLogger(TLog.LogLevel.DEBUG, "UserEscaped = {0}", uri?.UserEscaped);
+                LocalLogger(TLog.LogLevel.DEBUG, "UserInfo = {0}", uri?.UserInfo);
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnArray1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string s = "apple.chan;Apple Chan;23456789";
+                string[] array = s?.Split(';');
+                Student student = new Student()
+                {
+                    UniqueName = array?[0],
+                    DisplayName = array?[1],
+                    Phone = array?[2],
+                    Email = array?[3]
+                };
+                LocalLogger(TLog.LogLevel.DEBUG, "UniqueName = {0}", student.UniqueName);
+                LocalLogger(TLog.LogLevel.DEBUG, "DisplayName = {0}", student.DisplayName);
+                LocalLogger(TLog.LogLevel.DEBUG, "Phone = {0}", student.Phone);
+                LocalLogger(TLog.LogLevel.DEBUG, "Email = {0}", student.Email);
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
         private void BtnTest1_Click(object sender, EventArgs e)
         {
             try
@@ -2322,6 +2368,17 @@ namespace VsCSharpWinForm_sample2
                 LocalLogger(TLog.LogLevel.DEBUG, "Folder = {0}", s2);
                 string s3 = System.IO.Path.Combine("", s);
                 LocalLogger(TLog.LogLevel.DEBUG, "Filepath = {0}", s3);
+                s = "sftp://10.15.255.5/Dunhill_uk/FCDB_TestData/SFCI_APAC_P_*.csv";
+                LocalLogger(TLog.LogLevel.DEBUG, "Original string = {0}", s);
+                LocalLogger(TLog.LogLevel.DEBUG, "Folder = {0}", System.IO.Path.GetDirectoryName(s));
+                LocalLogger(TLog.LogLevel.DEBUG, "Filename = {0}", System.IO.Path.GetFileName(s));
+                LocalLogger(TLog.LogLevel.DEBUG, "Please go to URI.");
+                s = "2021-05-13T08:37:57.187Z";
+                LocalLogger(TLog.LogLevel.DEBUG, "String = {0}", s);
+                if (DateTime.TryParse(s, out DateTime t)) LocalLogger(TLog.LogLevel.DEBUG, "Time = {0:yyyy-MM-dd HH:mm:ss.fff}. UTC time = {1:yyyy-MM-dd HH:mm:ss.fff}", t, t.ToUniversalTime());
+                else LocalLogger(TLog.LogLevel.DEBUG, "Cannot parse to time.");
+                DateTime? t1 = DateTime.TryParse(s, out t) ? t : (DateTime?)null;
+                LocalLogger(TLog.LogLevel.DEBUG, "Time = {0:yyyy-MM-dd HH:mm:ss.fff}. UTC time = {1:yyyy-MM-dd HH:mm:ss.fff}", t1, t1?.ToUniversalTime());
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }

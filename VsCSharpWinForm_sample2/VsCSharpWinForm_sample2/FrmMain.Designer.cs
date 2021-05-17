@@ -34,6 +34,8 @@
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnUri = new System.Windows.Forms.Button();
+            this.BtnOAuthMicrosoft = new System.Windows.Forms.Button();
             this.BtnEnDe1 = new System.Windows.Forms.Button();
             this.BtnSerializeFile = new System.Windows.Forms.Button();
             this.BtnSerializeText = new System.Windows.Forms.Button();
@@ -107,7 +109,7 @@
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
-            this.BtnOAuthMicrosoft = new System.Windows.Forms.Button();
+            this.BtnArray1 = new System.Windows.Forms.Button();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -165,6 +167,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnArray1);
+            this.tabPage1.Controls.Add(this.BtnUri);
             this.tabPage1.Controls.Add(this.BtnOAuthMicrosoft);
             this.tabPage1.Controls.Add(this.BtnEnDe1);
             this.tabPage1.Controls.Add(this.BtnSerializeFile);
@@ -197,6 +201,26 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnUri
+            // 
+            this.BtnUri.Location = new System.Drawing.Point(551, 127);
+            this.BtnUri.Name = "BtnUri";
+            this.BtnUri.Size = new System.Drawing.Size(75, 23);
+            this.BtnUri.TabIndex = 26;
+            this.BtnUri.Text = "URI";
+            this.BtnUri.UseVisualStyleBackColor = true;
+            this.BtnUri.Click += new System.EventHandler(this.BtnUri_Click);
+            // 
+            // BtnOAuthMicrosoft
+            // 
+            this.BtnOAuthMicrosoft.Location = new System.Drawing.Point(445, 126);
+            this.BtnOAuthMicrosoft.Name = "BtnOAuthMicrosoft";
+            this.BtnOAuthMicrosoft.Size = new System.Drawing.Size(100, 23);
+            this.BtnOAuthMicrosoft.TabIndex = 25;
+            this.BtnOAuthMicrosoft.Text = "OAuth Microsoft";
+            this.BtnOAuthMicrosoft.UseVisualStyleBackColor = true;
+            this.BtnOAuthMicrosoft.Click += new System.EventHandler(this.BtnOAuthMicrosoft_Click);
             // 
             // BtnEnDe1
             // 
@@ -1028,15 +1052,15 @@
             // 
             this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
-            // BtnOAuthMicrosoft
+            // BtnArray1
             // 
-            this.BtnOAuthMicrosoft.Location = new System.Drawing.Point(445, 126);
-            this.BtnOAuthMicrosoft.Name = "BtnOAuthMicrosoft";
-            this.BtnOAuthMicrosoft.Size = new System.Drawing.Size(100, 23);
-            this.BtnOAuthMicrosoft.TabIndex = 25;
-            this.BtnOAuthMicrosoft.Text = "OAuth Microsoft";
-            this.BtnOAuthMicrosoft.UseVisualStyleBackColor = true;
-            this.BtnOAuthMicrosoft.Click += new System.EventHandler(this.BtnOAuthMicrosoft_Click);
+            this.BtnArray1.Location = new System.Drawing.Point(632, 127);
+            this.BtnArray1.Name = "BtnArray1";
+            this.BtnArray1.Size = new System.Drawing.Size(75, 23);
+            this.BtnArray1.TabIndex = 27;
+            this.BtnArray1.Text = "Array1";
+            this.BtnArray1.UseVisualStyleBackColor = true;
+            this.BtnArray1.Click += new System.EventHandler(this.BtnArray1_Click);
             // 
             // FrmMain
             // 
@@ -1164,6 +1188,8 @@
         private System.Windows.Forms.Button BtnSerializeFile;
         private System.Windows.Forms.Button BtnEnDe1;
         private System.Windows.Forms.Button BtnOAuthMicrosoft;
+        private System.Windows.Forms.Button BtnUri;
+        private System.Windows.Forms.Button BtnArray1;
     }
 }
 
