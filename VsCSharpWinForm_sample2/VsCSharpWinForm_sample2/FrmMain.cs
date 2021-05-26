@@ -230,20 +230,20 @@ namespace VsCSharpWinForm_sample2
                     char[] cArrayTrim = { ' ', '\t', (char)10, (char)13 };
 
                     /// system.
-                    Param.IsService = TIniFile.GetBool(TIniFile.DoIniParaInBuffer(false, sIni, "IsService", "", Param.IsService.ToString()).Trim(cArrayTrim).ToUpper());
+                    Param.IsService = FileHelper.INI.GetBool(FileHelper.INI.DoIniParaInBuffer(false, sIni, "IsService", "", Param.IsService.ToString()).Trim(cArrayTrim).ToUpper());
                     //GeneralT.DoIniParaInBufferGetInteger(ref miMainLoopSleepingIntervalInMS, sIni, "MainLoopSleepingIntervalInMS", "", miMainLoopSleepingIntervalInMS);
 
                     /// Log.
                     if (Logger != null)
                     {
-                        Logger.FilePathFormat = GeneralT.GetDefaultAbsolutePathIfRelative(TIniFile.DoIniParaInBuffer(false, sIni, "FilePathFormat", "", Logger.FilePathFormat).Trim(cArrayTrim));
-                        Logger.ContentFormat = TIniFile.DoIniParaInBuffer(false, sIni, "ContentFormat", "", Logger.ContentFormat).Trim(cArrayTrim);
+                        Logger.FilePathFormat = GeneralT.GetDefaultAbsolutePathIfRelative(FileHelper.INI.DoIniParaInBuffer(false, sIni, "FilePathFormat", "", Logger.FilePathFormat).Trim(cArrayTrim));
+                        Logger.ContentFormat = FileHelper.INI.DoIniParaInBuffer(false, sIni, "ContentFormat", "", Logger.ContentFormat).Trim(cArrayTrim);
                     }
 
                     /// Login.
-                    Param.Login.MaxRetry = TIniFile.GetInt(TIniFile.DoIniParaInBuffer(false, sIni, "LoginMaxRetry", "", Param.Login.MaxRetry.ToString()), 0) ?? 0;
-                    Param.Login.FailMessage = TIniFile.DoIniParaInBuffer(false, sIni, "LoginFailMessage", "", Param.Login.FailMessage).Trim(cArrayTrim);
-                    Param.Login.ExceedMaxRetryMessage = TIniFile.DoIniParaInBuffer(false, sIni, "LoginExceedMaxRetryMessage", "", Param.Login.ExceedMaxRetryMessage).Trim(cArrayTrim);
+                    Param.Login.MaxRetry = FileHelper.INI.GetInt(FileHelper.INI.DoIniParaInBuffer(false, sIni, "LoginMaxRetry", "", Param.Login.MaxRetry.ToString()), 0) ?? 0;
+                    Param.Login.FailMessage = FileHelper.INI.DoIniParaInBuffer(false, sIni, "LoginFailMessage", "", Param.Login.FailMessage).Trim(cArrayTrim);
+                    Param.Login.ExceedMaxRetryMessage = FileHelper.INI.DoIniParaInBuffer(false, sIni, "LoginExceedMaxRetryMessage", "", Param.Login.ExceedMaxRetryMessage).Trim(cArrayTrim);
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -290,11 +290,12 @@ namespace VsCSharpWinForm_sample2
                 string exeFolder = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
                 System.IO.Directory.SetCurrentDirectory(exeFolder);
 
-                TIniFile.Logger = Logger;
+                //FileHelper.INI.Logger = Logger;
                 /// Declare instances of the objects.
 
                 ReadIni();/// Read initial file.
                 /// Set the logger of objects.
+                FileHelper.Logger = Logger;
                 CyptoRijndaelT.Logger = Logger;
                 GeneralT.Logger = Logger;
                 TTcpClientSocket.Logger = Logger;
@@ -305,9 +306,6 @@ namespace VsCSharpWinForm_sample2
                 Views.FrmWait.Logger = Logger;
                 Views.FrmTcpClient.Logger = Logger;
                 MailHelper.Logger = Logger;
-                ZipHelper.Logger = Logger;
-                FileTransferHelper.Logger = Logger;
-                TCsvFile.Logger = Logger;
                 ExcelHelper.Logger = Logger;
 
                 /// Show the help message if run in the command line with proper switch.
@@ -447,7 +445,9 @@ namespace VsCSharpWinForm_sample2
             try
             {
                 WriteLogToUI("1234984 64633 d2g");
-                WriteLogToUI("abcdef {0:HH:mm:ss.fff}", DateTime.Now);
+                DateTime t = DateTime.Now;
+                WriteLogToUI("Now = {0:yyyy-MM-dd HH:mm:ss.fffffff}", t);
+                WriteLogToUI("UTC = {0:yyyy-MM-ddTHH:mm:ss.fffffffZ}", t.ToUniversalTime());
             }
             catch (Exception ex) { Logger?.Error(ex); }
         }
@@ -1500,7 +1500,7 @@ namespace VsCSharpWinForm_sample2
                     GeneralT.GetDefaultAbsolutePathIfRelative("x64")
                 };
                 LocalLogger(TLog.LogLevel.DEBUG, "Source Paths:{0}{1}", Environment.NewLine, string.Join(Environment.NewLine, sourcePaths));
-                if (ZipHelper.DotNet.Zip(zipFilepath, password, sourcePaths))
+                if (FileHelper.Zip.DotNet.Zip(zipFilepath, password, sourcePaths))
                     LocalLogger(TLog.LogLevel.DEBUG, "Succeed to zip items.");
                 else
                 {
@@ -1508,7 +1508,7 @@ namespace VsCSharpWinForm_sample2
                     return;
                 }
                 string extractedFolder = GeneralT.GetDefaultAbsolutePathIfRelative("extract");
-                if (ZipHelper.DotNet.Unzip(zipFilepath, password, extractedFolder))
+                if (FileHelper.Zip.DotNet.Unzip(zipFilepath, password, extractedFolder))
                     LocalLogger(TLog.LogLevel.DEBUG, "Succeed to unzip items.");
                 else
                 {
@@ -1518,7 +1518,7 @@ namespace VsCSharpWinForm_sample2
                 LocalLogger(TLog.LogLevel.DEBUG, "7 zip");
                 LocalLogger(TLog.LogLevel.DEBUG, "Source Paths:{0}{1}", Environment.NewLine, string.Join(Environment.NewLine, sourcePaths));
                 zipFilepath = GeneralT.GetDefaultAbsolutePathIfRelative("a2.zip");
-                if (ZipHelper.SevenZip.Zip(zipFilepath, password, out string output, out string error, sourcePaths))
+                if (FileHelper.Zip.SevenZip.Zip(zipFilepath, password, out string output, out string error, sourcePaths))
                     LocalLogger(TLog.LogLevel.DEBUG, "Succeed to zip items.");
                 else
                 {
@@ -1526,7 +1526,7 @@ namespace VsCSharpWinForm_sample2
                     return;
                 }
                 extractedFolder = GeneralT.GetDefaultAbsolutePathIfRelative("extract2");
-                if (ZipHelper.SevenZip.Unzip(zipFilepath, password, extractedFolder, out output, out error))
+                if (FileHelper.Zip.SevenZip.Unzip(zipFilepath, password, extractedFolder, out output, out error))
                     LocalLogger(TLog.LogLevel.DEBUG, "Succeed to unzip items.");
                 else
                 {
@@ -1658,7 +1658,7 @@ namespace VsCSharpWinForm_sample2
                 //    }
                 //}
 
-                //List<List<string>> list = TCsvFile.GetListOfStringList(path);
+                //List<List<string>> list = FileHelper.CSV.GetListOfStringList(path);
                 //LocalLogger(TLog.LogLevel.DEBUG, "Number of records = {0}", list?.Count);
                 //if ((list?.Count ?? 0) > 0)
                 //{
@@ -1676,10 +1676,10 @@ namespace VsCSharpWinForm_sample2
                 //}
 
                 ///// Example 1.
-                //int recordCount = TCsvFile.ReadFileWithImportedAction(path, CsvHandlingMethod1);
+                //int recordCount = FileHelper.CSV.ReadFileWithImportedAction(path, CsvHandlingMethod1);
                 //LocalLogger(TLog.LogLevel.DEBUG, "Number of records = {0}", recordCount);
                 /// Example 2.
-                string[][] arrayOfStringArray = TCsvFile.ReadFileAndGetArrayOfStringArray(path);
+                string[][] arrayOfStringArray = FileHelper.CSV.ReadFileAndGetArrayOfStringArray(path);
                 LocalLogger(TLog.LogLevel.DEBUG, "Number of records = {0}", arrayOfStringArray?.Length);
                 if ((arrayOfStringArray?.Length ?? 0) > 0)
                 {
@@ -1696,7 +1696,7 @@ namespace VsCSharpWinForm_sample2
                     }
                 }
 
-                //List<Student> students = TCsvFile.Read1<Student>(path);
+                //List<Student> students = FileHelper.CSV.Read1<Student>(path);
 
                 /// Write.
                 path = GeneralT.GetDefaultAbsolutePathIfRelative("testCsvFile1.csv");
@@ -1714,7 +1714,7 @@ namespace VsCSharpWinForm_sample2
                 //        int i = 0;
                 //        while (i < recordCount1)
                 //        {
-                //            if (TCsvFile.WriteStringArrayToStreamWriter(sw, arrayOfStringArray[i], false))
+                //            if (FileHelper.CSV.WriteStringArrayToStreamWriter(sw, arrayOfStringArray[i], false))
                 //            { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to write the record {0}", i); }
                 //            else { LocalLogger(TLog.LogLevel.DEBUG, "Fail to write the record {0}", i); }
                 //            i++;
@@ -1729,7 +1729,7 @@ namespace VsCSharpWinForm_sample2
                     int i = 0;
                     while (i < recordCount2)
                     {
-                        if (TCsvFile.WriteToFile(path, arrayOfStringArray[i], false))
+                        if (FileHelper.CSV.WriteToFile(path, arrayOfStringArray[i], false))
                             LocalLogger(TLog.LogLevel.DEBUG, "Succeed to write the record {0}", i);
                         else LocalLogger(TLog.LogLevel.DEBUG, "Fail to write the record {0}", i);
                         i++;
