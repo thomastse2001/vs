@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace VsCSharpWinForm_sample2.Helpers
 {
     public class GeneralT
     {
         /// General functions.
-        /// Updated date: 2021-05-14
+        /// Updated date: 2021-05-20
         /// To zip or unzip file, need to install Ionic.Zip in NuGet Package Manager.
 
         public static TLog Logger { get; set; }
@@ -220,10 +221,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             try
             {
                 /// Check extension.
-                if (extArray == null || extArray.Length < 1)
-                {
-                    extArray = new string[] { ".end", ".exit", ".quit", ".stop", ".close", ".finish" };
-                }
+                if (extArray == null || extArray.Length < 1) extArray = new string[] { ".end", ".exit", ".quit", ".stop", ".close", ".finish" };
                 /// Get the file path of the EXIT file without extension. E.g. sPathNoExt="C:\ABC\App1" if full path="C:\ABC\App1.exe"
                 sb.Append(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location)).Append(System.IO.Path.DirectorySeparatorChar);
                 sb.Append(System.IO.Path.GetFileNameWithoutExtension(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName));
@@ -253,8 +251,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         i2 += 1;
                                     }
                                 }
-                                if (System.IO.File.Exists(sPath))
-                                { Logger?.Error("Cannot delete an EXIT file {0}", sPath); }
+                                if (System.IO.File.Exists(sPath)) Logger?.Error("Cannot delete an EXIT file {0}", sPath);
                             }
                             else { bLoop = false; }/// stop looping if choose to not delete the EXIT file.
                         }
@@ -396,8 +393,9 @@ namespace VsCSharpWinForm_sample2.Helpers
 
                 //if (sSrcPath.Contains(sSrcFolder)) { sRelativePath = sSrcPath.Substring(sSrcFolder.Length).Trim(cArrayTrim); }
                 sSrcFolder = GetDefaultAbsolutePathIfRelative(sSrcFolder);
-                if (sSrcPath.Length > sSrcFolder.Length && sSrcPath.IndexOf(sSrcFolder) == 0) { sRelativePath = sSrcPath.Substring(sSrcFolder.Length).Trim(cArrayTrim); }
-                else { sRelativePath = System.IO.Path.GetFileName(sSrcPath); }
+                //if (sSrcPath.Length > sSrcFolder.Length && sSrcPath.IndexOf(sSrcFolder) == 0) { sRelativePath = sSrcPath.Substring(sSrcFolder.Length).Trim(cArrayTrim); }
+                //else { sRelativePath = System.IO.Path.GetFileName(sSrcPath); }
+                sRelativePath = sSrcPath.Length > sSrcFolder.Length && sSrcPath.IndexOf(sSrcFolder) == 0 ? sSrcPath.Substring(sSrcFolder.Length).Trim(cArrayTrim) : System.IO.Path.GetFileName(sSrcPath);
                 sDestFolder = GetDefaultAbsolutePathIfRelative(sDestFolder);
                 sDestPath = sDestFolder + System.IO.Path.DirectorySeparatorChar + sRelativePath;
                 sParentFolder = System.IO.Path.GetDirectoryName(sDestPath);
@@ -468,8 +466,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                         return null;
                     }
                     /// Check if the source file exists on file moving.
-                    if (System.IO.File.Exists(sSrcPath))
-                    { Logger.Warn("The original file exists, which is unexpected. {0}", sSrcPath); }
+                    if (System.IO.File.Exists(sSrcPath)) Logger.Warn("The original file exists, which is unexpected. {0}", sSrcPath);
                 }
                 /// Return the destination file path.
                 return sDestPath;
@@ -516,7 +513,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 do
                 {
                     if (FileDeletionReturnBool(sPath)) b = false;
-                    else { if (iSleepingIntervalInMS >= 0) { System.Threading.Thread.Sleep(iSleepingIntervalInMS); } }
+                    else { if (iSleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(iSleepingIntervalInMS); }
                 } while (b && (int)(DateTime.Now - t).TotalMilliseconds < iTimeoutInMS);
                 if (System.IO.File.Exists(sPath)) return false;
                 return true;
@@ -594,7 +591,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 /// Get the other same processes.
                 ps = System.Diagnostics.Process.GetProcessesByName(pCurrent.ProcessName);
                 i = 0;
-                while ((i < ps.Length) && (ps[i].Id == pCurrent.Id)) { i += 1; }
+                while (i < ps.Length && ps[i].Id == pCurrent.Id) { i += 1; }
                 if (i < ps.Length)
                 {
                     Logger?.Debug(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". Detect.");
@@ -964,4 +961,18 @@ namespace VsCSharpWinForm_sample2.Helpers
             }
         }
     }
+
+    public static class EnumExtensionMethods
+    {
+        /// https://www.c-sharpcorner.com/code/323/how-do-i-get-description-of-enum.aspx
+        /// https://stackoverflow.com/questions/2650080/how-to-get-c-sharp-enum-description-from-value
+        /// https://blog.hildenco.com/2018/07/getting-enum-descriptions-using-c.html
+        public static string GetEnumDescription(this Enum enumValue)
+        {
+            var fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
+            var descriptionAttributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            return descriptionAttributes.Length > 0 ? descriptionAttributes[0].Description : enumValue.ToString();
+        }
+    }
+
 }

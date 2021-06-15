@@ -15,6 +15,7 @@ namespace VsCSharpWinForm_sample2.Views
         public static Helpers.TLog Logger { get; set; }
         public readonly int Id = -1;
         public bool IsExit = false;
+        public string VersionString { get; set; }
         public string CryptPassword { get; set; }
         //private Helpers.TTcpClientSocket MyClient = null;
         //private Queue<Helpers.TTcpClientSocket.DataPackage> MyIncomingDataQueue = new Queue<Helpers.TTcpClientSocket.DataPackage>();
@@ -263,8 +264,13 @@ namespace VsCSharpWinForm_sample2.Views
                 /// Version Information. Show the version in the GUI.
                 /// Assume the product version (File version) is same as Assembly version.
                 /// To update the version, in the menu bar, click "Project > [Project Name] Properties > Application > Assembly Information...", change the Assembly version and File version.
-                LblVersion.Top = 9;
-                LblVersion.Left = this.Width - LblVersion.Width - 24;/// set the position of label according to its width.
+                if (string.IsNullOrWhiteSpace(VersionString)) LblVersion.Text = "";
+                else
+                {
+                    LblVersion.Text = VersionString;
+                    LblVersion.Top = 9;
+                    LblVersion.Left = this.Width - LblVersion.Width - 24;/// set the position of label according to its width.
+                }
 
                 UiConfig(false);
                 //MyThreadToAnalyzeIncomingDataQueue = new System.Threading.Thread(new System.Threading.ThreadStart(ProcessAnalyzeIncomingDataQueue))

@@ -41,42 +41,42 @@
             // LblInputFilenameTemplate
             // 
             this.LblInputFilenameTemplate.AutoSize = true;
-            this.LblInputFilenameTemplate.Location = new System.Drawing.Point(12, 103);
+            this.LblInputFilenameTemplate.Location = new System.Drawing.Point(12, 95);
             this.LblInputFilenameTemplate.Name = "LblInputFilenameTemplate";
-            this.LblInputFilenameTemplate.Size = new System.Drawing.Size(123, 13);
+            this.LblInputFilenameTemplate.Size = new System.Drawing.Size(121, 12);
             this.LblInputFilenameTemplate.TabIndex = 0;
             this.LblInputFilenameTemplate.Text = "Input Filename Template";
             // 
             // TxtInputFilenameTemplate
             // 
-            this.TxtInputFilenameTemplate.Location = new System.Drawing.Point(149, 100);
+            this.TxtInputFilenameTemplate.Location = new System.Drawing.Point(149, 92);
             this.TxtInputFilenameTemplate.Name = "TxtInputFilenameTemplate";
-            this.TxtInputFilenameTemplate.Size = new System.Drawing.Size(220, 20);
+            this.TxtInputFilenameTemplate.Size = new System.Drawing.Size(220, 22);
             this.TxtInputFilenameTemplate.TabIndex = 1;
-            this.TxtInputFilenameTemplate.Text = "invoice_AAA_{0:yyyy_MM_dd}_BBB.pdf";
+            this.TxtInputFilenameTemplate.Text = "invoice_AAA_{0:yyyy-MM-dd}_BBB.pdf";
             // 
             // LblOutputFilenameTemplate
             // 
             this.LblOutputFilenameTemplate.AutoSize = true;
-            this.LblOutputFilenameTemplate.Location = new System.Drawing.Point(12, 129);
+            this.LblOutputFilenameTemplate.Location = new System.Drawing.Point(12, 119);
             this.LblOutputFilenameTemplate.Name = "LblOutputFilenameTemplate";
-            this.LblOutputFilenameTemplate.Size = new System.Drawing.Size(131, 13);
+            this.LblOutputFilenameTemplate.Size = new System.Drawing.Size(128, 12);
             this.LblOutputFilenameTemplate.TabIndex = 2;
             this.LblOutputFilenameTemplate.Text = "Output Filename Template";
             // 
             // TxtOutputFilenameTemplate
             // 
-            this.TxtOutputFilenameTemplate.Location = new System.Drawing.Point(149, 126);
+            this.TxtOutputFilenameTemplate.Location = new System.Drawing.Point(149, 116);
             this.TxtOutputFilenameTemplate.Name = "TxtOutputFilenameTemplate";
-            this.TxtOutputFilenameTemplate.Size = new System.Drawing.Size(220, 20);
+            this.TxtOutputFilenameTemplate.Size = new System.Drawing.Size(220, 22);
             this.TxtOutputFilenameTemplate.TabIndex = 3;
             this.TxtOutputFilenameTemplate.Text = "AAAAA_{0:yyyy-MM-dd}_BB.pdf";
             // 
             // BtnOK
             // 
-            this.BtnOK.Location = new System.Drawing.Point(149, 176);
+            this.BtnOK.Location = new System.Drawing.Point(149, 162);
             this.BtnOK.Name = "BtnOK";
-            this.BtnOK.Size = new System.Drawing.Size(75, 23);
+            this.BtnOK.Size = new System.Drawing.Size(75, 21);
             this.BtnOK.TabIndex = 4;
             this.BtnOK.Text = "OK";
             this.BtnOK.UseVisualStyleBackColor = true;
@@ -84,9 +84,9 @@
             // 
             // BtnCancel
             // 
-            this.BtnCancel.Location = new System.Drawing.Point(297, 176);
+            this.BtnCancel.Location = new System.Drawing.Point(297, 162);
             this.BtnCancel.Name = "BtnCancel";
-            this.BtnCancel.Size = new System.Drawing.Size(75, 23);
+            this.BtnCancel.Size = new System.Drawing.Size(75, 21);
             this.BtnCancel.TabIndex = 5;
             this.BtnCancel.Text = "Cancel";
             this.BtnCancel.UseVisualStyleBackColor = true;
@@ -95,9 +95,9 @@
             // LblNote
             // 
             this.LblNote.AutoSize = true;
-            this.LblNote.Location = new System.Drawing.Point(12, 70);
+            this.LblNote.Location = new System.Drawing.Point(12, 65);
             this.LblNote.Name = "LblNote";
-            this.LblNote.Size = new System.Drawing.Size(210, 13);
+            this.LblNote.Size = new System.Drawing.Size(208, 12);
             this.LblNote.TabIndex = 6;
             this.LblNote.Text = "Enter the templates including file extension.";
             // 
@@ -106,7 +106,7 @@
             this.LblMessage.AutoSize = true;
             this.LblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblMessage.ForeColor = System.Drawing.Color.Red;
-            this.LblMessage.Location = new System.Drawing.Point(12, 9);
+            this.LblMessage.Location = new System.Drawing.Point(12, 8);
             this.LblMessage.Name = "LblMessage";
             this.LblMessage.Size = new System.Drawing.Size(57, 13);
             this.LblMessage.TabIndex = 7;
@@ -114,9 +114,9 @@
             // 
             // FrmRenameFilenames
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 211);
+            this.ClientSize = new System.Drawing.Size(384, 195);
             this.Controls.Add(this.LblMessage);
             this.Controls.Add(this.LblNote);
             this.Controls.Add(this.BtnCancel);
