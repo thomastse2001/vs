@@ -512,8 +512,6 @@
         }
 
         #endregion
-
-        public System.Windows.Forms.Label LblVersion;
         private System.Windows.Forms.Label LblServerHost;
         private System.Windows.Forms.Label LblServerPort;
         private System.Windows.Forms.TextBox TxtLog;
@@ -544,5 +542,6 @@
         private System.Windows.Forms.NumericUpDown NudSleepingInterval;
         private System.Windows.Forms.CheckBox ChkSleepingInterval;
         private System.ComponentModel.BackgroundWorker BWorkerCheckConnected;
+        private System.Windows.Forms.Label LblVersion;
     }
 }

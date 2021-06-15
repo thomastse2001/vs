@@ -11,7 +11,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// TCP Client and Server by a synchronous socket in the threading model.
         /// Able to send file with 100M bytes, and even 200M bytes, but not very good to send 200 M bytes. Cannot send 500M bytes file.
         /// Data unit is byte.
-        /// Updated date: 2021-05-05
+        /// Updated date: 2021-06-04
         /// 
         /// AddDataToIncomingDataQueue
         /// PackData
@@ -408,16 +408,18 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         /// Determine the number of bytes to be read and copied.
                                         iInputRemaining = byteDataInQueue.Length - iIndex1;/// number of bytes that input remains to be read.
                                         iOutputRemaining = 4 - IncomingLengthIndex;/// number of bytes that output remains to be write.
-                                        if (iInputRemaining >= iOutputRemaining)
-                                        {
-                                            /// If remaining data length is larger than or equal to 4, do following.
-                                            iCopy = iOutputRemaining;
-                                        }
-                                        else
-                                        {
-                                            /// If the remaining data length is smaller than 4, do following.
-                                            iCopy = iInputRemaining;
-                                        }
+                                        //if (iInputRemaining >= iOutputRemaining)
+                                        //{
+                                        //    /// If remaining data length is larger than or equal to 4, do following.
+                                        //    iCopy = iOutputRemaining;
+                                        //}
+                                        //else
+                                        //{
+                                        //    /// If the remaining data length is smaller than 4, do following.
+                                        //    iCopy = iInputRemaining;
+                                        //}
+                                        /// Set iCopy according to the remaining data length whether it is larger than or equal to 4.
+                                        iCopy = iInputRemaining >= iOutputRemaining ? iOutputRemaining : iInputRemaining;
                                         /// Copy.
                                         if (iCopy > 0) Array.Copy(byteDataInQueue, iIndex1, IncomingLengthBuffer, IncomingLengthIndex, iCopy);
                                         IncomingLengthIndex += iCopy;
@@ -448,16 +450,18 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         /// assume the memory is assigned for content.
                                         iInputRemaining = byteDataInQueue.Length - iIndex1;
                                         iOutputRemaining = IncomingContentSize - IncomingContentIndex;
-                                        if (iInputRemaining >= iOutputRemaining)
-                                        {
-                                            /// if remaining data length is larger than or equal to the remaining data required to read to the buffer, do following.
-                                            iCopy = iOutputRemaining;
-                                        }
-                                        else
-                                        {
-                                            /// if remaining data length is smaller than the remaining data required to read to the buffer, do following.
-                                            iCopy = iInputRemaining;
-                                        }
+                                        //if (iInputRemaining >= iOutputRemaining)
+                                        //{
+                                        //    /// if remaining data length is larger than or equal to the remaining data required to read to the buffer, do following.
+                                        //    iCopy = iOutputRemaining;
+                                        //}
+                                        //else
+                                        //{
+                                        //    /// if remaining data length is smaller than the remaining data required to read to the buffer, do following.
+                                        //    iCopy = iInputRemaining;
+                                        //}
+                                        /// Set iCopy according to the remaining data length whether it is larger than or equal to 4.
+                                        iCopy = iInputRemaining >= iOutputRemaining ? iOutputRemaining : iInputRemaining;
                                         /// Copy.
                                         if (iCopy > 0) Array.Copy(byteDataInQueue, iIndex1, IncomingContentBuffer, IncomingContentIndex, iCopy);
                                         IncomingContentIndex += iCopy;

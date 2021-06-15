@@ -12,9 +12,22 @@ namespace VsCSharpWinForm_sample2.Views
 {
     public partial class FrmLogin : Form
     {
+        public string VersionString { get; set; }
+
         public FrmLogin()
         {
             InitializeComponent();
+        }
+
+        private void FrmLogin_Load(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(VersionString)) LblVersion.Text = "";
+            else
+            {
+                LblVersion.Text = VersionString;
+                LblVersion.Top = 9;
+                LblVersion.Left = this.Width - LblVersion.Width - 24;
+            }
         }
 
         private void BtnOK_Click(object sender, EventArgs e)

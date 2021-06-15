@@ -86,9 +86,8 @@ namespace VsCSharpWinForm_sample2
                     try
                     {
                         int iMax = 100000;
-                        char[] cArrayTrim = { ' ', '\t', (char)10, (char)13 };
-                        string s = (args?.Length ?? 0) < 1 ? format : string.Format(format, args);
-                        TxtLog.AppendText(s.Trim(cArrayTrim) + Environment.NewLine);
+                        //char[] cArrayTrim = { ' ', '\t', (char)10, (char)13 };
+                        TxtLog.AppendText(((args?.Length ?? 0) < 1 ? format : string.Format(format, args)) + Environment.NewLine);
                         if (TxtLog.TextLength > iMax) TxtLog.Text = TxtLog.Text.Substring(TxtLog.Text.Length - iMax);
                         TxtLog.SelectionStart = TxtLog.TextLength;
                         TxtLog.ScrollToCaret();
@@ -305,6 +304,7 @@ namespace VsCSharpWinForm_sample2
                 TTcpSocket.Server.Logger = Logger;
                 Views.FrmWait.Logger = Logger;
                 Views.FrmTcpClient.Logger = Logger;
+                Views.FrmTicTacToe.Logger = Logger;
                 MailHelper.Logger = Logger;
                 ExcelHelper.Logger = Logger;
 
@@ -373,11 +373,9 @@ namespace VsCSharpWinForm_sample2
                 {
                     Views.FrmLogin frmLogin = new Views.FrmLogin()
                     {
+                        VersionString = this.LblVersion.Text,
                         Text = ExeFileNameWithoutExt + " - Login"
                     };
-                    frmLogin.LblVersion.Text = this.LblVersion.Text;
-                    frmLogin.LblVersion.Top = 9;
-                    frmLogin.LblVersion.Left = frmLogin.Width - frmLogin.LblVersion.Width - 24;
                     frmLogin.LblMessage.Text = "";
                     frmLogin.TxtUsername.Text = Param.Login.Username;
                     frmLogin.TxtPassword.Text = Param.Login.Hash;
@@ -626,9 +624,9 @@ namespace VsCSharpWinForm_sample2
             {
                 Views.FrmTcpClient frmTcpClient = new Views.FrmTcpClient(Param.TcpClient.Id)
                 {
+                    VersionString = this.LblVersion.Text,
                     CryptPassword = Param.TcpClient.DefaultValue.CryptPassword
                 };
-                frmTcpClient.LblVersion.Text = this.LblVersion.Text;
                 frmTcpClient.TxtServerHost.Text = Param.TcpClient.DefaultValue.ServerHost;
                 frmTcpClient.NudServerPort.Value = Param.TcpClient.DefaultValue.ServerPort;
                 frmTcpClient.ChkContainLengthAsHeader.Checked = Param.TcpClient.DefaultValue.ContainLengthAsHeader;
@@ -2204,6 +2202,34 @@ namespace VsCSharpWinForm_sample2
             finally { BtnLineSeparator.Enabled = true; }
         }
 
+        private void BtnTicTacToe_Click(object sender, EventArgs e)
+        {
+            /// https://blog.nerdjfpb.com/project-ideas-for-c-beginners-to-expert/
+            try
+            {
+                Views.FrmTicTacToe frm = new Views.FrmTicTacToe()
+                {
+                    VersionString = LblVersion.Text
+                };
+                frm.ShowDialog();
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnPaint_Click(object sender, EventArgs e)
+        {
+            /// https://blog.nerdjfpb.com/project-ideas-for-c-beginners-to-expert/
+        }
+
+        private void BtnPolygonShape2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Views.FrmPolygonShape2 frm = new Views.FrmPolygonShape2()) frm.ShowDialog();
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
         #region Encrypt1Region
         private void EncryptFile1(string filepath, string targetFolder, byte[] headerByteArray)
         {
@@ -2331,6 +2357,23 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
+                int[] yArray = new int[10];
+                int[] xArray = new int[10];
+                int i;
+                for (i = 0; i < 10; i++)
+                {
+                    yArray[i] = (i - 1) / 3;
+                    xArray[i] = (i - 1) % 3;
+                    LocalLogger(TLog.LogLevel.DEBUG, "i = {0}, x = {1}, y = {2}", i, xArray[i], yArray[i]);
+                }
+                /// Split an array to 2 arrays with even and odd indices respectively.
+                /// https://stackoverflow.com/questions/37382990/how-to-split-an-array-to-2-arrays-with-odd-and-even-indices-respectively
+                int[] zArray = new int[9] { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+                int[] zArrayEven = zArray.Where((x, ii) => ii % 2 == 0).ToArray();
+                for (i = 0; i < zArrayEven.Length; i++) LocalLogger(TLog.LogLevel.DEBUG, "zArrayEven[{0}] = {1}", i, zArrayEven[i]);
+                int[] zArrayOdd = zArray.Where((x, ii) => ii % 2 == 1).ToArray();
+                for (i = 0; i < zArrayOdd.Length; i++) LocalLogger(TLog.LogLevel.DEBUG, "zArrayOdd[{0}] = {1}", i, zArrayOdd[i]);
+                ///
                 string s = "apple.chan;Apple Chan;23456789";
                 string[] array = s?.Split(';');
                 Student student = new Student()

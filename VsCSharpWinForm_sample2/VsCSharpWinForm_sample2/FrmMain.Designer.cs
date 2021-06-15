@@ -34,6 +34,10 @@
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnPolygonShape2 = new System.Windows.Forms.Button();
+            this.BtnPaint = new System.Windows.Forms.Button();
+            this.BtnTicTacToe = new System.Windows.Forms.Button();
+            this.BtnArray1 = new System.Windows.Forms.Button();
             this.BtnUri = new System.Windows.Forms.Button();
             this.BtnOAuthMicrosoft = new System.Windows.Forms.Button();
             this.BtnEnDe1 = new System.Windows.Forms.Button();
@@ -109,7 +113,6 @@
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
-            this.BtnArray1 = new System.Windows.Forms.Button();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -167,6 +170,9 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnPolygonShape2);
+            this.tabPage1.Controls.Add(this.BtnPaint);
+            this.tabPage1.Controls.Add(this.BtnTicTacToe);
             this.tabPage1.Controls.Add(this.BtnArray1);
             this.tabPage1.Controls.Add(this.BtnUri);
             this.tabPage1.Controls.Add(this.BtnOAuthMicrosoft);
@@ -201,6 +207,46 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnPolygonShape2
+            // 
+            this.BtnPolygonShape2.Location = new System.Drawing.Point(168, 155);
+            this.BtnPolygonShape2.Name = "BtnPolygonShape2";
+            this.BtnPolygonShape2.Size = new System.Drawing.Size(110, 25);
+            this.BtnPolygonShape2.TabIndex = 28;
+            this.BtnPolygonShape2.Text = "Polygon Shape 2";
+            this.BtnPolygonShape2.UseVisualStyleBackColor = true;
+            this.BtnPolygonShape2.Click += new System.EventHandler(this.BtnPolygonShape2_Click);
+            // 
+            // BtnPaint
+            // 
+            this.BtnPaint.Location = new System.Drawing.Point(87, 155);
+            this.BtnPaint.Name = "BtnPaint";
+            this.BtnPaint.Size = new System.Drawing.Size(75, 25);
+            this.BtnPaint.TabIndex = 29;
+            this.BtnPaint.Text = "Paint";
+            this.BtnPaint.UseVisualStyleBackColor = true;
+            this.BtnPaint.Click += new System.EventHandler(this.BtnPaint_Click);
+            // 
+            // BtnTicTacToe
+            // 
+            this.BtnTicTacToe.Location = new System.Drawing.Point(6, 155);
+            this.BtnTicTacToe.Name = "BtnTicTacToe";
+            this.BtnTicTacToe.Size = new System.Drawing.Size(75, 25);
+            this.BtnTicTacToe.TabIndex = 28;
+            this.BtnTicTacToe.Text = "Tic-Tac-Toe";
+            this.BtnTicTacToe.UseVisualStyleBackColor = true;
+            this.BtnTicTacToe.Click += new System.EventHandler(this.BtnTicTacToe_Click);
+            // 
+            // BtnArray1
+            // 
+            this.BtnArray1.Location = new System.Drawing.Point(632, 127);
+            this.BtnArray1.Name = "BtnArray1";
+            this.BtnArray1.Size = new System.Drawing.Size(75, 23);
+            this.BtnArray1.TabIndex = 27;
+            this.BtnArray1.Text = "Array1";
+            this.BtnArray1.UseVisualStyleBackColor = true;
+            this.BtnArray1.Click += new System.EventHandler(this.BtnArray1_Click);
             // 
             // BtnUri
             // 
@@ -943,7 +989,7 @@
             this.ClbTcpClientList.FormattingEnabled = true;
             this.ClbTcpClientList.Location = new System.Drawing.Point(338, 89);
             this.ClbTcpClientList.Name = "ClbTcpClientList";
-            this.ClbTcpClientList.Size = new System.Drawing.Size(200, 34);
+            this.ClbTcpClientList.Size = new System.Drawing.Size(200, 79);
             this.ClbTcpClientList.TabIndex = 26;
             // 
             // BtnTcpServerDeselectAllClients
@@ -1052,21 +1098,11 @@
             // 
             this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
-            // BtnArray1
-            // 
-            this.BtnArray1.Location = new System.Drawing.Point(632, 127);
-            this.BtnArray1.Name = "BtnArray1";
-            this.BtnArray1.Size = new System.Drawing.Size(75, 23);
-            this.BtnArray1.TabIndex = 27;
-            this.BtnArray1.Text = "Array1";
-            this.BtnArray1.UseVisualStyleBackColor = true;
-            this.BtnArray1.Click += new System.EventHandler(this.BtnArray1_Click);
-            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 461);
+            this.ClientSize = new System.Drawing.Size(784, 462);
             this.Controls.Add(this.BtnHideMainDialog);
             this.Controls.Add(this.TControlMain);
             this.Controls.Add(this.TxtLog);
@@ -1190,6 +1226,9 @@
         private System.Windows.Forms.Button BtnOAuthMicrosoft;
         private System.Windows.Forms.Button BtnUri;
         private System.Windows.Forms.Button BtnArray1;
+        private System.Windows.Forms.Button BtnPolygonShape2;
+        private System.Windows.Forms.Button BtnTicTacToe;
+        private System.Windows.Forms.Button BtnPaint;
     }
 }
 

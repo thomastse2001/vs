@@ -142,14 +142,13 @@
             this.Name = "FrmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login";
+            this.Load += new System.EventHandler(this.FrmLogin_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        public System.Windows.Forms.Label LblVersion;
         private System.Windows.Forms.Label LblUsername;
         public System.Windows.Forms.TextBox TxtUsername;
         private System.Windows.Forms.Label LblPassword;
@@ -158,5 +157,6 @@
         private System.Windows.Forms.Button BtnCancel;
         public System.Windows.Forms.Label LblMessage;
         private System.Windows.Forms.Label LblReminder;
+        private System.Windows.Forms.Label LblVersion;
     }
 }

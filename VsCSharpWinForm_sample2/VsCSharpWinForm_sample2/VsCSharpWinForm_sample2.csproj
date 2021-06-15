@@ -91,6 +91,12 @@
     <Compile Include="Views\FrmLogin.Designer.cs">
       <DependentUpon>FrmLogin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\FrmPolygonShape2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FrmPolygonShape2.Designer.cs">
+      <DependentUpon>FrmPolygonShape2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\FrmRenameFilenames.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,6 +108,12 @@
     </Compile>
     <Compile Include="Views\FrmTcpClient.Designer.cs">
       <DependentUpon>FrmTcpClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FrmTicTacToe.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FrmTicTacToe.Designer.cs">
+      <DependentUpon>FrmTicTacToe.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\FrmWait.cs">
       <SubType>Form</SubType>
@@ -124,11 +136,17 @@
     <EmbeddedResource Include="Views\FrmLogin.resx">
       <DependentUpon>FrmLogin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\FrmPolygonShape2.resx">
+      <DependentUpon>FrmPolygonShape2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\FrmRenameFilenames.resx">
       <DependentUpon>FrmRenameFilenames.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FrmTcpClient.resx">
       <DependentUpon>FrmTcpClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FrmTicTacToe.resx">
+      <DependentUpon>FrmTicTacToe.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\FrmWait.resx">
       <DependentUpon>FrmWait.cs</DependentUpon>
