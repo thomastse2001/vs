@@ -13,14 +13,13 @@ namespace MvcApp1.DAO
 
         public static object GetObjectToDb<T>(T input)
         {
-            if (input == null) { return DBNull.Value; }
+            if (input == null) return DBNull.Value;
             return input;
         }
 
         public static object GetObjectFromDb(DataRow dr, string fieldName)
         {
-            if (string.IsNullOrEmpty(fieldName) || (dr?.Table.Columns.Contains(fieldName) ?? false) == false || DBNull.Value.Equals(dr[fieldName]))
-            { return null; }
+            if (string.IsNullOrEmpty(fieldName) || (dr?.Table.Columns.Contains(fieldName) ?? false) == false || DBNull.Value.Equals(dr[fieldName])) return null;
             return dr[fieldName];
         }
 
@@ -34,54 +33,54 @@ namespace MvcApp1.DAO
         //public static string GetString(object vObject) { return GetString(vObject, null); }
         //public static string GetString(object vObject, string vDefault)
         //{
-        //    if (DBNull.Value.Equals(vObject)) { return vDefault; }
+        //    if (DBNull.Value.Equals(vObject)) return vDefault;
         //    return vObject.ToString();
         //}
         //public static string GetString(DataRow dr, string fieldName) { return GetString(dr, fieldName, null); }
         //public static string GetString(DataRow dr, string fieldName, string vDefault)
         //{
-        //    if (CheckDbNull(dr, fieldName)) { return vDefault; }
+        //    if (CheckDbNull(dr, fieldName)) return vDefault;
         //    return dr[fieldName].ToString();
         //}
 
         //public static int? GetInt(object vObject) { return GetInt(vObject, null); }
         //public static int? GetInt(object vObject, int? vDefault)
         //{
-        //    if (int.TryParse(GetString(vObject), out int i)) { return i; }
+        //    if (int.TryParse(GetString(vObject), out int i)) return i;
         //    return vDefault;
         //}
         //public static int? GetInt(DataRow dr, string fieldName) { return GetInt(dr, fieldName, null); }
         //public static int? GetInt(DataRow dr, string fieldName, int? vDefault)
         //{
-        //    //if (int.TryParse(GetString(dr, fieldName), out int i)) { return i; }
+        //    //if (int.TryParse(GetString(dr, fieldName), out int i)) return i;
         //    //return vDefault;
-        //    if (CheckDbNull(dr, fieldName)) { return vDefault; }
+        //    if (CheckDbNull(dr, fieldName)) return vDefault;
         //    return (int)dr[fieldName];
         //}
 
         //public static bool? GetBool(object vObject) { return GetBool(vObject, null); }
         //public static bool? GetBool(object vObject, bool? vDefault)
         //{
-        //    if (bool.TryParse(GetString(vObject), out bool b)) { return b; }
+        //    if (bool.TryParse(GetString(vObject), out bool b)) return b;
         //    return vDefault;
         //}
         //public static bool? GetBool(DataRow dr, string fieldName) { return GetBool(dr, fieldName, null); }
         //public static bool? GetBool(DataRow dr, string fieldName, bool? vDefault)
         //{
-        //    if (CheckDbNull(dr, fieldName)) { return vDefault; }
+        //    if (CheckDbNull(dr, fieldName)) return vDefault;
         //    return (bool)dr[fieldName];
         //}
 
         //public static DateTime? GetDateTime(object vObject) { return GetDateTime(vObject, null); }
         //public static DateTime? GetDateTime(object vObject, DateTime? vDefault)
         //{
-        //    if (DateTime.TryParse(GetString(vObject), out DateTime dt)) { return dt; }
+        //    if (DateTime.TryParse(GetString(vObject), out DateTime dt)) return dt;
         //    return vDefault;
         //}
         //public static DateTime? GetDateTime(DataRow dr, string fieldName) { return GetDateTime(dr, fieldName, null); }
         //public static DateTime? GetDateTime(DataRow dr, string fieldName, DateTime? vDefault)
         //{
-        //    if (CheckDbNull(dr, fieldName)) { return vDefault; }
+        //    if (CheckDbNull(dr, fieldName)) return vDefault;
         //    return (DateTime)dr[fieldName];
         //}
 
@@ -122,7 +121,7 @@ namespace MvcApp1.DAO
         //    {
         //        if (cn != null)
         //        {
-        //            if (cn.State != System.Data.ConnectionState.Closed) { cn.Close(); }
+        //            if (cn.State != System.Data.ConnectionState.Closed) cn.Close();
         //            cn.Dispose();
         //            cn = null;
         //        }
@@ -150,14 +149,13 @@ namespace MvcApp1.DAO
             /// https://www.codeproject.com/Tips/423233/How-to-Connect-to-MySQL-Using-Csharp
             public static int ExecuteNonQuery(string sql, params SqlParameter[] arrayOfParameters)
             {
-                if (string.IsNullOrEmpty(sql)) { return 0; }
+                if (string.IsNullOrEmpty(sql)) return 0;
                 using (SqlConnection cn = new SqlConnection(ConnectionString))
                 {
                     cn.Open();
                     using (SqlCommand com = new SqlCommand(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { com.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                         return com.ExecuteNonQuery();
                     }
                 }
@@ -165,7 +163,7 @@ namespace MvcApp1.DAO
 
             public static int ExecuteNonQueryWithTransaction(string sql, params SqlParameter[] arrayOfParameters)
             {
-                if (string.IsNullOrEmpty(sql)) { return 0; }
+                if (string.IsNullOrEmpty(sql)) return 0;
                 using (SqlConnection cn = new SqlConnection(ConnectionString))
                 {
                     cn.Open();
@@ -175,8 +173,7 @@ namespace MvcApp1.DAO
                     {
                         using (SqlCommand com = new SqlCommand(sql, cn, trans))
                         {
-                            if ((arrayOfParameters?.Length ?? 0) > 0)
-                            { com.Parameters.AddRange(arrayOfParameters); }
+                            if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                             iReturn = com.ExecuteNonQuery();
                             trans.Commit();
                         }
@@ -229,7 +226,7 @@ namespace MvcApp1.DAO
                 using (SqlConnection cn = new SqlConnection(ConnectionString))
                 {
                     cn.Open();
-                    if (arrayOfSqlItems == null) { return 0; }
+                    if (arrayOfSqlItems == null) return 0;
                     int iReturn = 0;
                     SqlTransaction trans = cn.BeginTransaction();
                     try
@@ -240,8 +237,8 @@ namespace MvcApp1.DAO
                             {
                                 using (SqlCommand com = new SqlCommand(o.Key, cn, trans))
                                 {
-                                    if ((o.Value?.Length ?? 0) > 0)/// o.Value is an array of parameters.
-                                    { com.Parameters.AddRange(o.Value); }
+                                    /// o.Value is an array of parameters.
+                                    if ((o.Value?.Length ?? 0) > 0) com.Parameters.AddRange(o.Value);
                                     iReturn += com.ExecuteNonQuery();
                                 }
                             }
@@ -269,8 +266,7 @@ namespace MvcApp1.DAO
                 {
                     using (SqlCommand com = new SqlCommand(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { com.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                         com.Connection.Open();
                         return com.ExecuteScalar();
                     }
@@ -286,15 +282,13 @@ namespace MvcApp1.DAO
                     //using (SqlDataAdapter da = new SqlDataAdapter(sql, cn))
                     //{
                     //    //if (arrayOfParameters != null && arrayOfParameters.Length > 0)
-                    //    if ((arrayOfParameters?.Length ?? 0) > 0)
-                    //    { da.SelectCommand.Parameters.AddRange(arrayOfParameters); }
+                    //    if ((arrayOfParameters?.Length ?? 0) > 0) da.SelectCommand.Parameters.AddRange(arrayOfParameters);
                     //    cn.Open();
                     //    da.Fill(dtReturn);
                     //}
                     using (SqlCommand com = new SqlCommand(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { com.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                         com.Connection.Open();
                         using (SqlDataReader rdr = com.ExecuteReader())
                         {
@@ -339,7 +333,7 @@ namespace MvcApp1.DAO
         /// https://www.codeproject.com/Articles/22165/Using-SQLite-in-your-C-Application
         public class SQLite
         {
-            public static string DatabaseFilePath { get; set; } = @"C:\temp\db.sqlite";
+            public static string DatabaseFilePath { get; set; } = @"C:\temp\MvcApp1.sqlite";
             public static string ConnectionStringTemplate = "Version=3;Data Source={0}";
 
             public static string GetConnectionString()
@@ -354,25 +348,21 @@ namespace MvcApp1.DAO
                 if (!System.IO.File.Exists(DatabaseFilePath))
                 {
                     string folder = System.IO.Path.GetDirectoryName(DatabaseFilePath);
-                    if (!System.IO.Directory.Exists(folder))
-                    {
-                        System.IO.Directory.CreateDirectory(folder);
-                    }
+                    if (!System.IO.Directory.Exists(folder)) System.IO.Directory.CreateDirectory(folder);
                     System.Data.SQLite.SQLiteConnection.CreateFile(DatabaseFilePath);
                 }
             }
 
             public static int ExecuteNonQuery(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
             {
-                if (string.IsNullOrEmpty(sql)) { return 0; }
+                if (string.IsNullOrEmpty(sql)) return 0;
                 CreateDatabaseFileIfNotExist();
                 using (System.Data.SQLite.SQLiteConnection cn = new System.Data.SQLite.SQLiteConnection(GetConnectionString()))
                 {
                     cn.Open();
                     using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { com.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                         return com.ExecuteNonQuery();
                     }
                 }
@@ -380,7 +370,7 @@ namespace MvcApp1.DAO
 
             public static int ExecuteNonQueryWithTransaction(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
             {
-                if (string.IsNullOrEmpty(sql)) { return 0; }
+                if (string.IsNullOrEmpty(sql)) return 0;
                 CreateDatabaseFileIfNotExist();
                 using (System.Data.SQLite.SQLiteConnection cn = new System.Data.SQLite.SQLiteConnection(GetConnectionString()))
                 {
@@ -392,8 +382,7 @@ namespace MvcApp1.DAO
                     {
                         using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(sql, cn, trans))
                         {
-                            if ((arrayOfParameters?.Length ?? 0) > 0)
-                            { com.Parameters.AddRange(arrayOfParameters); }
+                            if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                             iReturn = com.ExecuteNonQuery();
                         }
                         trans.Commit();
@@ -445,7 +434,7 @@ namespace MvcApp1.DAO
             /// int i = ExecuteNonQuery(ConnectionString, arrayOfSqlItems);
             public static int ExecuteNonQuery(params KeyValuePair<string, System.Data.SQLite.SQLiteParameter[]>[] arrayOfSqlItems)
             {
-                if (arrayOfSqlItems == null) { return 0; }
+                if (arrayOfSqlItems == null) return 0;
                 CreateDatabaseFileIfNotExist();
                 using (System.Data.SQLite.SQLiteConnection cn = new System.Data.SQLite.SQLiteConnection(GetConnectionString()))
                 {
@@ -460,8 +449,8 @@ namespace MvcApp1.DAO
                             {
                                 using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(o.Key, cn, trans))
                                 {
-                                    if ((o.Value?.Length ?? 0) > 0)/// o.Value is array of parameters.
-                                    { com.Parameters.AddRange(o.Value); }
+                                    /// o.Value is array of parameters.
+                                    if ((o.Value?.Length ?? 0) > 0) com.Parameters.AddRange(o.Value);
                                     iReturn += com.ExecuteNonQuery();
                                 }
                             }
@@ -486,8 +475,7 @@ namespace MvcApp1.DAO
                 {
                     using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { com.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                         com.Connection.Open();
                         return com.ExecuteScalar();
                     }
@@ -497,22 +485,20 @@ namespace MvcApp1.DAO
             /// Get a table from database.
             public static System.Data.DataTable SelectDataTable(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
             {
-                if (!System.IO.File.Exists(DatabaseFilePath)) { return null; }
+                if (!System.IO.File.Exists(DatabaseFilePath)) return null;
                 using (System.Data.SQLite.SQLiteConnection cn = new System.Data.SQLite.SQLiteConnection(GetConnectionString()))
                 {
                     System.Data.DataTable dtReturn = new System.Data.DataTable();
                     using (System.Data.SQLite.SQLiteDataAdapter da = new System.Data.SQLite.SQLiteDataAdapter(sql, cn))
                     {
-                        if ((arrayOfParameters?.Length ?? 0) > 0)
-                        { da.SelectCommand.Parameters.AddRange(arrayOfParameters); }
+                        if ((arrayOfParameters?.Length ?? 0) > 0) da.SelectCommand.Parameters.AddRange(arrayOfParameters);
                         cn.Open();
                         da.Fill(dtReturn);
                     }
                     /// Cannot use SQLiteDataReader in some cases.
                     //using (System.Data.SQLite.SQLiteCommand com = new System.Data.SQLite.SQLiteCommand(sql, cn))
                     //{
-                    //    if ((arrayOfParameters?.Length ?? 0) > 0)
-                    //    { com.Parameters.AddRange(arrayOfParameters); }
+                    //    if ((arrayOfParameters?.Length ?? 0) > 0) com.Parameters.AddRange(arrayOfParameters);
                     //    com.Connection.Open();
                     //    using (System.Data.SQLite.SQLiteDataReader rdr = com.ExecuteReader())
                     //    {
@@ -552,7 +538,7 @@ namespace MvcApp1.DAO
 
         private static void CreateAppFuncLevelTableIfNotExist()
         {
-            if (DbHandler.SQLite.TableExists("AppFuncLevels")) { return; }
+            if (DbHandler.SQLite.TableExists("AppFuncLevels")) return;
             int i = DbHandler.SQLite.ExecuteNonQuery(
                 "CREATE TABLE AppFuncLevels ("
                 + "AppFuncLevelId INTEGER PRIMARY KEY NOT NULL,"
@@ -569,7 +555,7 @@ namespace MvcApp1.DAO
 
         private static void CreateAppFunctionTableIfNotExist()
         {
-            if (DbHandler.SQLite.TableExists("AppFunctions")) { return; }
+            if (DbHandler.SQLite.TableExists("AppFunctions")) return;
             int i = DbHandler.SQLite.ExecuteNonQuery(
                 "CREATE TABLE AppFunctions ("
                 + "AppFunctionId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -636,7 +622,7 @@ namespace MvcApp1.DAO
 
         private static void CreateMapAppFunctionRoleTableIfNotExist()
         {
-            if (DbHandler.SQLite.TableExists("MapAppFunctionsRoles")) { return; }
+            if (DbHandler.SQLite.TableExists("MapAppFunctionsRoles")) return;
             int i = DbHandler.SQLite.ExecuteNonQuery(
                 "CREATE TABLE MapAppFunctionsRoles ("
                 + "RoleId int NOT NULL,"
@@ -676,7 +662,7 @@ namespace MvcApp1.DAO
 
         private static void CreateMapRoleUserTableIfNotExist()
         {
-            if (DbHandler.SQLite.TableExists("MapRolesUsers")) { return; }
+            if (DbHandler.SQLite.TableExists("MapRolesUsers")) return;
             int i = DbHandler.SQLite.ExecuteNonQuery(
                 "CREATE TABLE MapRolesUsers ("
 + "UserId int NOT NULL,"
@@ -697,7 +683,7 @@ namespace MvcApp1.DAO
 
         private static void CreateRoleTableIfNotExist()
         {
-            if (DbHandler.SQLite.TableExists("Roles")) { return; }
+            if (DbHandler.SQLite.TableExists("Roles")) return;
             int i = DbHandler.SQLite.ExecuteNonQuery(
                 "CREATE TABLE Roles ("
 + "RoleId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -719,7 +705,7 @@ namespace MvcApp1.DAO
 
         private static void CreateStudentTableIfNotExist()
         {
-            if (DbHandler.SQLite.TableExists("Students")) { return; }
+            if (DbHandler.SQLite.TableExists("Students")) return;
             int i = DbHandler.SQLite.ExecuteNonQuery(
                 "CREATE TABLE Students ("
 + "StudentId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -737,7 +723,7 @@ namespace MvcApp1.DAO
 
         private static void CreateUserTableIfNotExist()
         {
-            if (DbHandler.SQLite.TableExists("Users")) { return; }
+            if (DbHandler.SQLite.TableExists("Users")) return;
             int i = DbHandler.SQLite.ExecuteNonQuery(
                 "CREATE TABLE Users ("
 + "UserId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"

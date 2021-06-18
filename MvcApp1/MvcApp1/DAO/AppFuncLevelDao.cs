@@ -28,17 +28,10 @@ namespace MvcApp1.DAO
             try
             {
                 string sql = "SELECT * FROM AppFuncLevels WHERE AppFuncLevelId=@AppFuncLevelId";
-                if (DbHandler.IsMssqlConnected)
-                {
-                    dt = DbHandler.MSSQL.SelectDataTable(sql,
-                        new SqlParameter("@AppFuncLevelId", SqlDbType.Int) { Value = id });
-                }
-                else
-                {
-                    dt = DbHandler.SQLite.SelectDataTable(sql,
-                        new System.Data.SQLite.SQLiteParameter("@AppFuncLevelId", System.Data.DbType.Int32) { Value = id });
-                }
-                if ((dt?.Rows.Count ?? 0) > 0) { return null; }
+                dt = DbHandler.IsMssqlConnected ?
+                    DbHandler.MSSQL.SelectDataTable(sql, new SqlParameter("@AppFuncLevelId", SqlDbType.Int) { Value = id }):
+                    DbHandler.SQLite.SelectDataTable(sql, new System.Data.SQLite.SQLiteParameter("@AppFuncLevelId", System.Data.DbType.Int32) { Value = id });
+                if ((dt?.Rows.Count ?? 0) > 0) return null;
                 return Mapping(dt.Rows[0]);
             }
             finally { DbHandler.DisposeDataTable(ref dt); }
@@ -52,20 +45,13 @@ namespace MvcApp1.DAO
             try
             {
                 string sql = "SELECT * FROM AppFuncLevels ORDER BY AppFuncLevelId";
-                if (DbHandler.IsMssqlConnected)
-                {
-                    dt = DbHandler.MSSQL.SelectDataTable(sql);
-                }
-                else
-                {
-                    dt = DbHandler.SQLite.SelectDataTable(sql);
-                }
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
+                dt = DbHandler.IsMssqlConnected ? DbHandler.MSSQL.SelectDataTable(sql) : DbHandler.SQLite.SelectDataTable(sql);
+                if ((dt?.Rows.Count ?? 0) < 1) return null;
                 List<Models.AppFuncLevel> rList = new List<Models.AppFuncLevel>();
                 foreach (DataRow dr in dt.Rows)
                 {
                     Models.AppFuncLevel o = Mapping(dr);
-                    if (o != null) { rList.Add(o); }
+                    if (o != null) rList.Add(o);
                 }
                 return rList;
             }

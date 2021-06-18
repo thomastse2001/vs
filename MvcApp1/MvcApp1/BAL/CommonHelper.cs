@@ -112,14 +112,14 @@ namespace MvcApp1.BAL
 
         public static string GetSessionValue(HttpRequestBase request, string key)
         {
-            if (string.IsNullOrWhiteSpace(key) || request?.Params == null) { return ""; }
-            if (!request.Params.AllKeys.Contains(key)) { return ""; }
+            if (string.IsNullOrWhiteSpace(key) || request?.Params == null) return "";
+            if (!request.Params.AllKeys.Contains(key)) return "";
             return request[key].ToString();
         }
 
         public static int[] ConvertStringToIntArray(string input, string separator)
         {
-            if (string.IsNullOrWhiteSpace(input)) { return null; }
+            if (string.IsNullOrWhiteSpace(input)) return null;
             string[] strArray = input.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
             List<int> intList = new List<int>();
             try

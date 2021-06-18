@@ -11,8 +11,8 @@ namespace MvcApp1.DAO
     {
         public static int AssignByUserIdAndRoleSelectedList(int updatedBy, int userId, List<Models.Role> selectedRoleList)
         {
-            if (userId < 0) { return 0; }
-            if (selectedRoleList != null) { selectedRoleList.RemoveAll(x => x == null); }
+            if (userId < 0) return 0;
+            if (selectedRoleList != null) selectedRoleList.RemoveAll(x => x == null);
             /// if no list, delete all records in table if UserId=@UserId.
             if ((selectedRoleList?.Count ?? 0) < 1)
             {
@@ -107,8 +107,8 @@ namespace MvcApp1.DAO
 
         public static int AssignByRoleIdAndUserSelectedList(int updatedBy, int roleId, List<Models.User> selectedUserList)
         {
-            if (roleId < 0) { return 0; }
-            if (selectedUserList != null) { selectedUserList.RemoveAll(x => x == null); }
+            if (roleId < 0) return 0;
+            if (selectedUserList != null) selectedUserList.RemoveAll(x => x == null);
             /// if no list, delete all records in table if RoleId=@RoleId.
             if ((selectedUserList?.Count ?? 0) < 1)
             {

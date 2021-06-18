@@ -104,6 +104,9 @@
             this.ChkTcpServerSelectAllClients = new System.Windows.Forms.CheckBox();
             this.BtnTcpServerStartListening = new System.Windows.Forms.Button();
             this.BtnTcpServerStopListening = new System.Windows.Forms.Button();
+            this.TPageDataViewing = new System.Windows.Forms.TabPage();
+            this.BtnDataViewingInitializeData = new System.Windows.Forms.Button();
+            this.DgvStudent = new System.Windows.Forms.DataGridView();
             this.BtnHideMainDialog = new System.Windows.Forms.Button();
             this.ContextMenuStripHide = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.UnhideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,6 +116,19 @@
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
+            this.ColStudentId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColUniqueName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColDisplayName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColPhone = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColEmail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColGender = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColGenderString = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColEnrollmentFee = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColIsNewlyEnrolled = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.ColBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColCreatedDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColUpdatedDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DgvStudent2 = new System.Windows.Forms.DataGridView();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -131,7 +147,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxClient)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxIdleDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxConnectionDuration)).BeginInit();
+            this.TPageDataViewing.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent)).BeginInit();
             this.ContextMenuStripHide.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent2)).BeginInit();
             this.SuspendLayout();
             // 
             // LblVersion
@@ -162,6 +181,7 @@
             // 
             this.TControlMain.Controls.Add(this.tabPage1);
             this.TControlMain.Controls.Add(this.TPageTcpServerClient);
+            this.TControlMain.Controls.Add(this.TPageDataViewing);
             this.TControlMain.Location = new System.Drawing.Point(12, 131);
             this.TControlMain.Name = "TControlMain";
             this.TControlMain.SelectedIndex = 0;
@@ -1044,6 +1064,54 @@
             this.BtnTcpServerStopListening.UseVisualStyleBackColor = true;
             this.BtnTcpServerStopListening.Click += new System.EventHandler(this.BtnTcpServerStopListening_Click);
             // 
+            // TPageDataViewing
+            // 
+            this.TPageDataViewing.Controls.Add(this.DgvStudent2);
+            this.TPageDataViewing.Controls.Add(this.BtnDataViewingInitializeData);
+            this.TPageDataViewing.Controls.Add(this.DgvStudent);
+            this.TPageDataViewing.Location = new System.Drawing.Point(4, 22);
+            this.TPageDataViewing.Name = "TPageDataViewing";
+            this.TPageDataViewing.Padding = new System.Windows.Forms.Padding(3);
+            this.TPageDataViewing.Size = new System.Drawing.Size(752, 255);
+            this.TPageDataViewing.TabIndex = 2;
+            this.TPageDataViewing.Text = "Data Viewing";
+            this.TPageDataViewing.UseVisualStyleBackColor = true;
+            // 
+            // BtnDataViewingInitializeData
+            // 
+            this.BtnDataViewingInitializeData.Location = new System.Drawing.Point(6, 6);
+            this.BtnDataViewingInitializeData.Name = "BtnDataViewingInitializeData";
+            this.BtnDataViewingInitializeData.Size = new System.Drawing.Size(96, 23);
+            this.BtnDataViewingInitializeData.TabIndex = 0;
+            this.BtnDataViewingInitializeData.Text = "Initialize Data";
+            this.BtnDataViewingInitializeData.UseVisualStyleBackColor = true;
+            this.BtnDataViewingInitializeData.Click += new System.EventHandler(this.BtnDataViewingInitializeData_Click);
+            // 
+            // DgvStudent
+            // 
+            this.DgvStudent.AllowUserToAddRows = false;
+            this.DgvStudent.AllowUserToDeleteRows = false;
+            this.DgvStudent.AllowUserToResizeRows = false;
+            this.DgvStudent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvStudent.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ColStudentId,
+            this.ColUniqueName,
+            this.ColDisplayName,
+            this.ColPhone,
+            this.ColEmail,
+            this.ColGender,
+            this.ColGenderString,
+            this.ColEnrollmentFee,
+            this.ColIsNewlyEnrolled,
+            this.ColBirthday,
+            this.ColCreatedDate,
+            this.ColUpdatedDate});
+            this.DgvStudent.Location = new System.Drawing.Point(6, 35);
+            this.DgvStudent.Name = "DgvStudent";
+            this.DgvStudent.ReadOnly = true;
+            this.DgvStudent.Size = new System.Drawing.Size(500, 90);
+            this.DgvStudent.TabIndex = 1;
+            // 
             // BtnHideMainDialog
             // 
             this.BtnHideMainDialog.Location = new System.Drawing.Point(600, 69);
@@ -1098,6 +1166,111 @@
             // 
             this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
+            // ColStudentId
+            // 
+            this.ColStudentId.DataPropertyName = "StudentId";
+            this.ColStudentId.HeaderText = "Student ID";
+            this.ColStudentId.Name = "ColStudentId";
+            this.ColStudentId.ReadOnly = true;
+            this.ColStudentId.Visible = false;
+            // 
+            // ColUniqueName
+            // 
+            this.ColUniqueName.DataPropertyName = "UniqueName";
+            this.ColUniqueName.HeaderText = "Unique Name";
+            this.ColUniqueName.Name = "ColUniqueName";
+            this.ColUniqueName.ReadOnly = true;
+            // 
+            // ColDisplayName
+            // 
+            this.ColDisplayName.DataPropertyName = "DisplayName";
+            this.ColDisplayName.HeaderText = "Display Name";
+            this.ColDisplayName.Name = "ColDisplayName";
+            this.ColDisplayName.ReadOnly = true;
+            // 
+            // ColPhone
+            // 
+            this.ColPhone.DataPropertyName = "Phone";
+            this.ColPhone.HeaderText = "Phone";
+            this.ColPhone.Name = "ColPhone";
+            this.ColPhone.ReadOnly = true;
+            this.ColPhone.Visible = false;
+            // 
+            // ColEmail
+            // 
+            this.ColEmail.DataPropertyName = "Email";
+            this.ColEmail.HeaderText = "Email";
+            this.ColEmail.Name = "ColEmail";
+            this.ColEmail.ReadOnly = true;
+            this.ColEmail.Visible = false;
+            // 
+            // ColGender
+            // 
+            this.ColGender.DataPropertyName = "Gender";
+            this.ColGender.HeaderText = "Gender";
+            this.ColGender.Name = "ColGender";
+            this.ColGender.ReadOnly = true;
+            this.ColGender.Visible = false;
+            // 
+            // ColGenderString
+            // 
+            this.ColGenderString.DataPropertyName = "GenderString";
+            this.ColGenderString.HeaderText = "Gender String";
+            this.ColGenderString.Name = "ColGenderString";
+            this.ColGenderString.ReadOnly = true;
+            this.ColGenderString.Visible = false;
+            // 
+            // ColEnrollmentFee
+            // 
+            this.ColEnrollmentFee.DataPropertyName = "EnrollmentFee";
+            this.ColEnrollmentFee.HeaderText = "Enrollment Fee";
+            this.ColEnrollmentFee.Name = "ColEnrollmentFee";
+            this.ColEnrollmentFee.ReadOnly = true;
+            // 
+            // ColIsNewlyEnrolled
+            // 
+            this.ColIsNewlyEnrolled.DataPropertyName = "IsNewlyEnrolled";
+            this.ColIsNewlyEnrolled.HeaderText = "New Enrolled";
+            this.ColIsNewlyEnrolled.Name = "ColIsNewlyEnrolled";
+            this.ColIsNewlyEnrolled.ReadOnly = true;
+            // 
+            // ColBirthday
+            // 
+            this.ColBirthday.DataPropertyName = "Birthday";
+            this.ColBirthday.HeaderText = "Birthday";
+            this.ColBirthday.Name = "ColBirthday";
+            this.ColBirthday.ReadOnly = true;
+            this.ColBirthday.Visible = false;
+            // 
+            // ColCreatedDate
+            // 
+            this.ColCreatedDate.DataPropertyName = "CreatedDate";
+            this.ColCreatedDate.HeaderText = "Created Date";
+            this.ColCreatedDate.Name = "ColCreatedDate";
+            this.ColCreatedDate.ReadOnly = true;
+            this.ColCreatedDate.Visible = false;
+            // 
+            // ColUpdatedDate
+            // 
+            this.ColUpdatedDate.DataPropertyName = "UpdatedDate";
+            this.ColUpdatedDate.HeaderText = "Updated Date";
+            this.ColUpdatedDate.Name = "ColUpdatedDate";
+            this.ColUpdatedDate.ReadOnly = true;
+            this.ColUpdatedDate.Visible = false;
+            // 
+            // DgvStudent2
+            // 
+            this.DgvStudent2.AllowUserToAddRows = false;
+            this.DgvStudent2.AllowUserToDeleteRows = false;
+            this.DgvStudent2.AllowUserToResizeRows = false;
+            this.DgvStudent2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvStudent2.Location = new System.Drawing.Point(6, 131);
+            this.DgvStudent2.Name = "DgvStudent2";
+            this.DgvStudent2.ReadOnly = true;
+            this.DgvStudent2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DgvStudent2.Size = new System.Drawing.Size(500, 90);
+            this.DgvStudent2.TabIndex = 2;
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1137,7 +1310,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxClient)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxIdleDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxConnectionDuration)).EndInit();
+            this.TPageDataViewing.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent)).EndInit();
             this.ContextMenuStripHide.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1229,6 +1405,22 @@
         private System.Windows.Forms.Button BtnPolygonShape2;
         private System.Windows.Forms.Button BtnTicTacToe;
         private System.Windows.Forms.Button BtnPaint;
+        private System.Windows.Forms.TabPage TPageDataViewing;
+        private System.Windows.Forms.DataGridView DgvStudent;
+        private System.Windows.Forms.Button BtnDataViewingInitializeData;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColStudentId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColUniqueName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColDisplayName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColPhone;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColEmail;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColGender;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColGenderString;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColEnrollmentFee;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn ColIsNewlyEnrolled;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColBirthday;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColCreatedDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColUpdatedDate;
+        private System.Windows.Forms.DataGridView DgvStudent2;
     }
 }
 

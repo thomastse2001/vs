@@ -79,6 +79,7 @@
     <Compile Include="Helpers\TTcpClientSocket.cs" />
     <Compile Include="Helpers\TTcpServerSocket.cs" />
     <Compile Include="Helpers\TTcpSocket.cs" />
+    <Compile Include="Helpers\ZipHelper.cs" />
     <Compile Include="Models\MailItem.cs" />
     <Compile Include="Models\MyDbContext.cs" />
     <Compile Include="Models\Param.cs" />

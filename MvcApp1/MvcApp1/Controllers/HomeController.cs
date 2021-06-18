@@ -12,8 +12,8 @@ namespace MvcApp1.Controllers
         public ActionResult Index()
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "home")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "home")) return RedirectToAction("NoAccess", "home");
 
             ///// throw exception for demo.
             //throw new Exception("This is unhandled exception");
@@ -29,11 +29,11 @@ namespace MvcApp1.Controllers
         public ActionResult Index2()
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "index2")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "index2")) return RedirectToAction("NoAccess", "home");
 
             string LastVisited = "";
-            if (TempData.ContainsKey("LastVisited")) { LastVisited = TempData["LastVisited"].ToString(); }
+            if (TempData.ContainsKey("LastVisited")) LastVisited = TempData["LastVisited"].ToString();
             ViewBag.LastVisited = LastVisited;
 
             return View();
@@ -42,8 +42,8 @@ namespace MvcApp1.Controllers
         public ActionResult About()
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "about")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "about")) return RedirectToAction("NoAccess", "home");
 
             ViewBag.Message = "Your application description page.";
 
@@ -53,8 +53,8 @@ namespace MvcApp1.Controllers
         public ActionResult Contact()
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "contact")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "contact")) return RedirectToAction("NoAccess", "home");
 
             ViewBag.Message = "Your contact page.";
 
@@ -79,10 +79,7 @@ namespace MvcApp1.Controllers
         //[Authorize]
         public ActionResult Login(Models.LoginUser o)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(o);
-            }
+            if (!ModelState.IsValid) return View(o);
             DAO.DbHandler.CheckAndSetDb();
             Models.User validateUser = BAL.AccessBO.LoginAuthentication(o.LoginName, o.Password);
             if (validateUser == null)
@@ -106,7 +103,7 @@ namespace MvcApp1.Controllers
 
         public ActionResult NoAccess()
         {
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
             return View();
         }
     }
