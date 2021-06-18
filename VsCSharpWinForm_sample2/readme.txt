@@ -4,17 +4,15 @@ It is a Visual Studio C Sharp Windows Form sample code version 2, which demonstr
 
 DbHelper
 ExcelHelper
-FileTransferHelper
+FileHelper
 GeneralT
 MailHelper
 Singleton
-TCsvFile
 TIniFile
 TLog
 TTcpClientSocket
 TTcpServerSocket
 TTcpSocket
-ZipHelper
 Login Process
 
 Data transfer process in TTcpClientSocket, TTcpServerSocket and TTcpSocket:

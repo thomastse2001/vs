@@ -11,7 +11,7 @@ namespace MvcApp1.DAO
     {
         public static int AssignByRoleIdAndAppFunctionIdList(int updatedBy, int roleId, params int[] appFunctionIdArray)
         {
-            if (roleId < 0) { return 0; }
+            if (roleId < 0) return 0;
             /// if no list, delete all records in table if RoleId=@RoleId.
             if ((appFunctionIdArray?.Length ?? 0) < 1)
             {
@@ -81,8 +81,8 @@ namespace MvcApp1.DAO
                                 {
                                     new SqlParameter("@RoleId", SqlDbType.Int) { Value = roleId },
                                     new SqlParameter("@AppFunctionId", SqlDbType.Int) { Value = i },
-                                    new SqlParameter("@UpdatedDt", SqlDbType.DateTime){Value = tRef },
-                                    new SqlParameter("@UpdatedBy", SqlDbType.Int){Value = updatedBy }
+                                    new SqlParameter("@UpdatedDt", SqlDbType.DateTime) {Value = tRef },
+                                    new SqlParameter("@UpdatedBy", SqlDbType.Int) {Value = updatedBy }
                                 }));
                         }
                         return DbHandler.MSSQL.ExecuteNonQuery(paramList.ToArray());
@@ -122,7 +122,7 @@ namespace MvcApp1.DAO
 
         public static bool CanAccessAppFunctionByUserId(int userId, string uniqueName)
         {
-            if (string.IsNullOrWhiteSpace(uniqueName) || userId < 0) { return false; }
+            if (string.IsNullOrWhiteSpace(uniqueName) || userId < 0) return false;
             string sql = "SELECT 1 FROM MapAppFunctionsRoles fr INNER JOIN AppFunctions f ON f.AppFunctionId=fr.AppFunctionId INNER JOIN MapRolesUsers ru ON ru.RoleId=fr.RoleId WHERE f.UniqueName=@UniqueName AND ru.UserId=@UserId";
             if (DbHandler.IsMssqlConnected)
             {
@@ -142,7 +142,7 @@ namespace MvcApp1.DAO
 
         public static bool CanAccessAppFunctionByLoginName(string loginName, string uniqueName)
         {
-            if (string.IsNullOrWhiteSpace(uniqueName) || string.IsNullOrWhiteSpace(loginName)) { return false; }
+            if (string.IsNullOrWhiteSpace(uniqueName) || string.IsNullOrWhiteSpace(loginName)) return false;
             string sql = "SELECT 1 FROM MapAppFunctionsRoles fr INNER JOIN AppFunctions f ON f.AppFunctionId = fr.AppFunctionId INNER JOIN MapRolesUsers ru ON ru.RoleId = fr.RoleId INNER JOIN Users u ON u.UserId=ru.UserId WHERE f.UniqueName=@UniqueName AND u.LoginName=@LoginName";
             if (DbHandler.IsMssqlConnected)
             {

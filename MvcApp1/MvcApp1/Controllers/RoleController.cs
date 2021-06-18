@@ -12,8 +12,8 @@ namespace MvcApp1.Controllers
         public ActionResult Index()
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role")) return RedirectToAction("NoAccess", "home");
             /// Get data from database.
             string userIdString = Session["UserId"].ToString();
             IList<Models.Role> list = DAO.RoleDao.GetAll();
@@ -32,8 +32,8 @@ namespace MvcApp1.Controllers
         public ActionResult Details(int id)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_details")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_details")) return RedirectToAction("NoAccess", "home");
             return View(DAO.RoleDao.GetUnit(id));
         }
 
@@ -41,8 +41,8 @@ namespace MvcApp1.Controllers
         public ActionResult Create()
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_create")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_create")) return RedirectToAction("NoAccess", "home");
             return View();
         }
 
@@ -52,16 +52,16 @@ namespace MvcApp1.Controllers
         public ActionResult Create(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_create")) { return RedirectToAction("NoAccess", "home"); }
-            if (!ModelState.IsValid) { return View(o); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_create")) return RedirectToAction("NoAccess", "home");
+            if (!ModelState.IsValid) return View(o);
             if (o == null)
             {
                 ModelState.AddModelError(string.Empty, "Role is NULL.");
                 return View(o);
             }
             /// check whether name already exists in database.
-            if (string.IsNullOrEmpty(o.UniqueName)) { o.UniqueName = o.UniqueName.Trim(); }
+            if (string.IsNullOrEmpty(o.UniqueName)) o.UniqueName = o.UniqueName.Trim();
             if (DAO.RoleDao.UniqueNameExists(o.UniqueName))
             {
                 ModelState.AddModelError(string.Empty, "Unique Name already exists.");
@@ -76,21 +76,18 @@ namespace MvcApp1.Controllers
         public ActionResult CreateConfirm(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_create")) { return RedirectToAction("NoAccess", "home"); }
-            if (o == null || string.IsNullOrWhiteSpace(o.UniqueName)) { return RedirectToAction("Create"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_create")) return RedirectToAction("NoAccess", "home");
+            if (o == null || string.IsNullOrWhiteSpace(o.UniqueName)) return RedirectToAction("Create");
             /// If clicking the "Confirm".
             if ("confirm".Equals(BAL.CommonHelper.GetSessionValue(Request, "UiConfirm")?.ToLower()))
             {
                 int userId = DAO.UserDao.GetIdByLoginname("admin");
-                if (userId < 0) { userId = 0; }
+                if (userId < 0) userId = 0;
                 o.UpdatedBy = o.CreatedBy = userId;
                 /// Update database.
                 int i = DAO.RoleDao.InsertUnit(o);
-                if (i == 1)
-                {
-                    return View("CreateResult", o);
-                }
+                if (i == 1) return View("CreateResult", o);
                 else if (i < 1)
                 {
                     ModelState.AddModelError(string.Empty, "Fail to create it in database.");
@@ -102,10 +99,7 @@ namespace MvcApp1.Controllers
                     return View("Create", o);
                 }
             }
-            else
-            {
-                return View("Create", o);
-            }
+            else return View("Create", o);
         }
 
         /// From Views/Role/CreateResult.cshtml
@@ -113,8 +107,8 @@ namespace MvcApp1.Controllers
         public ActionResult CreateResult(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_create")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_create")) return RedirectToAction("NoAccess", "home");
             return View(o);
         }
 
@@ -123,8 +117,8 @@ namespace MvcApp1.Controllers
         public ActionResult Edit(int id)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_edit")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_edit")) return RedirectToAction("NoAccess", "home");
             return View(DAO.RoleDao.GetUnit(id));
         }
 
@@ -134,16 +128,16 @@ namespace MvcApp1.Controllers
         public ActionResult Edit(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_edit")) { return RedirectToAction("NoAccess", "home"); }
-            if (!ModelState.IsValid) { return View(o); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_edit")) return RedirectToAction("NoAccess", "home");
+            if (!ModelState.IsValid) return View(o);
             if (o == null)
             {
                 ModelState.AddModelError(string.Empty, "Role is NULL.");
                 return View(o);
             }
             /// check whether name already exists in database.
-            if (string.IsNullOrEmpty(o.UniqueName)) { o.UniqueName = o.UniqueName.Trim(); }
+            if (string.IsNullOrEmpty(o.UniqueName)) o.UniqueName = o.UniqueName.Trim();
             if (DAO.RoleDao.UniqueNameExists(o.UniqueName, o.RoleId))
             {
                 ModelState.AddModelError(string.Empty, "Unique Name already exists.");
@@ -158,9 +152,9 @@ namespace MvcApp1.Controllers
         public ActionResult EditConfirm(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_edit")) { return RedirectToAction("NoAccess", "home"); }
-            if (o == null || string.IsNullOrWhiteSpace(o.UniqueName)) { return RedirectToAction("Index"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_edit")) return RedirectToAction("NoAccess", "home");
+            if (o == null || string.IsNullOrWhiteSpace(o.UniqueName)) return RedirectToAction("Index");
             /// If clicking the "Confirm".
             if ("confirm".Equals(BAL.CommonHelper.GetSessionValue(Request, "UiConfirm")?.ToLower()))
             {
@@ -169,10 +163,7 @@ namespace MvcApp1.Controllers
                 o.UpdatedBy = o.CreatedBy = userId;
                 /// Update database.
                 int i = DAO.RoleDao.UpdateUnit(o);
-                if (i == 1)
-                {
-                    return View("EditResult", o);
-                }
+                if (i == 1) return View("EditResult", o);
                 else if (i < 1)
                 {
                     ModelState.AddModelError(string.Empty, "Fail to update it in database.");
@@ -184,10 +175,7 @@ namespace MvcApp1.Controllers
                     return View("Edit", o);
                 }
             }
-            else
-            {
-                return View("Edit", o);
-            }
+            else return View("Edit", o);
         }
 
         /// From Views/Role/EditResult.cshtml
@@ -195,8 +183,8 @@ namespace MvcApp1.Controllers
         public ActionResult EditResult(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_edit")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_edit")) return RedirectToAction("NoAccess", "home");
             return View(o);
         }
 
@@ -205,8 +193,8 @@ namespace MvcApp1.Controllers
         public ActionResult Delete(int id)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_delete")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_delete")) return RedirectToAction("NoAccess", "home");
             return View(DAO.RoleDao.GetUnit(id));
         }
 
@@ -215,9 +203,9 @@ namespace MvcApp1.Controllers
         public ActionResult Delete(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_delete")) { return RedirectToAction("NoAccess", "home"); }
-            if (o == null) { return RedirectToAction("Index"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_delete")) return RedirectToAction("NoAccess", "home");
+            if (o == null) return RedirectToAction("Index");
             /// update database.
             if (DAO.RoleDao.DeleteUnit(o.RoleId) < 1)
             {
@@ -230,8 +218,8 @@ namespace MvcApp1.Controllers
         public ActionResult AssignUsersToRole(int id)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_users")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_users")) return RedirectToAction("NoAccess", "home");
             Models.Role role = DAO.RoleDao.GetUnit(id);
             if (role == null)
             {
@@ -247,8 +235,8 @@ namespace MvcApp1.Controllers
         public ActionResult AssignUsersToRole(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_users")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_users")) return RedirectToAction("NoAccess", "home");
             if (o == null)
             {
                 ModelState.AddModelError(string.Empty, "Role is NULL.");
@@ -265,8 +253,8 @@ namespace MvcApp1.Controllers
         public ActionResult AssignUsersToRoleConfirm(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_users")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_users")) return RedirectToAction("NoAccess", "home");
             string selectedValuesString = BAL.CommonHelper.GetSessionValue(Request, "UiSelectedValues");
             /// If clicking the "Confirm".
             if ("confirm".Equals(BAL.CommonHelper.GetSessionValue(Request, "UiConfirm")?.ToLower()))
@@ -301,16 +289,16 @@ namespace MvcApp1.Controllers
         public ActionResult AssignUsersToRoleResult(Models.User o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_users")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_users")) return RedirectToAction("NoAccess", "home");
             return View(o);
         }
 
         public ActionResult AssignFuncToRole(int id)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_func")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_func")) return RedirectToAction("NoAccess", "home");
             Models.Role role = DAO.RoleDao.GetUnit(id);
             if (role == null)
             {
@@ -325,8 +313,8 @@ namespace MvcApp1.Controllers
         public ActionResult AssignFuncToRole(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_func")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_func")) return RedirectToAction("NoAccess", "home");
             if (o == null)
             {
                 ModelState.AddModelError(string.Empty, "Role is NULL.");
@@ -341,8 +329,8 @@ namespace MvcApp1.Controllers
         public ActionResult AssignFuncToRoleConfirm(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_func")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_func")) return RedirectToAction("NoAccess", "home");
             int[] intArray = BAL.CommonHelper.ConvertStringToIntArray(BAL.CommonHelper.GetSessionValue(Request, "IsSelectedArray"), ",");
             o.AppFunctionList = DAO.AppFunctionDao.GetListSelectedByAppFunctionId(1, 0, intArray);
             /// If clicking the "Confirm".
@@ -351,18 +339,15 @@ namespace MvcApp1.Controllers
                 int iReturn = DAO.MapAppFunctionsRolesDao.AssignByRoleIdAndAppFunctionIdList(0, o.RoleId, intArray);
                 return View("AssignFuncToRoleResult", o);
             }
-            else
-            {
-                return View("AssignFuncToRole", o);
-            }
+            else return View("AssignFuncToRole", o);
         }
 
         [HttpPost]
         public ActionResult AssignFuncToRoleResult(Models.Role o)
         {
             /// Authentication and authorisation.
-            if (Session["UserId"] == null) { return RedirectToAction("Login", "home"); }
-            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_func")) { return RedirectToAction("NoAccess", "home"); }
+            if (Session["UserId"] == null) return RedirectToAction("Login", "home");
+            if (!BAL.AccessBO.CanAccessAppFunctionByUserId(Session["UserId"].ToString(), "role_assign_func")) return RedirectToAction("NoAccess", "home");
             return View(o);
         }
     }

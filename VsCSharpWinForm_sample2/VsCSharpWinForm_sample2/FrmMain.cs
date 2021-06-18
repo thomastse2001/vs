@@ -86,9 +86,8 @@ namespace VsCSharpWinForm_sample2
                     try
                     {
                         int iMax = 100000;
-                        char[] cArrayTrim = { ' ', '\t', (char)10, (char)13 };
-                        string s = (args?.Length ?? 0) < 1 ? format : string.Format(format, args);
-                        TxtLog.AppendText(s.Trim(cArrayTrim) + Environment.NewLine);
+                        //char[] cArrayTrim = { ' ', '\t', (char)10, (char)13 };
+                        TxtLog.AppendText(((args?.Length ?? 0) < 1 ? format : string.Format(format, args)) + Environment.NewLine);
                         if (TxtLog.TextLength > iMax) TxtLog.Text = TxtLog.Text.Substring(TxtLog.Text.Length - iMax);
                         TxtLog.SelectionStart = TxtLog.TextLength;
                         TxtLog.ScrollToCaret();
@@ -305,6 +304,7 @@ namespace VsCSharpWinForm_sample2
                 TTcpSocket.Server.Logger = Logger;
                 Views.FrmWait.Logger = Logger;
                 Views.FrmTcpClient.Logger = Logger;
+                Views.FrmTicTacToe.Logger = Logger;
                 MailHelper.Logger = Logger;
                 ExcelHelper.Logger = Logger;
 
@@ -373,11 +373,9 @@ namespace VsCSharpWinForm_sample2
                 {
                     Views.FrmLogin frmLogin = new Views.FrmLogin()
                     {
+                        VersionString = this.LblVersion.Text,
                         Text = ExeFileNameWithoutExt + " - Login"
                     };
-                    frmLogin.LblVersion.Text = this.LblVersion.Text;
-                    frmLogin.LblVersion.Top = 9;
-                    frmLogin.LblVersion.Left = frmLogin.Width - frmLogin.LblVersion.Width - 24;
                     frmLogin.LblMessage.Text = "";
                     frmLogin.TxtUsername.Text = Param.Login.Username;
                     frmLogin.TxtPassword.Text = Param.Login.Hash;
@@ -626,9 +624,9 @@ namespace VsCSharpWinForm_sample2
             {
                 Views.FrmTcpClient frmTcpClient = new Views.FrmTcpClient(Param.TcpClient.Id)
                 {
+                    VersionString = this.LblVersion.Text,
                     CryptPassword = Param.TcpClient.DefaultValue.CryptPassword
                 };
-                frmTcpClient.LblVersion.Text = this.LblVersion.Text;
                 frmTcpClient.TxtServerHost.Text = Param.TcpClient.DefaultValue.ServerHost;
                 frmTcpClient.NudServerPort.Value = Param.TcpClient.DefaultValue.ServerPort;
                 frmTcpClient.ChkContainLengthAsHeader.Checked = Param.TcpClient.DefaultValue.ContainLengthAsHeader;
@@ -2158,6 +2156,106 @@ namespace VsCSharpWinForm_sample2
         }
         #endregion
 
+        #region DataViewingRegion
+        private static List<Student> GetStudentList()
+        {
+            return new List<Student>()
+            {
+                new Student()
+                {
+                    StudentId = 1,
+                    UniqueName = "apple.chan",
+                    DisplayName = "Apple Chan",
+                    Phone = "11111111",
+                    Email = "apple.chan@abc.com",
+                    Gender = 'F'
+                },
+                new Student()
+                {
+                    StudentId = 2,
+                    UniqueName = "orange.lee",
+                    DisplayName = "Orange Lee",
+                    Phone = "22222222",
+                    Email = "orange.lee@abc.com",
+                    Gender = 'M',
+                    EnrollmentFee = 100,
+                    IsNewlyEnrolled = false
+                },
+                new Student()
+                {
+                    StudentId = 3,
+                    UniqueName = "pear.ho",
+                    DisplayName = "Pear Ho",
+                    Phone = "33333333",
+                    Email = "pear.ho@abc.com",
+                    Gender = 'M',
+                    EnrollmentFee = 130,
+                    IsNewlyEnrolled = false
+                }
+            };
+        }
+
+        private void BtnDataViewingInitializeData_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                /// https://stackoverflow.com/questions/6473326/using-a-list-as-a-data-source-for-datagridview
+                List<Student> studentList = GetStudentList();
+                DgvStudent.DataSource = new BindingSource() { DataSource = studentList };
+                DgvStudent2.DataSource = new BindingSource() { DataSource = studentList };
+                foreach (DataGridViewColumn col in DgvStudent2.Columns)
+                {
+                    //int i = col.Index;
+                    switch (col.DataPropertyName)
+                    {
+                        case "StudentId":
+                            col.HeaderText = "Student ID";
+                            col.Visible = false;
+                            break;
+                        case "UniqueName":
+                            col.HeaderText = "Unique Name";
+                            break;
+                        case "DisplayName":
+                            col.HeaderText = "Display Name";
+                            break;
+                        case "Phone":
+                            col.Visible = false;
+                            break;
+                        case "Email":
+                            col.Visible = false;
+                            break;
+                        case "Gender":
+                            col.Visible = false;
+                            break;
+                        case "GenderString":
+                            col.Visible = false;
+                            break;
+                        case "EnrollmentFee":
+                            col.HeaderText = "Enrollment Fee";
+                            col.Width = 105;
+                            break;
+                        case "IsNewlyEnrolled":
+                            col.HeaderText = "Newly Enrolled?";
+                            col.Width = 110;
+                            break;
+                        case "Birthday":
+                            col.Visible = false;
+                            break;
+                        case "CreatedDate":
+                            col.HeaderText = "Created Date";
+                            col.Visible = false;
+                            break;
+                        case "UpdatedDate":
+                            col.HeaderText = "Updated Date";
+                            col.Visible = false;
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+        #endregion
+
         private void BtnMail_Click(object sender, EventArgs e)
         {
             BtnMail.Enabled = false;
@@ -2202,6 +2300,34 @@ namespace VsCSharpWinForm_sample2
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
             finally { BtnLineSeparator.Enabled = true; }
+        }
+
+        private void BtnTicTacToe_Click(object sender, EventArgs e)
+        {
+            /// https://blog.nerdjfpb.com/project-ideas-for-c-beginners-to-expert/
+            try
+            {
+                Views.FrmTicTacToe frm = new Views.FrmTicTacToe()
+                {
+                    VersionString = LblVersion.Text
+                };
+                frm.ShowDialog();
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnPaint_Click(object sender, EventArgs e)
+        {
+            /// https://blog.nerdjfpb.com/project-ideas-for-c-beginners-to-expert/
+        }
+
+        private void BtnPolygonShape2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Views.FrmPolygonShape2 frm = new Views.FrmPolygonShape2()) frm.ShowDialog();
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
 
         #region Encrypt1Region
@@ -2331,6 +2457,23 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
+                int[] yArray = new int[10];
+                int[] xArray = new int[10];
+                int i;
+                for (i = 0; i < 10; i++)
+                {
+                    yArray[i] = (i - 1) / 3;
+                    xArray[i] = (i - 1) % 3;
+                    LocalLogger(TLog.LogLevel.DEBUG, "i = {0}, x = {1}, y = {2}", i, xArray[i], yArray[i]);
+                }
+                /// Split an array to 2 arrays with even and odd indices respectively.
+                /// https://stackoverflow.com/questions/37382990/how-to-split-an-array-to-2-arrays-with-odd-and-even-indices-respectively
+                int[] zArray = new int[9] { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+                int[] zArrayEven = zArray.Where((x, ii) => ii % 2 == 0).ToArray();
+                for (i = 0; i < zArrayEven.Length; i++) LocalLogger(TLog.LogLevel.DEBUG, "zArrayEven[{0}] = {1}", i, zArrayEven[i]);
+                int[] zArrayOdd = zArray.Where((x, ii) => ii % 2 == 1).ToArray();
+                for (i = 0; i < zArrayOdd.Length; i++) LocalLogger(TLog.LogLevel.DEBUG, "zArrayOdd[{0}] = {1}", i, zArrayOdd[i]);
+                ///
                 string s = "apple.chan;Apple Chan;23456789";
                 string[] array = s?.Split(';');
                 Student student = new Student()

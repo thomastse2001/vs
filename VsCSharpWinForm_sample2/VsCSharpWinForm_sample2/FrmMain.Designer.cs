@@ -34,6 +34,10 @@
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnPolygonShape2 = new System.Windows.Forms.Button();
+            this.BtnPaint = new System.Windows.Forms.Button();
+            this.BtnTicTacToe = new System.Windows.Forms.Button();
+            this.BtnArray1 = new System.Windows.Forms.Button();
             this.BtnUri = new System.Windows.Forms.Button();
             this.BtnOAuthMicrosoft = new System.Windows.Forms.Button();
             this.BtnEnDe1 = new System.Windows.Forms.Button();
@@ -100,6 +104,9 @@
             this.ChkTcpServerSelectAllClients = new System.Windows.Forms.CheckBox();
             this.BtnTcpServerStartListening = new System.Windows.Forms.Button();
             this.BtnTcpServerStopListening = new System.Windows.Forms.Button();
+            this.TPageDataViewing = new System.Windows.Forms.TabPage();
+            this.BtnDataViewingInitializeData = new System.Windows.Forms.Button();
+            this.DgvStudent = new System.Windows.Forms.DataGridView();
             this.BtnHideMainDialog = new System.Windows.Forms.Button();
             this.ContextMenuStripHide = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.UnhideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -109,7 +116,19 @@
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
-            this.BtnArray1 = new System.Windows.Forms.Button();
+            this.ColStudentId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColUniqueName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColDisplayName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColPhone = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColEmail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColGender = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColGenderString = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColEnrollmentFee = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColIsNewlyEnrolled = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.ColBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColCreatedDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColUpdatedDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DgvStudent2 = new System.Windows.Forms.DataGridView();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -128,7 +147,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxClient)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxIdleDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxConnectionDuration)).BeginInit();
+            this.TPageDataViewing.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent)).BeginInit();
             this.ContextMenuStripHide.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent2)).BeginInit();
             this.SuspendLayout();
             // 
             // LblVersion
@@ -159,6 +181,7 @@
             // 
             this.TControlMain.Controls.Add(this.tabPage1);
             this.TControlMain.Controls.Add(this.TPageTcpServerClient);
+            this.TControlMain.Controls.Add(this.TPageDataViewing);
             this.TControlMain.Location = new System.Drawing.Point(12, 131);
             this.TControlMain.Name = "TControlMain";
             this.TControlMain.SelectedIndex = 0;
@@ -167,6 +190,9 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnPolygonShape2);
+            this.tabPage1.Controls.Add(this.BtnPaint);
+            this.tabPage1.Controls.Add(this.BtnTicTacToe);
             this.tabPage1.Controls.Add(this.BtnArray1);
             this.tabPage1.Controls.Add(this.BtnUri);
             this.tabPage1.Controls.Add(this.BtnOAuthMicrosoft);
@@ -201,6 +227,46 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnPolygonShape2
+            // 
+            this.BtnPolygonShape2.Location = new System.Drawing.Point(168, 155);
+            this.BtnPolygonShape2.Name = "BtnPolygonShape2";
+            this.BtnPolygonShape2.Size = new System.Drawing.Size(110, 25);
+            this.BtnPolygonShape2.TabIndex = 28;
+            this.BtnPolygonShape2.Text = "Polygon Shape 2";
+            this.BtnPolygonShape2.UseVisualStyleBackColor = true;
+            this.BtnPolygonShape2.Click += new System.EventHandler(this.BtnPolygonShape2_Click);
+            // 
+            // BtnPaint
+            // 
+            this.BtnPaint.Location = new System.Drawing.Point(87, 155);
+            this.BtnPaint.Name = "BtnPaint";
+            this.BtnPaint.Size = new System.Drawing.Size(75, 25);
+            this.BtnPaint.TabIndex = 29;
+            this.BtnPaint.Text = "Paint";
+            this.BtnPaint.UseVisualStyleBackColor = true;
+            this.BtnPaint.Click += new System.EventHandler(this.BtnPaint_Click);
+            // 
+            // BtnTicTacToe
+            // 
+            this.BtnTicTacToe.Location = new System.Drawing.Point(6, 155);
+            this.BtnTicTacToe.Name = "BtnTicTacToe";
+            this.BtnTicTacToe.Size = new System.Drawing.Size(75, 25);
+            this.BtnTicTacToe.TabIndex = 28;
+            this.BtnTicTacToe.Text = "Tic-Tac-Toe";
+            this.BtnTicTacToe.UseVisualStyleBackColor = true;
+            this.BtnTicTacToe.Click += new System.EventHandler(this.BtnTicTacToe_Click);
+            // 
+            // BtnArray1
+            // 
+            this.BtnArray1.Location = new System.Drawing.Point(632, 127);
+            this.BtnArray1.Name = "BtnArray1";
+            this.BtnArray1.Size = new System.Drawing.Size(75, 23);
+            this.BtnArray1.TabIndex = 27;
+            this.BtnArray1.Text = "Array1";
+            this.BtnArray1.UseVisualStyleBackColor = true;
+            this.BtnArray1.Click += new System.EventHandler(this.BtnArray1_Click);
             // 
             // BtnUri
             // 
@@ -943,7 +1009,7 @@
             this.ClbTcpClientList.FormattingEnabled = true;
             this.ClbTcpClientList.Location = new System.Drawing.Point(338, 89);
             this.ClbTcpClientList.Name = "ClbTcpClientList";
-            this.ClbTcpClientList.Size = new System.Drawing.Size(200, 34);
+            this.ClbTcpClientList.Size = new System.Drawing.Size(200, 79);
             this.ClbTcpClientList.TabIndex = 26;
             // 
             // BtnTcpServerDeselectAllClients
@@ -997,6 +1063,54 @@
             this.BtnTcpServerStopListening.Text = "Stop Listening";
             this.BtnTcpServerStopListening.UseVisualStyleBackColor = true;
             this.BtnTcpServerStopListening.Click += new System.EventHandler(this.BtnTcpServerStopListening_Click);
+            // 
+            // TPageDataViewing
+            // 
+            this.TPageDataViewing.Controls.Add(this.DgvStudent2);
+            this.TPageDataViewing.Controls.Add(this.BtnDataViewingInitializeData);
+            this.TPageDataViewing.Controls.Add(this.DgvStudent);
+            this.TPageDataViewing.Location = new System.Drawing.Point(4, 22);
+            this.TPageDataViewing.Name = "TPageDataViewing";
+            this.TPageDataViewing.Padding = new System.Windows.Forms.Padding(3);
+            this.TPageDataViewing.Size = new System.Drawing.Size(752, 255);
+            this.TPageDataViewing.TabIndex = 2;
+            this.TPageDataViewing.Text = "Data Viewing";
+            this.TPageDataViewing.UseVisualStyleBackColor = true;
+            // 
+            // BtnDataViewingInitializeData
+            // 
+            this.BtnDataViewingInitializeData.Location = new System.Drawing.Point(6, 6);
+            this.BtnDataViewingInitializeData.Name = "BtnDataViewingInitializeData";
+            this.BtnDataViewingInitializeData.Size = new System.Drawing.Size(96, 23);
+            this.BtnDataViewingInitializeData.TabIndex = 0;
+            this.BtnDataViewingInitializeData.Text = "Initialize Data";
+            this.BtnDataViewingInitializeData.UseVisualStyleBackColor = true;
+            this.BtnDataViewingInitializeData.Click += new System.EventHandler(this.BtnDataViewingInitializeData_Click);
+            // 
+            // DgvStudent
+            // 
+            this.DgvStudent.AllowUserToAddRows = false;
+            this.DgvStudent.AllowUserToDeleteRows = false;
+            this.DgvStudent.AllowUserToResizeRows = false;
+            this.DgvStudent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvStudent.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ColStudentId,
+            this.ColUniqueName,
+            this.ColDisplayName,
+            this.ColPhone,
+            this.ColEmail,
+            this.ColGender,
+            this.ColGenderString,
+            this.ColEnrollmentFee,
+            this.ColIsNewlyEnrolled,
+            this.ColBirthday,
+            this.ColCreatedDate,
+            this.ColUpdatedDate});
+            this.DgvStudent.Location = new System.Drawing.Point(6, 35);
+            this.DgvStudent.Name = "DgvStudent";
+            this.DgvStudent.ReadOnly = true;
+            this.DgvStudent.Size = new System.Drawing.Size(500, 90);
+            this.DgvStudent.TabIndex = 1;
             // 
             // BtnHideMainDialog
             // 
@@ -1052,21 +1166,116 @@
             // 
             this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
-            // BtnArray1
+            // ColStudentId
             // 
-            this.BtnArray1.Location = new System.Drawing.Point(632, 127);
-            this.BtnArray1.Name = "BtnArray1";
-            this.BtnArray1.Size = new System.Drawing.Size(75, 23);
-            this.BtnArray1.TabIndex = 27;
-            this.BtnArray1.Text = "Array1";
-            this.BtnArray1.UseVisualStyleBackColor = true;
-            this.BtnArray1.Click += new System.EventHandler(this.BtnArray1_Click);
+            this.ColStudentId.DataPropertyName = "StudentId";
+            this.ColStudentId.HeaderText = "Student ID";
+            this.ColStudentId.Name = "ColStudentId";
+            this.ColStudentId.ReadOnly = true;
+            this.ColStudentId.Visible = false;
+            // 
+            // ColUniqueName
+            // 
+            this.ColUniqueName.DataPropertyName = "UniqueName";
+            this.ColUniqueName.HeaderText = "Unique Name";
+            this.ColUniqueName.Name = "ColUniqueName";
+            this.ColUniqueName.ReadOnly = true;
+            // 
+            // ColDisplayName
+            // 
+            this.ColDisplayName.DataPropertyName = "DisplayName";
+            this.ColDisplayName.HeaderText = "Display Name";
+            this.ColDisplayName.Name = "ColDisplayName";
+            this.ColDisplayName.ReadOnly = true;
+            // 
+            // ColPhone
+            // 
+            this.ColPhone.DataPropertyName = "Phone";
+            this.ColPhone.HeaderText = "Phone";
+            this.ColPhone.Name = "ColPhone";
+            this.ColPhone.ReadOnly = true;
+            this.ColPhone.Visible = false;
+            // 
+            // ColEmail
+            // 
+            this.ColEmail.DataPropertyName = "Email";
+            this.ColEmail.HeaderText = "Email";
+            this.ColEmail.Name = "ColEmail";
+            this.ColEmail.ReadOnly = true;
+            this.ColEmail.Visible = false;
+            // 
+            // ColGender
+            // 
+            this.ColGender.DataPropertyName = "Gender";
+            this.ColGender.HeaderText = "Gender";
+            this.ColGender.Name = "ColGender";
+            this.ColGender.ReadOnly = true;
+            this.ColGender.Visible = false;
+            // 
+            // ColGenderString
+            // 
+            this.ColGenderString.DataPropertyName = "GenderString";
+            this.ColGenderString.HeaderText = "Gender String";
+            this.ColGenderString.Name = "ColGenderString";
+            this.ColGenderString.ReadOnly = true;
+            this.ColGenderString.Visible = false;
+            // 
+            // ColEnrollmentFee
+            // 
+            this.ColEnrollmentFee.DataPropertyName = "EnrollmentFee";
+            this.ColEnrollmentFee.HeaderText = "Enrollment Fee";
+            this.ColEnrollmentFee.Name = "ColEnrollmentFee";
+            this.ColEnrollmentFee.ReadOnly = true;
+            // 
+            // ColIsNewlyEnrolled
+            // 
+            this.ColIsNewlyEnrolled.DataPropertyName = "IsNewlyEnrolled";
+            this.ColIsNewlyEnrolled.HeaderText = "New Enrolled";
+            this.ColIsNewlyEnrolled.Name = "ColIsNewlyEnrolled";
+            this.ColIsNewlyEnrolled.ReadOnly = true;
+            // 
+            // ColBirthday
+            // 
+            this.ColBirthday.DataPropertyName = "Birthday";
+            this.ColBirthday.HeaderText = "Birthday";
+            this.ColBirthday.Name = "ColBirthday";
+            this.ColBirthday.ReadOnly = true;
+            this.ColBirthday.Visible = false;
+            // 
+            // ColCreatedDate
+            // 
+            this.ColCreatedDate.DataPropertyName = "CreatedDate";
+            this.ColCreatedDate.HeaderText = "Created Date";
+            this.ColCreatedDate.Name = "ColCreatedDate";
+            this.ColCreatedDate.ReadOnly = true;
+            this.ColCreatedDate.Visible = false;
+            // 
+            // ColUpdatedDate
+            // 
+            this.ColUpdatedDate.DataPropertyName = "UpdatedDate";
+            this.ColUpdatedDate.HeaderText = "Updated Date";
+            this.ColUpdatedDate.Name = "ColUpdatedDate";
+            this.ColUpdatedDate.ReadOnly = true;
+            this.ColUpdatedDate.Visible = false;
+            // 
+            // DgvStudent2
+            // 
+            this.DgvStudent2.AllowUserToAddRows = false;
+            this.DgvStudent2.AllowUserToDeleteRows = false;
+            this.DgvStudent2.AllowUserToResizeRows = false;
+            this.DgvStudent2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvStudent2.Location = new System.Drawing.Point(6, 131);
+            this.DgvStudent2.Name = "DgvStudent2";
+            this.DgvStudent2.ReadOnly = true;
+            this.DgvStudent2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DgvStudent2.Size = new System.Drawing.Size(500, 90);
+            this.DgvStudent2.TabIndex = 2;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 461);
+            this.ClientSize = new System.Drawing.Size(784, 462);
             this.Controls.Add(this.BtnHideMainDialog);
             this.Controls.Add(this.TControlMain);
             this.Controls.Add(this.TxtLog);
@@ -1101,7 +1310,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxClient)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxIdleDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxConnectionDuration)).EndInit();
+            this.TPageDataViewing.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent)).EndInit();
             this.ContextMenuStripHide.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1190,6 +1402,25 @@
         private System.Windows.Forms.Button BtnOAuthMicrosoft;
         private System.Windows.Forms.Button BtnUri;
         private System.Windows.Forms.Button BtnArray1;
+        private System.Windows.Forms.Button BtnPolygonShape2;
+        private System.Windows.Forms.Button BtnTicTacToe;
+        private System.Windows.Forms.Button BtnPaint;
+        private System.Windows.Forms.TabPage TPageDataViewing;
+        private System.Windows.Forms.DataGridView DgvStudent;
+        private System.Windows.Forms.Button BtnDataViewingInitializeData;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColStudentId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColUniqueName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColDisplayName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColPhone;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColEmail;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColGender;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColGenderString;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColEnrollmentFee;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn ColIsNewlyEnrolled;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColBirthday;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColCreatedDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColUpdatedDate;
+        private System.Windows.Forms.DataGridView DgvStudent2;
     }
 }
 

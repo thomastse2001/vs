@@ -11,7 +11,6 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// Updated date: 2021-05-24
         public static TLog Logger { get; set; }
 
-        #region CsvRegion
         public class CSV
         {
             /// Updated date: 2020-09-21
@@ -308,9 +307,7 @@ namespace VsCSharpWinForm_sample2.Helpers
             }
             #endregion
         }
-        #endregion
 
-        #region FtpRegion
         public class FTP
         {
             /// Updated date: 2020-09-10
@@ -516,9 +513,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 }
             }
         }
-        #endregion
 
-        #region SftpRegion
         public class SFTP
         {
             /// Renci.SshNet.SftpClient can upload file to SFTP.
@@ -826,10 +821,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                 }
             }
         }
-        #endregion
 
-        #region ZipRegion
-        
         public class Zip
         {
             /// Updated date: 2020-09-06
@@ -1160,7 +1152,6 @@ namespace VsCSharpWinForm_sample2.Helpers
                 }
             }
         }
-        #endregion
 
         public static byte[] ConvertFileToByteArray(string filepath, int mode)
         {
