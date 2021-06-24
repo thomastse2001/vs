@@ -40,9 +40,9 @@ namespace MvcApp1.DAO
 
         //private static Models.AppFunction MappingNavigationObject(DataRow dr)
         //{
-        //    if (dr == null) { return null; }
+        //    if (dr == null) return null;
         //    int? ii = (int?)DbHandler.GetObjectFromDb(dr, "AppFunctionId");
-        //    if (ii == null) { return null; }
+        //    if (ii == null) return null;
         //    return new Models.AppFunction()
         //    {
         //        AppFunctionId = ii.GetValueOrDefault(),
@@ -56,15 +56,15 @@ namespace MvcApp1.DAO
         public static List<Models.AppFunction> GetNavigationList(int AppFuncLevelId, int ParentId) { return GetList(AppFuncLevelId, ParentId, true, true); }
         public static List<Models.AppFunction> GetList(int AppFuncLevelId, int ParentId, bool? IsNavItem, bool isShort)
         {
-            if (AppFuncLevelId > 3 || AppFuncLevelId < 0) { return null; }
+            if (AppFuncLevelId > 3 || AppFuncLevelId < 0) return null;
             DataTable dt = null;
             List<SqlParameter> listOfPara = null;
             List<System.Data.SQLite.SQLiteParameter> listOfPara2 = null;
             try
             {
                 string sql;
-                if (isShort) { sql = "SELECT AppFunctionId,UniqueName,DisplayName,ActionName,ControllerName,ParentId,AppFuncLevelId FROM AppFunctions WHERE AppFuncLevelId=@AppFuncLevelId AND ParentId=@ParentId" + (IsNavItem.HasValue ? " AND IsNavItem=@IsNavItem" : "") + " ORDER BY SequentialNum,DisplayName,UniqueName"; }
-                else { sql = "SELECT * FROM AppFunctions WHERE AppFuncLevelId=@AppFuncLevelId AND ParentId=@ParentId" + (IsNavItem.HasValue ? " AND IsNavItem=@IsNavItem" : "") + " ORDER BY SequentialNum,DisplayName,UniqueName"; }
+                if (isShort) sql = "SELECT AppFunctionId,UniqueName,DisplayName,ActionName,ControllerName,ParentId,AppFuncLevelId FROM AppFunctions WHERE AppFuncLevelId=@AppFuncLevelId AND ParentId=@ParentId" + (IsNavItem.HasValue ? " AND IsNavItem=@IsNavItem" : "") + " ORDER BY SequentialNum,DisplayName,UniqueName";
+                else sql = "SELECT * FROM AppFunctions WHERE AppFuncLevelId=@AppFuncLevelId AND ParentId=@ParentId" + (IsNavItem.HasValue ? " AND IsNavItem=@IsNavItem" : "") + " ORDER BY SequentialNum,DisplayName,UniqueName";
                 if (DbHandler.IsMssqlConnected)
                 {
                     listOfPara = new List<SqlParameter>()
@@ -72,7 +72,7 @@ namespace MvcApp1.DAO
                         new SqlParameter("@AppFuncLevelId", SqlDbType.Int) { Value = AppFuncLevelId },
                         new SqlParameter("@ParentId", SqlDbType.Int) { Value = ParentId }
                     };
-                    if (IsNavItem.HasValue) { listOfPara.Add(new SqlParameter("@IsNavItem", SqlDbType.Bit) { Value = IsNavItem.GetValueOrDefault() }); }
+                    if (IsNavItem.HasValue) listOfPara.Add(new SqlParameter("@IsNavItem", SqlDbType.Bit) { Value = IsNavItem.GetValueOrDefault() });
                     dt = DbHandler.MSSQL.SelectDataTable(sql, listOfPara.ToArray());
                 }
                 else
@@ -82,10 +82,10 @@ namespace MvcApp1.DAO
                         new System.Data.SQLite.SQLiteParameter("@AppFuncLevelId", DbType.Int32) { Value = AppFuncLevelId },
                         new System.Data.SQLite.SQLiteParameter("@ParentId", DbType.Int32) { Value = ParentId }
                     };
-                    if (IsNavItem.HasValue) { listOfPara2.Add(new System.Data.SQLite.SQLiteParameter("@IsNavItem", DbType.Boolean) { Value = IsNavItem.GetValueOrDefault() }); }
+                    if (IsNavItem.HasValue) listOfPara2.Add(new System.Data.SQLite.SQLiteParameter("@IsNavItem", DbType.Boolean) { Value = IsNavItem.GetValueOrDefault() });
                     dt = DbHandler.SQLite.SelectDataTable(sql, listOfPara2.ToArray());
                 }
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
+                if ((dt?.Rows.Count ?? 0) < 1) return null;
                 List<Models.AppFunction> rList = new List<Models.AppFunction>();
                 foreach (DataRow dr in dt.Rows)
                 {
@@ -108,40 +108,54 @@ namespace MvcApp1.DAO
             }
         }
 
+        private static List<Models.AppFunction> GetListByDataTable(DataTable dt)
+        {
+            if ((dt?.Rows.Count ?? 0) < 1) return null;
+            List<Models.AppFunction> rList = new List<Models.AppFunction>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                Models.AppFunction o = Mapping(dr);
+                if (o != null) rList.Add(o);
+            }
+            return rList;
+        }
+
         public static List<Models.AppFunction> GetListBySqlFromMssql(string sql, params SqlParameter[] arrayOfParameters)
         {
-            DataTable dt = null;
-            try
-            {
-                dt = DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters);
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
-                List<Models.AppFunction> rList = new List<Models.AppFunction>();
-                foreach (DataRow dr in dt.Rows)
-                {
-                    Models.AppFunction o = Mapping(dr);
-                    if (o != null) { rList.Add(o); }
-                }
-                return rList;
-            }
-            finally { DbHandler.DisposeDataTable(ref dt); }
+            //DataTable dt = null;
+            //try
+            //{
+            //    dt = DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters);
+            //    if ((dt?.Rows.Count ?? 0) < 1) return null;
+            //    List<Models.AppFunction> rList = new List<Models.AppFunction>();
+            //    foreach (DataRow dr in dt.Rows)
+            //    {
+            //        Models.AppFunction o = Mapping(dr);
+            //        if (o != null) rList.Add(o);
+            //    }
+            //    return rList;
+            //}
+            //finally { DbHandler.DisposeDataTable(ref dt); }
+            return GetListByDataTable(DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters));
         }
 
         public static List<Models.AppFunction> GetListBySqlFromSQLite(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
         {
-            DataTable dt = null;
-            try
-            {
-                dt = DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters);
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
-                List<Models.AppFunction> rList = new List<Models.AppFunction>();
-                foreach (DataRow dr in dt.Rows)
-                {
-                    Models.AppFunction o = Mapping(dr);
-                    if (o != null) { rList.Add(o); }
-                }
-                return rList;
-            }
-            finally { DbHandler.DisposeDataTable(ref dt); }
+            //DataTable dt = null;
+            //try
+            //{
+            //    dt = DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters);
+            //    if ((dt?.Rows.Count ?? 0) < 1) return null;
+            //    List<Models.AppFunction> rList = new List<Models.AppFunction>();
+            //    foreach (DataRow dr in dt.Rows)
+            //    {
+            //        Models.AppFunction o = Mapping(dr);
+            //        if (o != null) rList.Add(o);
+            //    }
+            //    return rList;
+            //}
+            //finally { DbHandler.DisposeDataTable(ref dt); }
+            return GetListByDataTable(DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters));
         }
 
         public static List<Models.AppFunction> GetNavigationListByUserId(int UserId, int AppFuncLevelId, int ParentId)
@@ -164,7 +178,7 @@ namespace MvcApp1.DAO
                     new System.Data.SQLite.SQLiteParameter("@ParentId", DbType.Int32) { Value = ParentId },
                     new System.Data.SQLite.SQLiteParameter("@IsNavItem", DbType.Boolean) { Value = true });
             }
-            if ((list?.Count ?? 0) < 1) { return null; }
+            if ((list?.Count ?? 0) < 1) return null;
             foreach (Models.AppFunction o in list)
             {
                 if (o != null)
@@ -177,7 +191,7 @@ namespace MvcApp1.DAO
 
         //public static List<Models.AppFunction> GetList(int AppFuncLevelId, int ParentId)
         //{
-        //    if (AppFuncLevelId > 3 || AppFuncLevelId < 0) { return null; }
+        //    if (AppFuncLevelId > 3 || AppFuncLevelId < 0) return null;
         //    DataTable dt = null;
         //    List<SqlParameter> listOfPara = null;
         //    try
@@ -189,7 +203,7 @@ namespace MvcApp1.DAO
         //            new SqlParameter("@ParentId", SqlDbType.Int) { Value = ParentId }
         //        };
         //        dt = DbHandler.MssqlSelectDataTable2(DbHandler.ConnectionString, sSql, array1);
-        //        if (dt == null || dt.Rows.Count < 1) { return null; }
+        //        if (dt == null || dt.Rows.Count < 1) return null;
         //        List<Models.AppFunction> rList = new List<Models.AppFunction>();
         //        foreach (DataRow dr in dt.Rows)
         //        {
@@ -208,13 +222,10 @@ namespace MvcApp1.DAO
                     + " FROM AppFunctions f LEFT JOIN Users u1 ON f.CreatedBy=u1.UserId"
                     + " LEFT JOIN Users u2 ON f.UpdatedBy=u2.UserId"
                     + " WHERE f.AppFunctionId=@AppFunctionId";
-                if (DbHandler.IsMssqlConnected)
-                { dt = DbHandler.MSSQL.SelectDataTable(sql, new SqlParameter("@AppFunctionId", SqlDbType.Int) { Value = id }); }
-                else
-                {
-                    dt = DbHandler.SQLite.SelectDataTable(sql, new System.Data.SQLite.SQLiteParameter("@AppFunctionId", DbType.Int32) { Value = id });
-                }
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
+                dt = DbHandler.IsMssqlConnected ?
+                    DbHandler.MSSQL.SelectDataTable(sql, new SqlParameter("@AppFunctionId", SqlDbType.Int) { Value = id }) :
+                    DbHandler.SQLite.SelectDataTable(sql, new System.Data.SQLite.SQLiteParameter("@AppFunctionId", DbType.Int32) { Value = id });
+                if ((dt?.Rows.Count ?? 0) < 1) return null;
                 return Mapping(dt.Rows[0]);
             }
             finally { DbHandler.DisposeDataTable(ref dt); }
@@ -251,8 +262,8 @@ namespace MvcApp1.DAO
         {
             string sql = "SELECT COUNT(*) FROM AppFunctions WHERE AppFunctionId!=@AppFunctionId AND UniqueName=@UniqueName";
             return (
-                DbHandler.IsMssqlConnected?
-                Convert.ToInt32(DbHandler.MSSQL.ExecuteScalar(sql, new SqlParameter("@UniqueName", SqlDbType.VarChar) { Value = UniqueName }, new SqlParameter("@AppFunctionId", SqlDbType.Int) { Value = AppFunctionId })):
+                DbHandler.IsMssqlConnected ?
+                Convert.ToInt32(DbHandler.MSSQL.ExecuteScalar(sql, new SqlParameter("@UniqueName", SqlDbType.VarChar) { Value = UniqueName }, new SqlParameter("@AppFunctionId", SqlDbType.Int) { Value = AppFunctionId })) :
                 Convert.ToInt32(DbHandler.SQLite.ExecuteScalar(sql, new System.Data.SQLite.SQLiteParameter("@UniqueName", DbType.AnsiString) { Value = UniqueName }))
                 ) > 0;
         }
@@ -311,7 +322,7 @@ namespace MvcApp1.DAO
         /// Return value = number of records affected.
         public static int UpdateUnit(Models.AppFunction o)
         {
-            //if (o == null) { return -1; }
+            //if (o == null) return -1;
             string sql = "UPDATE AppFunctions SET UniqueName=@UniqueName,DisplayName=@DisplayName" +
                 ",ControllerName=@ControllerName,ActionName=@ActionName,AppFuncLevelId=@AppFuncLevelId,ParentId=@ParentId,SequentialNum=@SequentialNum,IsNavItem=@IsNavItem" +
                 ",IsDisabled=@IsDisabled,UpdatedDt=GETDATE(),UpdatedBy=@UpdatedBy,Description=@Description" +
@@ -369,18 +380,15 @@ namespace MvcApp1.DAO
                     }
                 };
                 string sql = "SELECT * FROM AppFunctions WHERE AppFuncLevelId<3 ORDER BY AppFuncLevelId,SequentialNum,DisplayName,UniqueName";
-                if (DbHandler.IsMssqlConnected)
-                { dt = DbHandler.MSSQL.SelectDataTable(sql); }
-                else
-                {
-                    dt = DbHandler.SQLite.SelectDataTable(sql);
-                }
+                dt = DbHandler.IsMssqlConnected ?
+                    DbHandler.MSSQL.SelectDataTable(sql) :
+                    DbHandler.SQLite.SelectDataTable(sql);
                 if ((dt?.Rows.Count ?? 0) > 0)
                 {
                     foreach (DataRow dr in dt.Rows)
                     {
                         Models.AppFunction o = Mapping(dr);
-                        if (o != null) { rList.Add(o); }
+                        if (o != null) rList.Add(o);
                     }
                 }
                 return rList;
@@ -402,7 +410,7 @@ namespace MvcApp1.DAO
             //return GetListBySql("SELECT f.*,CASE WHEN (SELECT 1 FROM MapAppFunctionsRoles m WHERE m.AppFunctionId=f.AppFunctionId AND m.RoleId=@RoleId)=1 THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsSelected FROM AppFunctions f",
             //    new SqlParameter("@RoleId", SqlDbType.Int) { Value = roleId });
 
-            //if (AppFuncLevelId > 3 || AppFuncLevelId < 0) { return null; }
+            //if (AppFuncLevelId > 3 || AppFuncLevelId < 0) return null;
             //DataTable dt = null;
             //try
             //{
@@ -429,7 +437,7 @@ namespace MvcApp1.DAO
             //    DbHandler.DisposeDataTable(ref dt);
             //}
 
-            if (AppFuncLevelId > 3 || AppFuncLevelId < 0) { return null; }
+            if (AppFuncLevelId > 3 || AppFuncLevelId < 0) return null;
             string sql = "SELECT f.*,CASE WHEN (SELECT 1 FROM MapAppFunctionsRoles m WHERE m.AppFunctionId=f.AppFunctionId AND m.RoleId=@RoleId)=1 THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsSelected FROM AppFunctions f WHERE AppFuncLevelId=@AppFuncLevelId AND ParentId=@ParentId ORDER BY SequentialNum,DisplayName,UniqueName";
             List<Models.AppFunction> list;
             if (DbHandler.IsMssqlConnected)
@@ -446,7 +454,7 @@ namespace MvcApp1.DAO
                     new System.Data.SQLite.SQLiteParameter("@AppFuncLevelId", DbType.Int32) { Value = AppFuncLevelId },
                     new System.Data.SQLite.SQLiteParameter("@ParentId", DbType.Int32) { Value = ParentId });
             }
-            if ((list?.Count ?? 0) < 1) { return null; }
+            if ((list?.Count ?? 0) < 1) return null;
             foreach (Models.AppFunction o in list)
             {
                 if (o != null)
@@ -460,8 +468,8 @@ namespace MvcApp1.DAO
         public static List<Models.AppFunction> GetListSelectedByAppFunctionId(int AppFuncLevelId, int ParentId, params int[] arrayOfAppFunctionId)
         {
             string s;
-            if ((arrayOfAppFunctionId?.Length ?? 0) < 1) { s = "CAST(0 AS bit)"; }
-            else { s = "CASE WHEN AppFunctionId IN (" + string.Join(",", arrayOfAppFunctionId.Select(i => i.ToString()).ToArray()) + ") THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END"; }
+            if ((arrayOfAppFunctionId?.Length ?? 0) < 1) s = "CAST(0 AS bit)";
+            else s = "CASE WHEN AppFunctionId IN (" + string.Join(",", arrayOfAppFunctionId.Select(i => i.ToString()).ToArray()) + ") THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END";
             string sql = "SELECT *," + s + " AS IsSelected FROM AppFunctions WHERE AppFuncLevelId=@AppFuncLevelId AND ParentId=@ParentId ORDER BY SequentialNum,DisplayName,UniqueName";
             List<Models.AppFunction> list;
             if (DbHandler.IsMssqlConnected)
@@ -476,7 +484,7 @@ namespace MvcApp1.DAO
                     new System.Data.SQLite.SQLiteParameter("@AppFuncLevelId", DbType.Int32) { Value = AppFuncLevelId },
                     new System.Data.SQLite.SQLiteParameter("@ParentId", DbType.Int32) { Value = ParentId });
             }
-            if ((list?.Count ?? 0) < 1) { return null; }
+            if ((list?.Count ?? 0) < 1) return null;
             foreach (Models.AppFunction o in list)
             {
                 if (o != null)

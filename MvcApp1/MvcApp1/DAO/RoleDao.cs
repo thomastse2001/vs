@@ -32,24 +32,6 @@ namespace MvcApp1.DAO
                 /// For Assign users to a specific role.
                 UserList = null
             };
-            //Models.Role r = new Models.Role() { RoleId = i.GetValueOrDefault() };
-            //r.UniqueName = (string)DbHandler.GetObjectFromDb(dr, "UniqueName");
-            //r.DisplayName = (string)DbHandler.GetObjectFromDb(dr, "DisplayName");
-            //r.IsDisabled = (bool)DbHandler.GetObjectFromDb(dr, "IsDisabled");
-            //r.CreatedDt = (DateTime?)DbHandler.GetObjectFromDb(dr, "CreatedDt") ?? DateTime.MinValue;
-            //r.CreatedBy = (int?)DbHandler.GetObjectFromDb(dr, "CreatedBy") ?? 0;
-            //r.UpdatedDt = (DateTime?)DbHandler.GetObjectFromDb(dr, "UpdatedDt") ?? DateTime.MinValue;
-            //r.UpdatedBy = (int?)DbHandler.GetObjectFromDb(dr, "UpdatedBy") ?? 0;
-            //r.Description = (string)DbHandler.GetObjectFromDb(dr, "Description");
-            ///// For Details.
-            //r.CreatedByDisplayName = (string)DbHandler.GetObjectFromDb(dr, "CreatedByDisplayName");
-            //r.UpdatedByDisplayName = (string)DbHandler.GetObjectFromDb(dr, "UpdatedByDisplayName");
-            ///// For MapRolesUsers.
-            ////r.IsSelected = (bool?)DbHandler.GetObjectFromDb(dr, "IsSelected") ?? false;
-            //r.IsSelected = Convert.ToBoolean(DbHandler.GetObjectFromDb(dr, "IsSelected"));
-            ///// For Assign users to a specific role.
-            //r.UserList = null;
-            //return r;
         }
 
         public static Models.Role GetUnit(int RoleId)
@@ -61,15 +43,10 @@ namespace MvcApp1.DAO
                     + " FROM Roles r LEFT JOIN Users u1 ON r.CreatedBy=u1.UserId"
                     + " LEFT JOIN Users u2 ON r.UpdatedBy=u2.UserId"
                     + " WHERE r.RoleId=@RoleId";
-                if (DbHandler.IsMssqlConnected)
-                {
-                    dt = DbHandler.MSSQL.SelectDataTable(sql, new SqlParameter("@RoleId", SqlDbType.Int) { Value = RoleId });
-                }
-                else
-                {
-                    dt = DbHandler.SQLite.SelectDataTable(sql, new System.Data.SQLite.SQLiteParameter("@RoleId", DbType.Int32) { Value = RoleId });
-                }
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
+                dt = DbHandler.IsMssqlConnected ?
+                    DbHandler.MSSQL.SelectDataTable(sql, new SqlParameter("@RoleId", SqlDbType.Int) { Value = RoleId }) :
+                    DbHandler.SQLite.SelectDataTable(sql, new System.Data.SQLite.SQLiteParameter("@RoleId", DbType.Int32) { Value = RoleId });
+                if ((dt?.Rows.Count ?? 0) < 1) return null;
                 return Mapping(dt.Rows[0]);
             }
             finally { DbHandler.DisposeDataTable(ref dt); }
@@ -84,40 +61,54 @@ namespace MvcApp1.DAO
                 Convert.ToInt32(DbHandler.SQLite.ExecuteScalar(sql, new System.Data.SQLite.SQLiteParameter("@UniqueName", DbType.AnsiString) { Value = DbHandler.GetObjectToDb(uniqueName) }));
         }
 
+        private static List<Models.Role> GetListByDataTable(DataTable dt)
+        {
+            if ((dt?.Rows.Count ?? 0) < 1) return null;
+            List<Models.Role> rList = new List<Models.Role>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                Models.Role o = Mapping(dr);
+                if (o != null) rList.Add(o);
+            }
+            return rList;
+        }
+
         public static List<Models.Role> GetListBySqlFromMssql(string sql, params SqlParameter[] arrayOfParameters)
         {
-            DataTable dt = null;
-            try
-            {
-                dt = DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters);
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
-                List<Models.Role> rList = new List<Models.Role>();
-                foreach (DataRow dr in dt.Rows)
-                {
-                    Models.Role o = Mapping(dr);
-                    if (o != null) { rList.Add(o); }
-                }
-                return rList;
-            }
-            finally { DbHandler.DisposeDataTable(ref dt); }
+            //DataTable dt = null;
+            //try
+            //{
+            //    dt = DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters);
+            //    if ((dt?.Rows.Count ?? 0) < 1) return null;
+            //    List<Models.Role> rList = new List<Models.Role>();
+            //    foreach (DataRow dr in dt.Rows)
+            //    {
+            //        Models.Role o = Mapping(dr);
+            //        if (o != null) rList.Add(o);
+            //    }
+            //    return rList;
+            //}
+            //finally { DbHandler.DisposeDataTable(ref dt); }
+            return GetListByDataTable(DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters));
 		}
 
         public static List<Models.Role> GetListBySqlFromSQLite(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
         {
-            DataTable dt = null;
-            try
-            {
-                dt = DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters);
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
-                List<Models.Role> rList = new List<Models.Role>();
-                foreach (DataRow dr in dt.Rows)
-                {
-                    Models.Role o = Mapping(dr);
-                    if (o != null) { rList.Add(o); }
-                }
-                return rList;
-            }
-            finally { DbHandler.DisposeDataTable(ref dt); }
+            //DataTable dt = null;
+            //try
+            //{
+            //    dt = DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters);
+            //    if ((dt?.Rows.Count ?? 0) < 1) return null;
+            //    List<Models.Role> rList = new List<Models.Role>();
+            //    foreach (DataRow dr in dt.Rows)
+            //    {
+            //        Models.Role o = Mapping(dr);
+            //        if (o != null) rList.Add(o);
+            //    }
+            //    return rList;
+            //}
+            //finally { DbHandler.DisposeDataTable(ref dt); }
+            return GetListByDataTable(DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters));
         }
 
         public static List<Models.Role> GetAll()
@@ -211,7 +202,7 @@ namespace MvcApp1.DAO
         ///  Get a list of all roles by RoleId.
         public static List<Models.Role> GetListByRoleId(params int[] arrayOfRoleId)
         {
-            if ((arrayOfRoleId?.Length ?? 0) < 1) { return null; }
+            if ((arrayOfRoleId?.Length ?? 0) < 1) return null;
             /// https://coderwall.com/p/oea7uq/convert-simple-int-array-to-string-c
             string sql = "SELECT * FROM Roles WHERE RoleId IN (" + string.Join(",", arrayOfRoleId.Select(i => i.ToString()).ToArray()) + ")";
             return DbHandler.IsMssqlConnected ?
@@ -242,8 +233,8 @@ namespace MvcApp1.DAO
         public static List<Models.Role> GetListSelectedByRoleId(params int[] arrayOfRoldId)
         {
             string s;
-            if ((arrayOfRoldId?.Length ?? 0) < 1) { s = "CAST(0 AS bit)"; }
-            else { s = "CASE WHEN RoleId IN (" + string.Join(",", arrayOfRoldId.Select(i => i.ToString()).ToArray()) + ") THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END"; }
+            if ((arrayOfRoldId?.Length ?? 0) < 1) s = "CAST(0 AS bit)";
+            else s = "CASE WHEN RoleId IN (" + string.Join(",", arrayOfRoldId.Select(i => i.ToString()).ToArray()) + ") THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END";
             string sql = "SELECT *," + s + " AS IsSelected FROM Roles";
             return DbHandler.IsMssqlConnected ?
                 GetListBySqlFromMssql(sql):

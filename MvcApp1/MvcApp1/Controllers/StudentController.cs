@@ -109,7 +109,7 @@ namespace MvcApp1.Controllers
 
             // Update database.
             int i = StudentDao.InsertRecord(std);
-            if (i == 1) { return RedirectToAction("Index"); }
+            if (i == 1) return RedirectToAction("Index");
             else if (i < 1)
             {
                 ModelState.AddModelError(string.Empty, "Fail to create it in database.");
@@ -165,7 +165,7 @@ namespace MvcApp1.Controllers
 
             // Update database.
             int i = StudentDao.UpdateRecord(std);
-            if (i == 1) { return RedirectToAction("Index"); }
+            if (i == 1) return RedirectToAction("Index");
             else if (i < 1)
             {
                 ModelState.AddModelError(string.Empty, "Fail to update it in database.");
@@ -203,11 +203,11 @@ namespace MvcApp1.Controllers
         [HttpPost]
         public ActionResult Delete(Student std)
         {
-            if (std == null) { return RedirectToAction("Index"); }
+            if (std == null) return RedirectToAction("Index");
 
             // Update database.
             int i = StudentDao.DeleteRecord(std.StudentId);
-            if (i > 0) { return RedirectToAction("Index"); }
+            if (i > 0) return RedirectToAction("Index");
             else
             {
                 ModelState.AddModelError(string.Empty, "Fail to delete it in database.");

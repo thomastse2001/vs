@@ -48,15 +48,10 @@ namespace MvcApp1.DAO
                     + " FROM Users u0 LEFT JOIN Users u1 ON u0.CreatedBy=u1.UserId"
                     + " LEFT JOIN Users u2 ON u0.UpdatedBy=u2.UserId"
                     + " WHERE u0.UserId=@UserId";
-                if (DbHandler.IsMssqlConnected)
-                {
-                    dt = DbHandler.MSSQL.SelectDataTable(sql, new SqlParameter("@UserId", SqlDbType.Int) { Value = UserId });
-                }
-                else
-                {
-                    dt = DbHandler.SQLite.SelectDataTable(sql, new System.Data.SQLite.SQLiteParameter("@UserId", DbType.Int32) { Value = UserId });
-                }
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
+                dt = DbHandler.IsMssqlConnected ?
+                    DbHandler.MSSQL.SelectDataTable(sql, new SqlParameter("@UserId", SqlDbType.Int) { Value = UserId }):
+                    DbHandler.SQLite.SelectDataTable(sql, new System.Data.SQLite.SQLiteParameter("@UserId", DbType.Int32) { Value = UserId });
+                if ((dt?.Rows.Count ?? 0) < 1) return null;
                 return Mapping(dt.Rows[0]);
             }
             finally { DbHandler.DisposeDataTable(ref dt); }
@@ -71,40 +66,54 @@ namespace MvcApp1.DAO
                 Convert.ToInt32(DbHandler.SQLite.ExecuteScalar(sql, new System.Data.SQLite.SQLiteParameter("@LoginName", DbType.AnsiString) { Value = DbHandler.GetObjectToDb(loginname) }));
         }
 
+        private static List<Models.User> GetListByDataTable(DataTable dt)
+        {
+            if ((dt?.Rows.Count ?? 0) < 1) return null;
+            List<Models.User> rList = new List<Models.User>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                Models.User o = Mapping(dr);
+                if (o != null) rList.Add(o);
+            }
+            return rList;
+        }
+
         public static List<Models.User> GetListBySqlFromMssql(string sql, params SqlParameter[] arrayOfParameters)
         {
-            DataTable dt = null;
-            try
-            {
-                dt = DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters);
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
-                List<Models.User> rList = new List<Models.User>();
-                foreach (DataRow dr in dt.Rows)
-                {
-                    Models.User o = Mapping(dr);
-                    if (o != null) { rList.Add(o); }
-                }
-                return rList;
-            }
-            finally { DbHandler.DisposeDataTable(ref dt); }
+            //DataTable dt = null;
+            //try
+            //{
+            //    dt = DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters);
+            //    if ((dt?.Rows.Count ?? 0) < 1) return null;
+            //    List<Models.User> rList = new List<Models.User>();
+            //    foreach (DataRow dr in dt.Rows)
+            //    {
+            //        Models.User o = Mapping(dr);
+            //        if (o != null) rList.Add(o);
+            //    }
+            //    return rList;
+            //}
+            //finally { DbHandler.DisposeDataTable(ref dt); }
+            return GetListByDataTable(DbHandler.MSSQL.SelectDataTable(sql, arrayOfParameters));
         }
 
         public static List<Models.User> GetListBySqlFromSQLite(string sql, params System.Data.SQLite.SQLiteParameter[] arrayOfParameters)
         {
-            DataTable dt = null;
-            try
-            {
-                dt = DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters);
-                if ((dt?.Rows.Count ?? 0) < 1) { return null; }
-                List<Models.User> rList = new List<Models.User>();
-                foreach (DataRow dr in dt.Rows)
-                {
-                    Models.User o = Mapping(dr);
-                    if (o != null) { rList.Add(o); }
-                }
-                return rList;
-            }
-            finally { DbHandler.DisposeDataTable(ref dt); }
+            //DataTable dt = null;
+            //try
+            //{
+            //    dt = DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters);
+            //    if ((dt?.Rows.Count ?? 0) < 1) return null;
+            //    List<Models.User> rList = new List<Models.User>();
+            //    foreach (DataRow dr in dt.Rows)
+            //    {
+            //        Models.User o = Mapping(dr);
+            //        if (o != null) rList.Add(o);
+            //    }
+            //    return rList;
+            //}
+            //finally { DbHandler.DisposeDataTable(ref dt); }
+            return GetListByDataTable(DbHandler.SQLite.SelectDataTable(sql, arrayOfParameters));
         }
 
         public static List<Models.User> GetAll()
@@ -141,7 +150,7 @@ namespace MvcApp1.DAO
 
         public static int InsertUnit(Models.User o)
         {
-            if (o == null) { return -1; }
+            if (o == null) return -1;
             string sql = "INSERT INTO Users (LoginName,DisplayName,Hash,Password,IsDisabled,CreatedDt,CreatedBy,UpdatedDt,UpdatedBy,Description) VALUES (@LoginName,@DisplayName,@Hash,@Password,@IsDisabled,@UpdatedDt,@UpdatedBy,@UpdatedDt,@UpdatedBy,@Description)";
             return DbHandler.IsMssqlConnected ?
                 DbHandler.MSSQL.ExecuteNonQuery(sql,
@@ -176,7 +185,7 @@ namespace MvcApp1.DAO
         /// Return value = number of records affected.
         public static int UpdateUnit(Models.User o)
         {
-            if (o == null) { return -1; }
+            if (o == null) return -1;
             string sql = "UPDATE Users SET LoginName=@LoginName,DisplayName=@DisplayName,IsDisabled=@IsDisabled,UpdatedDt=@UpdatedDt,UpdatedBy=@UpdatedBy,Description=@Description" +
                 (o.IsUpdateHash ? ",Hash=@Hash,Password=@Password" : "") +
                 " WHERE UserId=@UserId";
@@ -235,7 +244,7 @@ namespace MvcApp1.DAO
         {
             string sql = "SELECT * FROM Users WHERE UserId IN (SELECT UserId FROM MapRolesUsers WHERE RoleId=@RoleId)";
             return DbHandler.IsMssqlConnected ?
-                GetListBySqlFromMssql(sql, new SqlParameter("@RoleId", SqlDbType.Int){ Value = roleId }):
+                GetListBySqlFromMssql(sql, new SqlParameter("@RoleId", SqlDbType.Int) { Value = roleId }):
                 GetListBySqlFromSQLite(sql, new System.Data.SQLite.SQLiteParameter("@RoleId", DbType.Int32) { Value = roleId });
         }
 
@@ -252,8 +261,8 @@ namespace MvcApp1.DAO
         public static List<Models.User> GetListSelectedByUserId(params int[] arrayOfUserId)
         {
             string s;
-            if ((arrayOfUserId?.Length ?? 0) < 1) { s = "CAST(0 AS bit)"; }
-            else { s = "CASE WHEN UserId IN (" + string.Join(",", arrayOfUserId.Select(i => i.ToString()).ToArray()) + ") THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END"; }
+            if ((arrayOfUserId?.Length ?? 0) < 1) s = "CAST(0 AS bit)";
+            else s = "CASE WHEN UserId IN (" + string.Join(",", arrayOfUserId.Select(i => i.ToString()).ToArray()) + ") THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END";
             string sql = "SELECT *," + s + " AS IsSelected FROM Users";
             return DbHandler.IsMssqlConnected ?
                 GetListBySqlFromMssql(sql):
@@ -262,14 +271,14 @@ namespace MvcApp1.DAO
 
         public static Models.User LoginAuthentication(string loginname, string password)
         {
-            if (string.IsNullOrWhiteSpace(loginname)) { return null; }
+            if (string.IsNullOrWhiteSpace(loginname)) return null;
             string hash = BAL.CommonHelper.ComputeHashFromString(password ?? "");
             string sql = "SELECT * FROM Users WHERE LoginName=@LoginName AND (Hash=@Hash OR (NOT(Password IS NULL OR Password='') AND Password=@Password))";
             List<Models.User> list = DbHandler.IsMssqlConnected ?
                 GetListBySqlFromMssql(sql,
                 new SqlParameter("@LoginName", SqlDbType.VarChar) { Value = loginname },
                 new SqlParameter("@Hash", SqlDbType.VarChar) { Value = hash },
-                new SqlParameter("@Password", SqlDbType.VarChar) { Value = DbHandler.GetObjectToDb(password) }) :
+                new SqlParameter("@Password", SqlDbType.VarChar) { Value = DbHandler.GetObjectToDb(password) }):
                 GetListBySqlFromSQLite(sql,
                 new System.Data.SQLite.SQLiteParameter("@LoginName", DbType.AnsiString) { Value = loginname },
                 new System.Data.SQLite.SQLiteParameter("@Hash", DbType.AnsiString) { Value = hash },

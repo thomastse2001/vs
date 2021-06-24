@@ -14,7 +14,7 @@ namespace MvcApp1.DAO
         {
             object o = DbHandler.GetObjectFromDb(dr, "StudentId");
             int? i = DbHandler.IsMssqlConnected ? (int?)o : (int?)(long?)o;
-            if (i == null) { return null; }
+            if (i == null) return null;
             return new Student()
             {
                 StudentId = i.GetValueOrDefault(),
@@ -43,7 +43,7 @@ namespace MvcApp1.DAO
                 foreach (DataRow dr in dt.Rows)
                 {
                     Student o = Mapping(dr);
-                    if (o != null) { rList.Add(o); }
+                    if (o != null) rList.Add(o);
                 }
             }
             finally { DbHandler.DisposeDataTable(ref dt); }
@@ -65,7 +65,7 @@ namespace MvcApp1.DAO
                 {
                     dt = DbHandler.SQLite.SelectDataTable(sql, new System.Data.SQLite.SQLiteParameter("@StudentId", DbType.Int32) { Value = id });
                 }
-                if (dt.Rows.Count < 1) { return null; }
+                if (dt.Rows.Count < 1) return null;
                 return Mapping(dt.Rows[0]);
             }
             finally { DbHandler.DisposeDataTable(ref dt); }
