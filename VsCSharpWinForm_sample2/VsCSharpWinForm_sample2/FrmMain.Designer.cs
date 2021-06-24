@@ -1,4 +1,4 @@
-﻿namespace VsCSharpWinForm_sample2
+namespace VsCSharpWinForm_sample2
 {
     partial class FrmMain
     {
@@ -34,6 +34,7 @@
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnNotifyIcon = new System.Windows.Forms.Button();
             this.BtnPolygonShape2 = new System.Windows.Forms.Button();
             this.BtnPaint = new System.Windows.Forms.Button();
             this.BtnTicTacToe = new System.Windows.Forms.Button();
@@ -105,17 +106,9 @@
             this.BtnTcpServerStartListening = new System.Windows.Forms.Button();
             this.BtnTcpServerStopListening = new System.Windows.Forms.Button();
             this.TPageDataViewing = new System.Windows.Forms.TabPage();
+            this.DgvStudent2 = new System.Windows.Forms.DataGridView();
             this.BtnDataViewingInitializeData = new System.Windows.Forms.Button();
             this.DgvStudent = new System.Windows.Forms.DataGridView();
-            this.BtnHideMainDialog = new System.Windows.Forms.Button();
-            this.ContextMenuStripHide = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.UnhideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.NotifyIconHide = new System.Windows.Forms.NotifyIcon(this.components);
-            this.BWorkerExitFile = new System.ComponentModel.BackgroundWorker();
-            this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
-            this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
-            this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
             this.ColStudentId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColUniqueName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColDisplayName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -128,7 +121,15 @@
             this.ColBirthday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColCreatedDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColUpdatedDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DgvStudent2 = new System.Windows.Forms.DataGridView();
+            this.BtnHideMainDialog = new System.Windows.Forms.Button();
+            this.ContextMenuStripHide = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.UnhideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.NotifyIconHide = new System.Windows.Forms.NotifyIcon(this.components);
+            this.BWorkerExitFile = new System.ComponentModel.BackgroundWorker();
+            this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
+            this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
+            this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -148,9 +149,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxIdleDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxConnectionDuration)).BeginInit();
             this.TPageDataViewing.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvStudent)).BeginInit();
             this.ContextMenuStripHide.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent2)).BeginInit();
             this.SuspendLayout();
             // 
             // LblVersion
@@ -190,6 +191,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnNotifyIcon);
             this.tabPage1.Controls.Add(this.BtnPolygonShape2);
             this.tabPage1.Controls.Add(this.BtnPaint);
             this.tabPage1.Controls.Add(this.BtnTicTacToe);
@@ -227,6 +229,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnNotifyIcon
+            // 
+            this.BtnNotifyIcon.Location = new System.Drawing.Point(284, 156);
+            this.BtnNotifyIcon.Name = "BtnNotifyIcon";
+            this.BtnNotifyIcon.Size = new System.Drawing.Size(75, 23);
+            this.BtnNotifyIcon.TabIndex = 30;
+            this.BtnNotifyIcon.Text = "Notify Icon";
+            this.BtnNotifyIcon.UseVisualStyleBackColor = true;
+            this.BtnNotifyIcon.Click += new System.EventHandler(this.BtnNotifyIcon_Click);
             // 
             // BtnPolygonShape2
             // 
@@ -1077,6 +1089,19 @@
             this.TPageDataViewing.Text = "Data Viewing";
             this.TPageDataViewing.UseVisualStyleBackColor = true;
             // 
+            // DgvStudent2
+            // 
+            this.DgvStudent2.AllowUserToAddRows = false;
+            this.DgvStudent2.AllowUserToDeleteRows = false;
+            this.DgvStudent2.AllowUserToResizeRows = false;
+            this.DgvStudent2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvStudent2.Location = new System.Drawing.Point(6, 131);
+            this.DgvStudent2.Name = "DgvStudent2";
+            this.DgvStudent2.ReadOnly = true;
+            this.DgvStudent2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DgvStudent2.Size = new System.Drawing.Size(500, 90);
+            this.DgvStudent2.TabIndex = 2;
+            // 
             // BtnDataViewingInitializeData
             // 
             this.BtnDataViewingInitializeData.Location = new System.Drawing.Point(6, 6);
@@ -1111,60 +1136,6 @@
             this.DgvStudent.ReadOnly = true;
             this.DgvStudent.Size = new System.Drawing.Size(500, 90);
             this.DgvStudent.TabIndex = 1;
-            // 
-            // BtnHideMainDialog
-            // 
-            this.BtnHideMainDialog.Location = new System.Drawing.Point(600, 69);
-            this.BtnHideMainDialog.Name = "BtnHideMainDialog";
-            this.BtnHideMainDialog.Size = new System.Drawing.Size(100, 23);
-            this.BtnHideMainDialog.TabIndex = 3;
-            this.BtnHideMainDialog.Text = "Hide Main Dialog";
-            this.BtnHideMainDialog.UseVisualStyleBackColor = true;
-            this.BtnHideMainDialog.Click += new System.EventHandler(this.BtnHideMainDialog_Click);
-            // 
-            // ContextMenuStripHide
-            // 
-            this.ContextMenuStripHide.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.UnhideToolStripMenuItem,
-            this.ExitToolStripMenuItem});
-            this.ContextMenuStripHide.Name = "ContextMenuStripHide";
-            this.ContextMenuStripHide.Size = new System.Drawing.Size(113, 48);
-            // 
-            // UnhideToolStripMenuItem
-            // 
-            this.UnhideToolStripMenuItem.Name = "UnhideToolStripMenuItem";
-            this.UnhideToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.UnhideToolStripMenuItem.Text = "Unhide";
-            this.UnhideToolStripMenuItem.Click += new System.EventHandler(this.UnhideToolStripMenuItem_Click);
-            // 
-            // ExitToolStripMenuItem
-            // 
-            this.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem";
-            this.ExitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.ExitToolStripMenuItem.Text = "Exit";
-            this.ExitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
-            // 
-            // NotifyIconHide
-            // 
-            this.NotifyIconHide.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-            this.NotifyIconHide.ContextMenuStrip = this.ContextMenuStripHide;
-            this.NotifyIconHide.Text = "notifyIcon1";
-            // 
-            // BWorkerExitFile
-            // 
-            this.BWorkerExitFile.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerExitFile_DoWork);
-            // 
-            // BWorkerTcpServerIncomingDataHandler
-            // 
-            this.BWorkerTcpServerIncomingDataHandler.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerTcpServerIncomingDataHandler_DoWork);
-            // 
-            // BWorkerTcpServerUpdatingClientList
-            // 
-            this.BWorkerTcpServerUpdatingClientList.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerTcpServerUpdatingClientList_DoWork);
-            // 
-            // BWorkerRenameFilenames
-            // 
-            this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
             // ColStudentId
             // 
@@ -1258,18 +1229,59 @@
             this.ColUpdatedDate.ReadOnly = true;
             this.ColUpdatedDate.Visible = false;
             // 
-            // DgvStudent2
+            // BtnHideMainDialog
             // 
-            this.DgvStudent2.AllowUserToAddRows = false;
-            this.DgvStudent2.AllowUserToDeleteRows = false;
-            this.DgvStudent2.AllowUserToResizeRows = false;
-            this.DgvStudent2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DgvStudent2.Location = new System.Drawing.Point(6, 131);
-            this.DgvStudent2.Name = "DgvStudent2";
-            this.DgvStudent2.ReadOnly = true;
-            this.DgvStudent2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DgvStudent2.Size = new System.Drawing.Size(500, 90);
-            this.DgvStudent2.TabIndex = 2;
+            this.BtnHideMainDialog.Location = new System.Drawing.Point(600, 69);
+            this.BtnHideMainDialog.Name = "BtnHideMainDialog";
+            this.BtnHideMainDialog.Size = new System.Drawing.Size(100, 23);
+            this.BtnHideMainDialog.TabIndex = 3;
+            this.BtnHideMainDialog.Text = "Hide Main Dialog";
+            this.BtnHideMainDialog.UseVisualStyleBackColor = true;
+            this.BtnHideMainDialog.Click += new System.EventHandler(this.BtnHideMainDialog_Click);
+            // 
+            // ContextMenuStripHide
+            // 
+            this.ContextMenuStripHide.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UnhideToolStripMenuItem,
+            this.ExitToolStripMenuItem});
+            this.ContextMenuStripHide.Name = "ContextMenuStripHide";
+            this.ContextMenuStripHide.Size = new System.Drawing.Size(113, 48);
+            // 
+            // UnhideToolStripMenuItem
+            // 
+            this.UnhideToolStripMenuItem.Name = "UnhideToolStripMenuItem";
+            this.UnhideToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.UnhideToolStripMenuItem.Text = "Unhide";
+            this.UnhideToolStripMenuItem.Click += new System.EventHandler(this.UnhideToolStripMenuItem_Click);
+            // 
+            // ExitToolStripMenuItem
+            // 
+            this.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem";
+            this.ExitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.ExitToolStripMenuItem.Text = "Exit";
+            this.ExitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
+            // 
+            // NotifyIconHide
+            // 
+            this.NotifyIconHide.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.NotifyIconHide.ContextMenuStrip = this.ContextMenuStripHide;
+            this.NotifyIconHide.Text = "notifyIcon1";
+            // 
+            // BWorkerExitFile
+            // 
+            this.BWorkerExitFile.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerExitFile_DoWork);
+            // 
+            // BWorkerTcpServerIncomingDataHandler
+            // 
+            this.BWorkerTcpServerIncomingDataHandler.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerTcpServerIncomingDataHandler_DoWork);
+            // 
+            // BWorkerTcpServerUpdatingClientList
+            // 
+            this.BWorkerTcpServerUpdatingClientList.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerTcpServerUpdatingClientList_DoWork);
+            // 
+            // BWorkerRenameFilenames
+            // 
+            this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
             // FrmMain
             // 
@@ -1311,9 +1323,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxIdleDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NudTcpServerMaxConnectionDuration)).EndInit();
             this.TPageDataViewing.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvStudent)).EndInit();
             this.ContextMenuStripHide.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.DgvStudent2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1421,6 +1433,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColCreatedDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColUpdatedDate;
         private System.Windows.Forms.DataGridView DgvStudent2;
+        private System.Windows.Forms.Button BtnNotifyIcon;
     }
 }
-

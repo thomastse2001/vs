@@ -2330,6 +2330,23 @@ namespace VsCSharpWinForm_sample2
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
 
+        private void BtnNotifyIcon_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                NotifyIcon notifyIcon = new NotifyIcon()
+                {
+                    Icon = SystemIcons.Application,
+                    BalloonTipIcon = ToolTipIcon.Info,
+                    BalloonTipTitle = "Balloon Tip Title",
+                    BalloonTipText = "This is balloon tip text.",
+                    Visible = true
+                };
+                notifyIcon.ShowBalloonTip(3000);
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
         #region Encrypt1Region
         private void EncryptFile1(string filepath, string targetFolder, byte[] headerByteArray)
         {
