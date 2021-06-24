@@ -2156,6 +2156,106 @@ namespace VsCSharpWinForm_sample2
         }
         #endregion
 
+        #region DataViewingRegion
+        private static List<Student> GetStudentList()
+        {
+            return new List<Student>()
+            {
+                new Student()
+                {
+                    StudentId = 1,
+                    UniqueName = "apple.chan",
+                    DisplayName = "Apple Chan",
+                    Phone = "11111111",
+                    Email = "apple.chan@abc.com",
+                    Gender = 'F'
+                },
+                new Student()
+                {
+                    StudentId = 2,
+                    UniqueName = "orange.lee",
+                    DisplayName = "Orange Lee",
+                    Phone = "22222222",
+                    Email = "orange.lee@abc.com",
+                    Gender = 'M',
+                    EnrollmentFee = 100,
+                    IsNewlyEnrolled = false
+                },
+                new Student()
+                {
+                    StudentId = 3,
+                    UniqueName = "pear.ho",
+                    DisplayName = "Pear Ho",
+                    Phone = "33333333",
+                    Email = "pear.ho@abc.com",
+                    Gender = 'M',
+                    EnrollmentFee = 130,
+                    IsNewlyEnrolled = false
+                }
+            };
+        }
+
+        private void BtnDataViewingInitializeData_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                /// https://stackoverflow.com/questions/6473326/using-a-list-as-a-data-source-for-datagridview
+                List<Student> studentList = GetStudentList();
+                DgvStudent.DataSource = new BindingSource() { DataSource = studentList };
+                DgvStudent2.DataSource = new BindingSource() { DataSource = studentList };
+                foreach (DataGridViewColumn col in DgvStudent2.Columns)
+                {
+                    //int i = col.Index;
+                    switch (col.DataPropertyName)
+                    {
+                        case "StudentId":
+                            col.HeaderText = "Student ID";
+                            col.Visible = false;
+                            break;
+                        case "UniqueName":
+                            col.HeaderText = "Unique Name";
+                            break;
+                        case "DisplayName":
+                            col.HeaderText = "Display Name";
+                            break;
+                        case "Phone":
+                            col.Visible = false;
+                            break;
+                        case "Email":
+                            col.Visible = false;
+                            break;
+                        case "Gender":
+                            col.Visible = false;
+                            break;
+                        case "GenderString":
+                            col.Visible = false;
+                            break;
+                        case "EnrollmentFee":
+                            col.HeaderText = "Enrollment Fee";
+                            col.Width = 105;
+                            break;
+                        case "IsNewlyEnrolled":
+                            col.HeaderText = "Newly Enrolled?";
+                            col.Width = 110;
+                            break;
+                        case "Birthday":
+                            col.Visible = false;
+                            break;
+                        case "CreatedDate":
+                            col.HeaderText = "Created Date";
+                            col.Visible = false;
+                            break;
+                        case "UpdatedDate":
+                            col.HeaderText = "Updated Date";
+                            col.Visible = false;
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+        #endregion
+
         private void BtnMail_Click(object sender, EventArgs e)
         {
             BtnMail.Enabled = false;
@@ -2226,6 +2326,23 @@ namespace VsCSharpWinForm_sample2
             try
             {
                 using (Views.FrmPolygonShape2 frm = new Views.FrmPolygonShape2()) frm.ShowDialog();
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnNotifyIcon_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                NotifyIcon notifyIcon = new NotifyIcon()
+                {
+                    Icon = SystemIcons.Application,
+                    BalloonTipIcon = ToolTipIcon.Info,
+                    BalloonTipTitle = "Balloon Tip Title",
+                    BalloonTipText = "This is balloon tip text.",
+                    Visible = true
+                };
+                notifyIcon.ShowBalloonTip(3000);
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
