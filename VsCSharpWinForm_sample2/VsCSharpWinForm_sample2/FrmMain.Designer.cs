@@ -1,4 +1,4 @@
-﻿namespace VsCSharpWinForm_sample2
+namespace VsCSharpWinForm_sample2
 {
     partial class FrmMain
     {
@@ -1449,4 +1449,3 @@
         private System.Windows.Forms.Button BtnGetWebAPI;
     }
 }
-
