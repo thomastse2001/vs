@@ -354,7 +354,7 @@ namespace VsCSharpWinForm_sample2
                 Param.Login.Hash = s;
                 if (!string.IsNullOrEmpty(Param.Login.Username))
                 {
-                    if (MyFrmWait == null) { MyFrmWait = new Views.FrmWait(); }
+                    if (MyFrmWait == null) MyFrmWait = new Views.FrmWait();
                     MyFrmWait.EndWaiting = false;
                     /// Authentication.
                     BWorkerLogin.RunWorkerAsync();
@@ -471,14 +471,21 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                string[] files = GeneralT.GetFilesWithPatternAndExpiryDayCountInFolder("log", null, null, ".log", 2, "yyyy-MM-dd");
+                DateTime referenceTime = DateTime.Now;
+                LocalLogger(TLog.LogLevel.INFO, "GetFilesWithPatternAndExpiryDayCountInFolder");
+                string[] files = GeneralT.GetFilesWithPatternAndExpiryDayCountInFolder("log", null, null, ".log", 2, "yyyy-MM-dd", referenceTime);
                 if ((files?.Length ?? 0) > 0)
                 {
                     LocalLogger(TLog.LogLevel.INFO, "FileCount = {0}", files.Length);
-                    foreach (string f in files)
-                    {
-                        LocalLogger(TLog.LogLevel.INFO, "File: {0}", f);
-                    }
+                    foreach (string f in files) LocalLogger(TLog.LogLevel.INFO, "File: {0}", f);
+                }
+                LocalLogger(TLog.LogLevel.INFO, "GetFilesWithPatternAndDayCountInFolder2");
+                LocalLogger(TLog.LogLevel.INFO, "DateTime in UTC: {0:yyyy-MM-dd HH:mm:ss}", referenceTime.ToUniversalTime());
+                string[] files2 = GeneralT.GetFilesWithPatternAndDayCountInFolder2("ab", null, null, ".txt", 0, "yyyyMMdd-HHmmss-fff", referenceTime.ToUniversalTime());
+                if ((files2?.Length ?? 0) > 0)
+                {
+                    LocalLogger(TLog.LogLevel.INFO, "FileCount = {0}", files2.Length);
+                    foreach (string f in files2) LocalLogger(TLog.LogLevel.INFO, "File: {0}", f);
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -2330,6 +2337,51 @@ namespace VsCSharpWinForm_sample2
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
 
+        private void BtnNotifyIcon_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                NotifyIcon notifyIcon = new NotifyIcon()
+                {
+                    Icon = SystemIcons.Application,
+                    BalloonTipIcon = ToolTipIcon.Info,
+                    BalloonTipTitle = "Balloon Tip Title",
+                    BalloonTipText = "This is balloon tip text.",
+                    Visible = true
+                };
+                notifyIcon.ShowBalloonTip(3000);
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnGetWebAPI_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ///// Send GET Request.
+                ///// https://www.tutorialsteacher.com/webapi/consuming-web-api-in-dotnet-using-httpclient
+                ///// https://www.c-sharpcorner.com/article/c-sharp-net-access-get-type-rest-web-api-method/
+                ///// Need to install "Microsoft.AspNet.WebApi.Client" and "Newtonsoft.Json" in NuGet.
+                ///// Need to upgrade to .NET Framework 4.6 ???
+                ///// Could not create SSL/TLS secure channel.
+                ///// https://stackoverflow.com/questions/32994464/could-not-create-ssl-tls-secure-channel-despite-setting-servercertificatevalida
+                ///// Hong Kong Observatory Open Data API Documentation
+                ///// https://www.hko.gov.hk/en/weatherAPI/doc/files/HKO_Open_Data_API_Documentation.pdf
+                //System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Ssl3 | System.Net.SecurityProtocolType.Tls | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls12;
+                //using (var client = new System.Net.Http.HttpClient() { BaseAddress = new Uri("https://data.weather.gov.hk/") })
+                //{
+                //    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                //    System.Net.Http.HttpResponseMessage response = await client.GetAsync("weatherAPI/opendata/weather.php?dataType=flw&lang=en").ConfigureAwait(false);
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        string result = response.Content.ReadAsStringAsync().Result;
+                //        LocalLogger(TLog.LogLevel.DEBUG, result);
+                //    }
+                //}
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
         #region Encrypt1Region
         private void EncryptFile1(string filepath, string targetFolder, byte[] headerByteArray)
         {
@@ -2522,6 +2574,14 @@ namespace VsCSharpWinForm_sample2
                 else LocalLogger(TLog.LogLevel.DEBUG, "Cannot parse to time.");
                 DateTime? t1 = DateTime.TryParse(s, out t) ? t : (DateTime?)null;
                 LocalLogger(TLog.LogLevel.DEBUG, "Time = {0:yyyy-MM-dd HH:mm:ss.fff}. UTC time = {1:yyyy-MM-dd HH:mm:ss.fff}", t1, t1?.ToUniversalTime());
+                s = "2021-07-22T02:25:01.000";
+                LocalLogger(TLog.LogLevel.DEBUG, "String = {0}", s);
+                if (DateTime.TryParse(s, out t)) LocalLogger(TLog.LogLevel.DEBUG, "Time = {0:yyyy-MM-dd HH:mm:ss.fff}", t);
+                s2 = "20210722-023501-507";
+                LocalLogger(TLog.LogLevel.DEBUG, "String = {0}", s2);
+                if (DateTime.TryParseExact(s2, "yyyyMMdd-HHmmss-fff", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime t2)) LocalLogger(TLog.LogLevel.DEBUG, "Time = {0:yyyy-MM-dd HH:mm:ss.fff}", t2);
+                if ((int)(t2 - t).TotalDays >= 0) LocalLogger(TLog.LogLevel.DEBUG, "In");
+                else LocalLogger(TLog.LogLevel.DEBUG, "Out");
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }

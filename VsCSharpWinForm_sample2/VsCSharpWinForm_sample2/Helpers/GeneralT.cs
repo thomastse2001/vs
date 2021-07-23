@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -293,8 +293,8 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// args = string of arguments
         /// sSwitch = string of switch
         /// output = output string of value of switch
-        public static bool GetArguments1(string[] args, string sSwitch) { string output; return GetArguments1(args, sSwitch, out output); }
-        public static bool GetArguments1(string[] args, string sSwitch, out string output)
+        public static bool GetArguments1(string[] args, string switchString) { string output; return GetArguments1(args, switchString, out output); }
+        public static bool GetArguments1(string[] args, string switchString, out string output)
         {
             bool bReturn = false;
             int i;
@@ -303,18 +303,19 @@ namespace VsCSharpWinForm_sample2.Helpers
             try
             {
                 if (args == null) return bReturn;
-                if (sSwitch.Length > 0)
+                if (switchString.Length > 0)
                 {
+                    switchString = switchString.ToLower();
                     i = 0;
                     while (bReturn == false && i < args.Length)
                     {
                         s = args[i];
-                        if (s.Length >= sSwitch.Length)
+                        if (s.Length >= switchString.Length)
                         {
-                            if (s.Substring(0, sSwitch.Length).ToLower().Equals(sSwitch.ToLower()))
+                            if (s.Substring(0, switchString.Length).ToLower().Equals(switchString))
                             {
                                 bReturn = true;/// stop looping.
-                                if (s.Length > sSwitch.Length) output = s.Substring(sSwitch.Length);
+                                if (s.Length > switchString.Length) output = s.Substring(switchString.Length);
                             }
                         }
                         i += 1;
@@ -841,7 +842,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         //}
 
         /// datetimeFormat = Date time format. e.g. "yyyy-MM-dd"
-        public static string[] GetFilesWithPatternAndExpiryDayCountInFolder(string folderPath, string fileNamePrefix, string fileNameSuffix, string fileExtension, int expiryDayCount, string datetimeFormat)
+        public static string[] GetFilesWithPatternAndExpiryDayCountInFolder(string folderPath, string fileNamePrefix, string fileNameSuffix, string fileExtension, int expiryDayCount, string datetimeFormat, DateTime referenceTime)
         {
             try
             {
@@ -862,7 +863,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                             {
                                 if (DateTime.TryParseExact(s, datetimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime t))
                                 {
-                                    if ((int)(DateTime.Now - t).TotalDays > expiryDayCount) list.Add(p);
+                                    if ((int)(referenceTime - t).TotalDays > expiryDayCount) list.Add(p);
                                 }
                             }
                         }
@@ -873,7 +874,49 @@ namespace VsCSharpWinForm_sample2.Helpers
                         Logger?.Error(ex2);
                     }
                 }
-                return list.ToArray();
+                return list.Count > 0 ? list.ToArray() : null;
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error(ex);
+                return null;
+            }
+        }
+
+        /// datetimeFormat = Date time format. e.g. "yyyy-MM-dd"
+        public static string[] GetFilesWithPatternAndDayCountInFolder2(string folderPath, string fileNamePrefix, string fileNameSuffix, string fileExtension, int dayCount, string datetimeFormat, DateTime referenceTime)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(folderPath) || System.IO.Directory.Exists(folderPath) == false) return null;
+                string filenameFormat = string.Format("{0}*{1}{2}", fileNamePrefix, fileNameSuffix, fileExtension);
+                string[] filepaths = System.IO.Directory.GetFiles(folderPath, filenameFormat);
+                List<string> list = new List<string>();
+                foreach (string p in filepaths)
+                {
+                    try
+                    {
+                        string s = System.IO.Path.GetFileNameWithoutExtension(p);
+                        if (!string.IsNullOrEmpty(s))
+                        {
+                            if (string.IsNullOrEmpty(fileNamePrefix) == false && fileNamePrefix.Length < s.Length) s = s.Substring(fileNamePrefix.Length);
+                            if (string.IsNullOrEmpty(fileNameSuffix) == false && fileNameSuffix.Length < s.Length) s = s.Substring(0, s.Length - fileNameSuffix.Length);
+                            if (string.IsNullOrEmpty(s) == false && s.Length > 0)
+                            {
+                                if (DateTime.TryParseExact(s, datetimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime t))
+                                {
+                                    if ((int)(t - referenceTime).TotalDays >= dayCount) list.Add(p);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex2)
+                    {
+                        Logger?.Error("File name = {0}", p);
+                        Logger?.Error(ex2);
+                    }
+                }
+                return list.Count > 0 ? list.ToArray() : null;
             }
             catch (Exception ex)
             {
