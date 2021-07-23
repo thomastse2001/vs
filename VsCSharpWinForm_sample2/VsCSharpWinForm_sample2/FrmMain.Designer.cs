@@ -130,6 +130,7 @@ namespace VsCSharpWinForm_sample2
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
+            this.BtnGetWebAPI = new System.Windows.Forms.Button();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -191,6 +192,7 @@ namespace VsCSharpWinForm_sample2
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnGetWebAPI);
             this.tabPage1.Controls.Add(this.BtnNotifyIcon);
             this.tabPage1.Controls.Add(this.BtnPolygonShape2);
             this.tabPage1.Controls.Add(this.BtnPaint);
@@ -1283,6 +1285,16 @@ namespace VsCSharpWinForm_sample2
             // 
             this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
+            // BtnGetWebAPI
+            // 
+            this.BtnGetWebAPI.Location = new System.Drawing.Point(365, 157);
+            this.BtnGetWebAPI.Name = "BtnGetWebAPI";
+            this.BtnGetWebAPI.Size = new System.Drawing.Size(90, 23);
+            this.BtnGetWebAPI.TabIndex = 31;
+            this.BtnGetWebAPI.Text = "Get Web API";
+            this.BtnGetWebAPI.UseVisualStyleBackColor = true;
+            this.BtnGetWebAPI.Click += new System.EventHandler(this.BtnGetWebAPI_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1434,5 +1446,6 @@ namespace VsCSharpWinForm_sample2
         private System.Windows.Forms.DataGridViewTextBoxColumn ColUpdatedDate;
         private System.Windows.Forms.DataGridView DgvStudent2;
         private System.Windows.Forms.Button BtnNotifyIcon;
+        private System.Windows.Forms.Button BtnGetWebAPI;
     }
 }

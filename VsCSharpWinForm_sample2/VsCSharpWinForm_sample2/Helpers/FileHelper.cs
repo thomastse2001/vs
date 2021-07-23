@@ -8,7 +8,7 @@ namespace VsCSharpWinForm_sample2.Helpers
 {
     public partial class FileHelper
     {
-        /// Updated date: 2021-05-24
+        /// Updated date: 2021-07-23
         public static TLog Logger { get; set; }
 
         public class CSV
@@ -822,6 +822,21 @@ namespace VsCSharpWinForm_sample2.Helpers
             }
         }
 
+        public class Web
+        {
+            public static string GetString(string uriPath, string username, string password, string proxyUrl, string proxyUsername, string proxyPassword)
+            {
+                using (System.Net.WebClient webClient = new System.Net.WebClient()
+                {
+                    Credentials = new System.Net.NetworkCredential(username, password),
+                    Proxy = new System.Net.WebProxy(proxyUrl, false, null, new System.Net.NetworkCredential(proxyUsername, proxyPassword))
+                })
+                {
+                    return webClient.DownloadString(uriPath);
+                }
+            }
+        }
+
         public class Zip
         {
             /// Updated date: 2020-09-06
@@ -1198,7 +1213,5 @@ namespace VsCSharpWinForm_sample2.Helpers
                 return null;
             }
         }
-
-
     }
 }
