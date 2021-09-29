@@ -1,4 +1,4 @@
-namespace VsCSharpWinForm_sample2
+﻿namespace VsCSharpWinForm_sample2
 {
     partial class FrmMain
     {
@@ -34,6 +34,9 @@ namespace VsCSharpWinForm_sample2
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnWinSCP = new System.Windows.Forms.Button();
+            this.BtnLinqToExcel = new System.Windows.Forms.Button();
+            this.BtnGetWebAPI = new System.Windows.Forms.Button();
             this.BtnNotifyIcon = new System.Windows.Forms.Button();
             this.BtnPolygonShape2 = new System.Windows.Forms.Button();
             this.BtnPaint = new System.Windows.Forms.Button();
@@ -130,6 +133,7 @@ namespace VsCSharpWinForm_sample2
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
+            this.BtnSftpBySshDotNet = new System.Windows.Forms.Button();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -191,6 +195,10 @@ namespace VsCSharpWinForm_sample2
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnSftpBySshDotNet);
+            this.tabPage1.Controls.Add(this.BtnWinSCP);
+            this.tabPage1.Controls.Add(this.BtnLinqToExcel);
+            this.tabPage1.Controls.Add(this.BtnGetWebAPI);
             this.tabPage1.Controls.Add(this.BtnNotifyIcon);
             this.tabPage1.Controls.Add(this.BtnPolygonShape2);
             this.tabPage1.Controls.Add(this.BtnPaint);
@@ -229,6 +237,36 @@ namespace VsCSharpWinForm_sample2
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnWinSCP
+            // 
+            this.BtnWinSCP.Location = new System.Drawing.Point(551, 157);
+            this.BtnWinSCP.Name = "BtnWinSCP";
+            this.BtnWinSCP.Size = new System.Drawing.Size(75, 23);
+            this.BtnWinSCP.TabIndex = 33;
+            this.BtnWinSCP.Text = "WinSCP";
+            this.BtnWinSCP.UseVisualStyleBackColor = true;
+            this.BtnWinSCP.Click += new System.EventHandler(this.BtnWinSCP_Click);
+            // 
+            // BtnLinqToExcel
+            // 
+            this.BtnLinqToExcel.Location = new System.Drawing.Point(461, 157);
+            this.BtnLinqToExcel.Name = "BtnLinqToExcel";
+            this.BtnLinqToExcel.Size = new System.Drawing.Size(80, 23);
+            this.BtnLinqToExcel.TabIndex = 32;
+            this.BtnLinqToExcel.Text = "LinqToExcel";
+            this.BtnLinqToExcel.UseVisualStyleBackColor = true;
+            this.BtnLinqToExcel.Click += new System.EventHandler(this.BtnLinqToExcel_Click);
+            // 
+            // BtnGetWebAPI
+            // 
+            this.BtnGetWebAPI.Location = new System.Drawing.Point(365, 157);
+            this.BtnGetWebAPI.Name = "BtnGetWebAPI";
+            this.BtnGetWebAPI.Size = new System.Drawing.Size(90, 23);
+            this.BtnGetWebAPI.TabIndex = 31;
+            this.BtnGetWebAPI.Text = "Get Web API";
+            this.BtnGetWebAPI.UseVisualStyleBackColor = true;
+            this.BtnGetWebAPI.Click += new System.EventHandler(this.BtnGetWebAPI_Click);
             // 
             // BtnNotifyIcon
             // 
@@ -1283,6 +1321,16 @@ namespace VsCSharpWinForm_sample2
             // 
             this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
+            // BtnSftpBySshDotNet
+            // 
+            this.BtnSftpBySshDotNet.Location = new System.Drawing.Point(632, 157);
+            this.BtnSftpBySshDotNet.Name = "BtnSftpBySshDotNet";
+            this.BtnSftpBySshDotNet.Size = new System.Drawing.Size(114, 23);
+            this.BtnSftpBySshDotNet.TabIndex = 34;
+            this.BtnSftpBySshDotNet.Text = "SFTP by SSH.NET";
+            this.BtnSftpBySshDotNet.UseVisualStyleBackColor = true;
+            this.BtnSftpBySshDotNet.Click += new System.EventHandler(this.BtnSftpBySshDotNet_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1434,5 +1482,10 @@ namespace VsCSharpWinForm_sample2
         private System.Windows.Forms.DataGridViewTextBoxColumn ColUpdatedDate;
         private System.Windows.Forms.DataGridView DgvStudent2;
         private System.Windows.Forms.Button BtnNotifyIcon;
+        private System.Windows.Forms.Button BtnGetWebAPI;
+        private System.Windows.Forms.Button BtnLinqToExcel;
+        private System.Windows.Forms.Button BtnWinSCP;
+        private System.Windows.Forms.Button BtnSftpBySshDotNet;
     }
 }
+

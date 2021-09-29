@@ -84,7 +84,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                                         if (bSectionMatch)
                                         {
                                             /// for bAction=True. Store the (current-1) line number.
-                                            if (bAction && (iLastLineSection < 0)) { iLastLineSection = iLine - 1; }
+                                            if (bAction && (iLastLineSection < 0)) iLastLineSection = iLine - 1;
                                         }
                                         else bSectionMatch = true;
                                         // iLine += 1;
@@ -107,7 +107,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                             if (bContinueRemaining)
                             {
                                 /// Search key.
-                                if ((bSection == false) || bSectionMatch)// if ((bSection == false) || (bSection && bSectionMatch))
+                                if (bSection == false || bSectionMatch)// if (bSection == false || (bSection && bSectionMatch))
                                 {
                                     if (iComment > -1) iEqual = s.IndexOf("=", 0, iComment);
                                     else iEqual = s.IndexOf("=");

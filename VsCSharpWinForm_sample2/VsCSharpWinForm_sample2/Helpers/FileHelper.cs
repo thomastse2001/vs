@@ -8,8 +8,35 @@ namespace VsCSharpWinForm_sample2.Helpers
 {
     public partial class FileHelper
     {
-        /// Updated date: 2021-05-24
+        /// Updated date: 2021-08-16
         public static TLog Logger { get; set; }
+
+        /// Delete file.
+        /// Return value = True if delete file successfully. Otherwise, false.
+        public static bool DeleteLocalFile(string filepath)
+        {
+            Logger?.Debug("Delete file {0}", filepath);
+            System.IO.File.Delete(filepath);
+            System.Threading.Thread.Sleep(1000);
+            if (!System.IO.File.Exists(filepath)) return true;
+            int i = 0;
+            while (i < 5 && System.IO.File.Exists(filepath))
+            {
+                System.Threading.Thread.Sleep(500);
+                i++;
+            }
+            return !System.IO.File.Exists(filepath);
+        }
+
+        /// Check if folder exists. If not create it.
+        /// Return value = True if folder exists. Otherwise, try to create folder. Return true if create folder successfully. Otherwise, false.
+        public static bool FolderExistsOrCreateIt(string folder)
+        {
+            if (System.IO.Directory.Exists(folder)) return true;
+            Logger?.Debug("Create folder {0}", folder);
+            System.IO.Directory.CreateDirectory(folder);
+            return System.IO.Directory.Exists(folder);
+        }
 
         public class CSV
         {
@@ -310,7 +337,7 @@ namespace VsCSharpWinForm_sample2.Helpers
 
         public class FTP
         {
-            /// Updated date: 2020-09-10
+            /// Updated date: 2021-08-05
             
             /// Return value = true if success. Otherwise, false.
             public static bool DeleteFile(string uriPath, string username, string password)
@@ -358,10 +385,15 @@ namespace VsCSharpWinForm_sample2.Helpers
                     }
                     if (System.IO.File.Exists(filepath))
                     {
-                        Logger?.Debug("Delete file {0}", filepath);
-                        System.IO.File.Delete(filepath);
-                        System.Threading.Thread.Sleep(1000);
-                        if (System.IO.File.Exists(filepath))
+                        //Logger?.Debug("Delete file {0}", filepath);
+                        //System.IO.File.Delete(filepath);
+                        //System.Threading.Thread.Sleep(1000);
+                        //if (System.IO.File.Exists(filepath))
+                        //{
+                        //    Logger?.Error("Cannot delete file {0}", filepath);
+                        //    return false;
+                        //}
+                        if (!DeleteLocalFile(filepath))
                         {
                             Logger?.Error("Cannot delete file {0}", filepath);
                             return false;
@@ -370,22 +402,30 @@ namespace VsCSharpWinForm_sample2.Helpers
                     else
                     {
                         string folder = System.IO.Path.GetDirectoryName(filepath);
-                        if (!System.IO.Directory.Exists(folder))
+                        //if (!System.IO.Directory.Exists(folder))
+                        //{
+                        //    Logger?.Debug("Create folder {0}", folder);
+                        //    System.IO.Directory.CreateDirectory(folder);
+                        //    System.Threading.Thread.Sleep(1000);
+                        //    if (!System.IO.Directory.Exists(folder))
+                        //    {
+                        //        Logger?.Error("Cannot create folder {0}", folder);
+                        //        return false;
+                        //    }
+                        //}
+                        if (!FolderExistsOrCreateIt(folder))
                         {
-                            Logger?.Debug("Create folder {0}", folder);
-                            System.IO.Directory.CreateDirectory(folder);
-                            System.Threading.Thread.Sleep(1000);
-                            if (!System.IO.Directory.Exists(folder))
-                            {
-                                Logger?.Error("Cannot create folder {0}", folder);
-                                return false;
-                            }
+                            Logger?.Error("Cannot create folder {0}", folder);
+                            return false;
                         }
                     }
                     Logger?.Debug("Download file {0} from FTP {1}", filepath, uriPath);
-                    using (System.Net.WebClient webClient = new System.Net.WebClient())
+                    using (System.Net.WebClient webClient = new System.Net.WebClient()
                     {
-                        webClient.Credentials = new System.Net.NetworkCredential(username, password);
+                        Credentials = new System.Net.NetworkCredential(username, password)
+                    })
+                    {
+                        //webClient.Credentials = new System.Net.NetworkCredential(username, password);
                         webClient.DownloadFile(uriPath, filepath);
                     }
                     return true;
@@ -497,9 +537,12 @@ namespace VsCSharpWinForm_sample2.Helpers
                         return false;
                     }
                     Logger?.Debug("Upload file {0} to FTP {1}", filepath, uriPath);
-                    using (System.Net.WebClient webClient = new System.Net.WebClient())
+                    using (System.Net.WebClient webClient = new System.Net.WebClient()
                     {
-                        webClient.Credentials = new System.Net.NetworkCredential(username, password);
+                        Credentials = new System.Net.NetworkCredential(username, password)
+                    })
+                    {
+                        //webClient.Credentials = new System.Net.NetworkCredential(username, password);
                         webClient.UploadFile(uriPath, filepath);
                     }
                     return true;
@@ -516,8 +559,40 @@ namespace VsCSharpWinForm_sample2.Helpers
 
         public class SFTP
         {
+            /// Need SSH.NET by Renci in NuGet.
             /// Renci.SshNet.SftpClient can upload file to SFTP.
             /// https://weblog.west-wind.com/posts/2019/Aug/20/UriAbsoluteUri-and-UrlEncoding-of-Local-File-Urls
+
+            //private static bool CheckConnectionByConnectionInfo(Renci.SshNet.ConnectionInfo connectionInfo)
+            //{
+            //    using (Renci.SshNet.SftpClient client = new Renci.SshNet.SftpClient(connectionInfo))
+            //    {
+            //        client.Connect();
+            //        if (client.IsConnected)
+            //        {
+            //            client.Disconnect();
+            //            return true;
+            //        }
+            //        else return false;
+            //    }
+            //}
+
+            ///// https://gist.github.com/piccaso/d963331dcbf20611b094
+            //public static bool CheckConnection(string host, int port, string username, string password)
+            //{
+            //    return CheckConnectionByConnectionInfo(new Renci.SshNet.ConnectionInfo(host, port, username, new Renci.SshNet.AuthenticationMethod[]
+            //    {
+            //        new Renci.SshNet.PasswordAuthenticationMethod(username, password)
+            //    }));
+            //}
+
+            //public static bool CheckConnection(string host, int port, string username, string password, Renci.SshNet.ProxyTypes proxyType, string proxyHost, int proxyPort, string proxyUsername, string proxyPassword)
+            //{
+            //    return CheckConnectionByConnectionInfo(new Renci.SshNet.ConnectionInfo(host, port, username, proxyType, proxyHost, proxyPort, proxyUsername, proxyPassword, new Renci.SshNet.AuthenticationMethod[]
+            //    {
+            //        new Renci.SshNet.PasswordAuthenticationMethod(username, password)
+            //    }));
+            //}
 
             /// Return value = true if success. Otherwise, false.
             public static bool DeleteFile(string uriFile, string username, string password)
@@ -576,10 +651,15 @@ namespace VsCSharpWinForm_sample2.Helpers
                     }
                     if (System.IO.File.Exists(filepath))
                     {
-                        Logger?.Debug("Delete file {0}", filepath);
-                        System.IO.File.Delete(filepath);
-                        System.Threading.Thread.Sleep(1000);
-                        if (System.IO.File.Exists(filepath))
+                        //Logger?.Debug("Delete file {0}", filepath);
+                        //System.IO.File.Delete(filepath);
+                        //System.Threading.Thread.Sleep(1000);
+                        //if (System.IO.File.Exists(filepath))
+                        //{
+                        //    Logger?.Error("SFTP.DownloadFile: Cannot delete file {0}", filepath);
+                        //    return false;
+                        //}
+                        if (!DeleteLocalFile(filepath))
                         {
                             Logger?.Error("SFTP.DownloadFile: Cannot delete file {0}", filepath);
                             return false;
@@ -588,16 +668,21 @@ namespace VsCSharpWinForm_sample2.Helpers
                     else
                     {
                         string folder = System.IO.Path.GetDirectoryName(filepath);
-                        if (!System.IO.Directory.Exists(folder))
+                        //if (!System.IO.Directory.Exists(folder))
+                        //{
+                        //    Logger?.Debug("Create folder {0}", folder);
+                        //    System.IO.Directory.CreateDirectory(folder);
+                        //    System.Threading.Thread.Sleep(1000);
+                        //    if (!System.IO.Directory.Exists(folder))
+                        //    {
+                        //        Logger?.Error("SFTP.DownloadFile: Cannot create folder {0}", folder);
+                        //        return false;
+                        //    }
+                        //}
+                        if (FolderExistsOrCreateIt(folder))
                         {
-                            Logger?.Debug("Create folder {0}", folder);
-                            System.IO.Directory.CreateDirectory(folder);
-                            System.Threading.Thread.Sleep(1000);
-                            if (!System.IO.Directory.Exists(folder))
-                            {
-                                Logger?.Error("SFTP.DownloadFile: Cannot create folder {0}", folder);
-                                return false;
-                            }
+                            Logger?.Error("SFTP.DownloadFile: Cannot create folder {0}", folder);
+                            return false;
                         }
                     }
                     /// Renci.SshNet.SftpClient can upload file to SFTP.
@@ -769,7 +854,143 @@ namespace VsCSharpWinForm_sample2.Helpers
             {
                 /// Need install "WinSCP" in NuGet.
                 /// https://winscp.net/eng/docs/library
-                public static bool UploadFiles(string uriFolder, int port, string username, string password, string sshHostKeyFingerprint, string proxyHost, int proxyPort, string proxyUsername, string proxyPassword, params string[] filepaths)
+
+                //public enum ProxyMethod : int
+                //{
+                //    /// https://winscp.net/eng/docs/rawsettings
+                //    None = 0,
+                //    SOCKS4 = 1,
+                //    SOCKS5 = 2,
+                //    HTTP = 3,
+                //    Telnet = 4,
+                //    Local = 5
+                //}
+
+                public class ProxyMethod
+                {
+                    /// https://winscp.net/eng/docs/rawsettings
+                    public const string None = "0";
+                    public const string SOCKS4 = "1";
+                    public const string SOCKS5 = "2";
+                    public const string HTTP = "3";
+                    public const string Telnet = "4";
+                    public const string Local = "5";
+                }
+
+                ///// Get session options with proxy setting. If no proxy setting, set proxyMethod = None.
+                //private static WinSCP.SessionOptions GetSessionOptions(string host, int port, string username, string password, string sshHostKeyFingerprint, string proxyMethod, string proxyHost, int proxyPort, string proxyUsername, string proxyPassword)
+                //{
+                //    WinSCP.SessionOptions sessionOptions = new WinSCP.SessionOptions
+                //    {
+                //        Protocol = WinSCP.Protocol.Sftp,
+                //        HostName = host,
+                //        PortNumber = port,
+                //        UserName = username,
+                //        Password = password,
+                //        SshHostKeyFingerprint = sshHostKeyFingerprint
+                //    };
+                //    if (string.IsNullOrEmpty(proxyMethod) == false && ProxyMethod.None.Equals(proxyMethod) == false)
+                //    {
+                //        sessionOptions.AddRawSettings("ProxyMethod", proxyMethod);
+                //        sessionOptions.AddRawSettings("ProxyHost", proxyHost);
+                //        sessionOptions.AddRawSettings("ProxyPort", proxyPort.ToString());
+                //        if (!string.IsNullOrEmpty(proxyUsername)) sessionOptions.AddRawSettings("ProxyUsername", proxyUsername);
+                //        if (!string.IsNullOrEmpty(proxyPassword)) sessionOptions.AddRawSettings("ProxyPassword", proxyPassword);
+                //    }
+                //    return sessionOptions;
+                //}
+
+                ///// Return value = True if connect successfully. Otherwise, false.
+                ///// https://stackoverflow.com/questions/46317508/checking-connection-state-with-winscp-net-assembly-in-c-sharp
+                //public static bool CheckConnection(string host, int port, string username, string password, string sshHostKeyFingerprint, string proxyMethod, string proxyHost, int proxyPort, string proxyUsername, string proxyPassword)
+                //{
+                //    using (WinSCP.Session session = new WinSCP.Session())
+                //    {
+                //        int attempts = 3;
+                //        do
+                //        {
+                //            try
+                //            {
+                //                session.Open(GetSessionOptions(host, port, username, password, sshHostKeyFingerprint, proxyMethod, proxyHost, proxyPort, proxyUsername, proxyPassword));
+                //                return true;
+                //            }
+                //            catch (Exception ex)
+                //            {
+                //                if (attempts == 0) Logger?.Error(ex);
+                //            }
+                //            attempts--;
+                //        } while (attempts > 0 && !session.Opened);
+                //        return session.Opened;
+                //    }
+                //}
+
+                /// Need install "WinSCP" in NuGet.
+                /// https://winscp.net/eng/docs/library
+                /// https://winscp.net/eng/docs/library_session_getfiles
+                public static bool DownloadFile(string uriPath, int port, string username, string password, string sshHostKeyFingerprint, string proxyMethod, string proxyHost, int proxyPort, string proxyUsername, string proxyPassword, string filepath)
+                {
+                    try
+                    {
+                        /// https://weblog.west-wind.com/posts/2019/Aug/20/UriAbsoluteUri-and-UrlEncoding-of-Local-File-Urls
+                        Uri sftpUri = new Uri(uriPath);
+                        string host = sftpUri?.Host;// 10.15.255.5
+                        string uriFilepath = sftpUri?.AbsolutePath;// /Dunhill_uk/FCDB_TestData/abc.csv
+                        if (System.IO.File.Exists(filepath))
+                        {
+                            if (!DeleteLocalFile(filepath))
+                            {
+                                Logger?.Error("SFTP.WinscpMethod.DownloadFile: Cannot delete file {0}", filepath);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            string folder = System.IO.Path.GetDirectoryName(filepath);
+                            if (!FolderExistsOrCreateIt(folder))
+                            {
+                                Logger?.Error("SFTP.WinscpMethod.DownloadFile: Cannot create folder {0}", folder);
+                                return false;
+                            }
+                        }
+                        //using (WinSCP.Session session = new WinSCP.Session())
+                        //{
+                        //    session.Open(GetSessionOptions(host, port, username, password, sshHostKeyFingerprint, proxyMethod, proxyHost, proxyPort, proxyUsername, proxyPassword));
+                        //    WinSCP.TransferOptions transferOptions = new WinSCP.TransferOptions()
+                        //    {
+                        //        TransferMode = WinSCP.TransferMode.Binary
+                        //    };
+                        //    WinSCP.TransferOperationResult result = session.GetFiles(uriFilepath, filepath, false, transferOptions);
+                        //    result.Check();
+                        //}
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger?.Error("URI = {0}", uriPath);
+                        Logger?.Error("Proxy Host = {0}", proxyHost);
+                        Logger?.Error("Filepath = {0}", filepath);
+                        Logger?.Error(ex);
+                        return false;
+                    }
+                }
+
+                //public static string[] ListDirectory(string uriPath, int port, string username, string password, string sshHostKeyFingerprint, string proxyMethod, string proxyHost, int proxyPort, string proxyUsername, string proxyPassword)
+                //{
+                //    /// https://weblog.west-wind.com/posts/2019/Aug/20/UriAbsoluteUri-and-UrlEncoding-of-Local-File-Urls
+                //    Uri sftpUri = new Uri(uriPath);
+                //    string host = sftpUri?.Host;// 10.15.255.5
+                //    string uriFilepath = sftpUri?.AbsolutePath;// /Dunhill_uk/FCDB_TestData/abc.csv
+                //    using (WinSCP.Session session = new WinSCP.Session())
+                //    {
+                //        session.Open(GetSessionOptions(host, port, username, password, sshHostKeyFingerprint, proxyMethod, proxyHost, proxyPort, proxyUsername, proxyPassword));
+                //        WinSCP.RemoteDirectoryInfo result = session.ListDirectory(uriFilepath);
+                //        return result?.Files?.Where(f => ".".Equals(f.Name) == false && "..".Equals(f.Name) == false)?.Select(f => f.FullName)?.OrderBy(s => s).ToArray();
+                //    }
+                //}
+
+                /// Need install "WinSCP" in NuGet.
+                /// https://winscp.net/eng/docs/library
+                public static bool UploadFiles(string uriFolder, int port, string username, string password, string sshHostKeyFingerprint, string proxyMethod, string proxyHost, int proxyPort, string proxyUsername, string proxyPassword, params string[] filepaths)
                 {
                     try
                     {
@@ -778,25 +999,9 @@ namespace VsCSharpWinForm_sample2.Helpers
                         Uri sftpUri = new Uri(uriFolder);
                         string host = sftpUri?.Host;// 10.15.255.5
                         string directory = sftpUri?.AbsolutePath;// /Dunhill_uk/FCDB_TestData
-
-                        //WinSCP.SessionOptions sessionOptions = new WinSCP.SessionOptions
-                        //{
-                        //    Protocol = WinSCP.Protocol.Sftp,
-                        //    HostName = host,
-                        //    PortNumber = port,
-                        //    UserName = username,
-                        //    Password = password,
-                        //    SshHostKeyFingerprint = sshHostKeyFingerprint
-                        //};
-                        //sessionOptions.AddRawSettings("ProxyMethod", "2");
-                        //sessionOptions.AddRawSettings("ProxyHost", proxyHost);
-                        //sessionOptions.AddRawSettings("ProxyPort", proxyPort.ToString());
-                        //sessionOptions.AddRawSettings("ProxyUsername", proxyUsername);
-                        //sessionOptions.AddRawSettings("ProxyPassword", proxyPassword);
-
                         //using (WinSCP.Session session = new WinSCP.Session())
                         //{
-                        //    session.Open(sessionOptions);
+                        //    session.Open(GetSessionOptions(host, port, username, password, sshHostKeyFingerprint, proxyMethod, proxyHost, proxyPort, proxyUsername, proxyPassword));
                         //    WinSCP.TransferOptions transferOptions = new WinSCP.TransferOptions()
                         //    {
                         //        TransferMode = WinSCP.TransferMode.Binary
@@ -818,6 +1023,21 @@ namespace VsCSharpWinForm_sample2.Helpers
                         Logger?.Error(ex);
                         return false;
                     }
+                }
+            }
+        }
+
+        public class Web
+        {
+            public static string GetString(string uriPath, string username, string password, string proxyUrl, string proxyUsername, string proxyPassword)
+            {
+                using (System.Net.WebClient webClient = new System.Net.WebClient()
+                {
+                    Credentials = new System.Net.NetworkCredential(username, password),
+                    Proxy = new System.Net.WebProxy(proxyUrl, false, null, new System.Net.NetworkCredential(proxyUsername, proxyPassword))
+                })
+                {
+                    return webClient.DownloadString(uriPath);
                 }
             }
         }
@@ -908,10 +1128,15 @@ namespace VsCSharpWinForm_sample2.Helpers
                         /// Delete the file if it exists.
                         if (System.IO.File.Exists(zipFilepath))
                         {
-                            Logger?.Debug("Delete file {0}", zipFilepath);
-                            System.IO.File.Delete(zipFilepath);
-                            System.Threading.Thread.Sleep(1000);
-                            if (System.IO.File.Exists(zipFilepath))
+                            //Logger?.Debug("Delete file {0}", zipFilepath);
+                            //System.IO.File.Delete(zipFilepath);
+                            //System.Threading.Thread.Sleep(1000);
+                            //if (System.IO.File.Exists(zipFilepath))
+                            //{
+                            //    Logger?.Error("Zip file exists and cannot delete it. {0}", zipFilepath);
+                            //    return false;
+                            //}
+                            if (!DeleteLocalFile(zipFilepath))
                             {
                                 Logger?.Error("Zip file exists and cannot delete it. {0}", zipFilepath);
                                 return false;
@@ -921,16 +1146,21 @@ namespace VsCSharpWinForm_sample2.Helpers
                         {
                             /// Check folder exists.
                             string folderpath = System.IO.Path.GetDirectoryName(zipFilepath);
-                            if (!System.IO.Directory.Exists(folderpath))
+                            //if (!System.IO.Directory.Exists(folderpath))
+                            //{
+                            //    Logger?.Debug("Create directory {0}", folderpath);
+                            //    System.IO.Directory.CreateDirectory(folderpath);
+                            //    System.Threading.Thread.Sleep(1000);
+                            //    if (!System.IO.Directory.Exists(folderpath))
+                            //    {
+                            //        Logger?.Error("Cannot create directory {0}", folderpath);
+                            //        return false;
+                            //    }
+                            //}
+                            if (!FolderExistsOrCreateIt(folderpath))
                             {
-                                Logger?.Debug("Create directory {0}", folderpath);
-                                System.IO.Directory.CreateDirectory(folderpath);
-                                System.Threading.Thread.Sleep(1000);
-                                if (!System.IO.Directory.Exists(folderpath))
-                                {
-                                    Logger?.Error("Cannot create directory {0}", folderpath);
-                                    return false;
-                                }
+                                Logger?.Error("Cannot create directory {0}", folderpath);
+                                return false;
                             }
                         }
                         Logger?.Debug("Zip files or folders to {0}", zipFilepath);
@@ -974,16 +1204,21 @@ namespace VsCSharpWinForm_sample2.Helpers
                             return false;
                         }
                         /// Check folder exists.
-                        if (!System.IO.Directory.Exists(targetFolderPath))
+                        //if (!System.IO.Directory.Exists(targetFolderPath))
+                        //{
+                        //    Logger?.Debug("Create directory {0}", targetFolderPath);
+                        //    System.IO.Directory.CreateDirectory(targetFolderPath);
+                        //    System.Threading.Thread.Sleep(1000);
+                        //    if (!System.IO.Directory.Exists(targetFolderPath))
+                        //    {
+                        //        Logger?.Error("Cannot create directory {0}", targetFolderPath);
+                        //        return false;
+                        //    }
+                        //}
+                        if (!FolderExistsOrCreateIt(targetFolderPath))
                         {
-                            Logger?.Debug("Create directory {0}", targetFolderPath);
-                            System.IO.Directory.CreateDirectory(targetFolderPath);
-                            System.Threading.Thread.Sleep(1000);
-                            if (!System.IO.Directory.Exists(targetFolderPath))
-                            {
-                                Logger?.Error("Cannot create directory {0}", targetFolderPath);
-                                return false;
-                            }
+                            Logger?.Error("Cannot create directory {0}", targetFolderPath);
+                            return false;
                         }
                         Logger?.Debug("Unzip file {0} to folder {1}", zipFilepath, targetFolderPath);
                         //using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(zipFilepath))/// Need to install Ionic.Zip in NuGet Package Manager.
@@ -1022,15 +1257,27 @@ namespace VsCSharpWinForm_sample2.Helpers
                             Logger?.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name + ". Cannot find file " + sevenZipPath);
                             return false;
                         }
-                        using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+                        using (System.Diagnostics.Process p = new System.Diagnostics.Process()
                         {
-                            p.StartInfo.FileName = sevenZipPath;
-                            p.StartInfo.Arguments = args;
-                            p.StartInfo.UseShellExecute = false;
-                            p.StartInfo.RedirectStandardError = true;
-                            p.StartInfo.RedirectStandardOutput = true;
-                            p.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                            p.StartInfo.CreateNoWindow = true;
+                            StartInfo = new System.Diagnostics.ProcessStartInfo()
+                            {
+                                FileName = sevenZipPath,
+                                Arguments = args,
+                                UseShellExecute = false,
+                                RedirectStandardError = true,
+                                RedirectStandardOutput = true,
+                                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                                CreateNoWindow = true
+                            }
+                        })
+                        {
+                            //p.StartInfo.FileName = sevenZipPath;
+                            //p.StartInfo.Arguments = args;
+                            //p.StartInfo.UseShellExecute = false;
+                            //p.StartInfo.RedirectStandardError = true;
+                            //p.StartInfo.RedirectStandardOutput = true;
+                            //p.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            //p.StartInfo.CreateNoWindow = true;
                             p.Start();
                             output = p.StandardOutput.ReadToEnd();
                             error = p.StandardError.ReadToEnd();
@@ -1073,10 +1320,15 @@ namespace VsCSharpWinForm_sample2.Helpers
                         /// Delete the file if it exists.
                         if (System.IO.File.Exists(zipFilepath))
                         {
-                            Logger?.Debug("Delete file {0}", zipFilepath);
-                            System.IO.File.Delete(zipFilepath);
-                            System.Threading.Thread.Sleep(1000);
-                            if (System.IO.File.Exists(zipFilepath))
+                            //Logger?.Debug("Delete file {0}", zipFilepath);
+                            //System.IO.File.Delete(zipFilepath);
+                            //System.Threading.Thread.Sleep(1000);
+                            //if (System.IO.File.Exists(zipFilepath))
+                            //{
+                            //    Logger?.Error("Zip file exists and cannot delete it. {0}", zipFilepath);
+                            //    return false;
+                            //}
+                            if (!DeleteLocalFile(zipFilepath))
                             {
                                 Logger?.Error("Zip file exists and cannot delete it. {0}", zipFilepath);
                                 return false;
@@ -1086,16 +1338,21 @@ namespace VsCSharpWinForm_sample2.Helpers
                         {
                             /// Check folder exists.
                             string folderpath = System.IO.Path.GetDirectoryName(zipFilepath);
-                            if (!System.IO.Directory.Exists(folderpath))
+                            //if (!System.IO.Directory.Exists(folderpath))
+                            //{
+                            //    Logger?.Debug("Create directory {0}", folderpath);
+                            //    System.IO.Directory.CreateDirectory(folderpath);
+                            //    System.Threading.Thread.Sleep(1000);
+                            //    if (!System.IO.Directory.Exists(folderpath))
+                            //    {
+                            //        Logger?.Error("Cannot create directory {0}", folderpath);
+                            //        return false;
+                            //    }
+                            //}
+                            if (!FolderExistsOrCreateIt(folderpath))
                             {
-                                Logger?.Debug("Create directory {0}", folderpath);
-                                System.IO.Directory.CreateDirectory(folderpath);
-                                System.Threading.Thread.Sleep(1000);
-                                if (!System.IO.Directory.Exists(folderpath))
-                                {
-                                    Logger?.Error("Cannot create directory {0}", folderpath);
-                                    return false;
-                                }
+                                Logger?.Error("Cannot create directory {0}", folderpath);
+                                return false;
                             }
                         }
                         Logger?.Debug("Zip files or folders to {0}", zipFilepath);
@@ -1128,16 +1385,21 @@ namespace VsCSharpWinForm_sample2.Helpers
                             return false;
                         }
                         /// Check folder exists.
-                        if (!System.IO.Directory.Exists(targetFolderPath))
+                        //if (!System.IO.Directory.Exists(targetFolderPath))
+                        //{
+                        //    Logger?.Debug("Create directory {0}", targetFolderPath);
+                        //    System.IO.Directory.CreateDirectory(targetFolderPath);
+                        //    System.Threading.Thread.Sleep(1000);
+                        //    if (!System.IO.Directory.Exists(targetFolderPath))
+                        //    {
+                        //        Logger?.Error("Cannot create directory {0}", targetFolderPath);
+                        //        return false;
+                        //    }
+                        //}
+                        if (!FolderExistsOrCreateIt(targetFolderPath))
                         {
-                            Logger?.Debug("Create directory {0}", targetFolderPath);
-                            System.IO.Directory.CreateDirectory(targetFolderPath);
-                            System.Threading.Thread.Sleep(1000);
-                            if (!System.IO.Directory.Exists(targetFolderPath))
-                            {
-                                Logger?.Error("Cannot create directory {0}", targetFolderPath);
-                                return false;
-                            }
+                            Logger?.Error("Cannot create directory {0}", targetFolderPath);
+                            return false;
                         }
                         Logger?.Debug("Unzip file {0} to folder {1}", zipFilepath, targetFolderPath);
                         string args = string.Format("x \"{0}\" -o\"{1}\"{2}", zipFilepath.Trim(' ', '"'), targetFolderPath.Trim(' ', '"'), string.IsNullOrEmpty(password) ? "" : string.Format(" -p{0}", password));
@@ -1198,7 +1460,5 @@ namespace VsCSharpWinForm_sample2.Helpers
                 return null;
             }
         }
-
-
     }
 }
