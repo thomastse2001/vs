@@ -1605,6 +1605,23 @@ namespace VsCSharpWinForm_sample2
                         }
                     }
                 }
+                /// If some properties are missing in the Json, it still can convert the Json to class.
+                //s = "[{\"StudentId\":1,\"UniqueName\":\"apple.chan\",\"DisplayName\":\"Apple Chan\",\"Gender\":\"F\",\"GenderString\":\"F\",\"EnrollmentFee\":100,\"IsNewlyEnrolled\":false,\"Birthday\":\"1990-02-16T00:00:00\",\"CreatedDate\":null,\"UpdatedDate\":null}]";
+                s = "[{\"StudentId\":1,\"UniqueName\":\"apple.chan\",\"DisplayName\":\"Apple Chan\"}]";
+                LocalLogger(TLog.LogLevel.DEBUG, "Test");
+                LocalLogger(TLog.LogLevel.DEBUG, s);
+                LocalLogger(TLog.LogLevel.DEBUG, "Result");
+                //result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Student>>(s);
+                if (result != null)
+                {
+                    foreach (Student o in result)
+                    {
+                        if (o != null)
+                        {
+                            LocalLogger(TLog.LogLevel.DEBUG, "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}", o.StudentId, o.UniqueName, o.DisplayName, o.Phone, o.Email, o.Gender, o.EnrollmentFee, o.IsNewlyEnrolled, o.Birthday);
+                        }
+                    }
+                }
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
@@ -2271,11 +2288,12 @@ namespace VsCSharpWinForm_sample2
                 /// https://stackoverflow.com/questions/32260/sending-email-in-net-through-gmail
                 MailHelper.Send(new MailItem()
                 {
-                    From = "thomastse2001@gmail.com",
+                    From = "\"Thomas Tse\" <thomastse2001@gmail.com>",
                     To = new string[] { "thomas_tse2001@hotmail.com" },
                     Subject = "Test3",
                     Body = "Testing mail 3.",
                     SmtpHost = "smtp.gmail.com",
+                    SmtpPort = 587,
                     SmtpUserName = "thomastse2001@gmail.com",
                     SmtpPassword = "password"
                 });
@@ -2382,6 +2400,173 @@ namespace VsCSharpWinForm_sample2
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
 
+        private void BtnLinqToExcel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string fieldDelimiter = "|";
+                //string filepath = GeneralT.GetDefaultAbsolutePathIfRelative("10420005460000_20210701_9.xls");
+                string filepath = GeneralT.GetDefaultAbsolutePathIfRelative("10420005460000_20210731_9.xls");
+                
+                Helpers.LinqToExcelProvider provider = new LinqToExcelProvider(filepath);
+                string[] sheetNames = provider.GetExcelSheetNames();
+                if (sheetNames != null && sheetNames.Length > 0)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, "Method 1");
+                    var result1 = from p in provider.GetWorkSheet(sheetNames[0])
+                                 select new Models.LinqToExcelObject()
+                                 {
+                                     TransactionDateString = Convert.ToString(p[0]).Trim(),
+                                     TransactionTimeString = Convert.ToString(p[1]).Trim(),
+                                     TerminalNo = Convert.ToString(p[3]).Trim(),
+                                     CardNo = Convert.ToString(p[10]).Trim(),
+                                     MerchantNo = Convert.ToString(p[11]).Trim()
+                                 };
+                    List<LinqToExcelObject> list1 = result1.ToList();
+                    if ((list1?.Count ?? 0) > 0)
+                    {
+                        LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list1.Count);
+                        foreach (var o in list1)
+                        {
+                            LocalLogger(TLog.LogLevel.DEBUG, "{0}, {1}, {2}", o.TransactionDateString, o.TransactionTimeString, o.TerminalNo);
+                        }
+                    }
+                    LocalLogger(TLog.LogLevel.DEBUG, "Method 2");
+                    var result2 = from p in provider.GetWorkSheet(sheetNames[0])
+                                  select new string[]
+                                  {
+                                      Convert.ToString(p?[0]).Trim(), Convert.ToString(p?[1]).Trim(), Convert.ToString(p?[2]).Trim(),
+                                      Convert.ToString(p?[3]).Trim(), Convert.ToString(p?[4]).Trim(), Convert.ToString(p?[5]).Trim(),
+                                      Convert.ToString(p?[6]).Trim(), Convert.ToString(p?[7]).Trim(), Convert.ToString(p?[8]).Trim(),
+                                      Convert.ToString(p?[9]).Trim(), Convert.ToString(p?[10]).Trim(), Convert.ToString(p?[11]).Trim(),
+                                      Convert.ToString(p?[12]).Trim(), Convert.ToString(p?[13]).Trim(), Convert.ToString(p?[14]).Trim(),
+                                      Convert.ToString(p?[15]).Trim(), Convert.ToString(p?[16]).Trim(), Convert.ToString(p?[17]).Trim(),
+                                      Convert.ToString(p?[18]).Trim(), Convert.ToString(p?[19]).Trim(), Convert.ToString(p?[20]).Trim(),
+                                      Convert.ToString(p?[21]).Trim(), Convert.ToString(p?[22]).Trim(), Convert.ToString(p?[23]).Trim(),
+                                  };
+                    List<string[]> list2 = result2.ToList();
+                    if ((list2?.Count ?? 0) > 0)
+                    {
+                        LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list2.Count);
+                        foreach (var o in list2)
+                        {
+                            if (o != null) LocalLogger(TLog.LogLevel.DEBUG, string.Join(",", o));
+                        }
+                    }
+                    LocalLogger(TLog.LogLevel.DEBUG, "Method 2b");
+                    var result2b = from p in provider.GetWorkSheet(sheetNames[0])
+                                   where p[10].ToString().Contains("清算日期")
+                                   select Convert.ToString(p?[11]).Trim();
+                    List<string> list2b = result2b.ToList();
+                    if ((list2b?.Count ?? 0) > 0)
+                    {
+                        LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list2b.Count);
+                        foreach (var o in list2b)
+                        {
+                            if (o != null) LocalLogger(TLog.LogLevel.DEBUG, o);
+                        }
+                    }
+                    if (DateTime.TryParse(list2b.FirstOrDefault(), out DateTime date2b)) LocalLogger(TLog.LogLevel.DEBUG, "Success to parse date = {0:yyyy-MM-dd}", date2b);
+                    else LocalLogger(TLog.LogLevel.ERROR, "Fail to parse date = {0}", list2b.FirstOrDefault());
+                    LocalLogger(TLog.LogLevel.DEBUG, "Method 3");
+                    var result3 = from p in provider.GetWorkSheet(sheetNames[0])
+                                  select new string[] { string.Join(fieldDelimiter, p.ItemArray) };
+                    List<string[]> list3 = result3.ToList();
+                    if ((list3?.Count ?? 0) > 0)
+                    {
+                        LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list3.Count);
+                        foreach (var o in list3)
+                        {
+                            if (o != null) LocalLogger(TLog.LogLevel.DEBUG, string.Join(",", o));
+                        }
+                    }
+                }
+
+                LocalLogger(TLog.LogLevel.DEBUG, "Method 8");
+                var result8 = from p in ExcelHelper.OleDb.GetWorkSheet(filepath)
+                              select string.Join(fieldDelimiter, p.ItemArray);
+                string[] array8 = result8.ToArray();
+                if ((array8?.Length ?? 0) > 0) LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}{1}{2}", array8.Length, Environment.NewLine, string.Join(Environment.NewLine, array8));
+                LocalLogger(TLog.LogLevel.DEBUG, "Method 9");
+                var result9 = from p in ExcelHelper.OleDb.GetWorkSheet(filepath)
+                              where string.IsNullOrEmpty(p[0].ToString()) == false && p[0].ToString().Contains("-")
+                              select string.Join(fieldDelimiter, p.ItemArray);
+                string[] array9 = result9?.ToArray();
+                if ((array9?.Length ?? 0) > 0) LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}{1}{2}", array9.Length, Environment.NewLine, string.Join(Environment.NewLine, array9));
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnWinSCP_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LocalLogger(TLog.LogLevel.DEBUG, "BtnWinSCP_Click");
+                //string proxyMethod = FileHelper.SFTP.WinscpMethod.ProxyMethod.SOCKS5;
+                //string proxyHost = "proxy.abc.net";
+                //int proxyPort = 1080;
+                //string proxyUsername = "first.last@abc.NET";
+                //string proxyPassword = "proxypassword";
+
+                //string host = "abc.net";
+                //int port = 22;
+                //string username = "sftpusername";
+                //string password = "sftppassword";
+                //string sshHostKeyFingerprint = "ssh-rsa 1024 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=";
+
+                //LocalLogger(TLog.LogLevel.DEBUG, "ProxyMethod = {0}", proxyMethod);
+                //if (FileHelper.SFTP.WinscpMethod.CheckConnection(host, port, username, password, sshHostKeyFingerprint, proxyMethod, proxyHost, proxyPort, proxyUsername, proxyPassword))
+                //    LocalLogger(TLog.LogLevel.DEBUG, "Succeed to connect.");
+                //else LocalLogger(TLog.LogLevel.DEBUG, "Fail to connect.");
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnSftpBySshDotNet_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LocalLogger(TLog.LogLevel.DEBUG, "BtnSftpBySshDotNet_Click");
+
+                //string host1 = "aaa.net";
+                //int port1 = 22;
+                //string username1 = "sftpusername";
+                //string password1 = "sftppassword";
+                //if (FileHelper.SFTP.CheckConnection(host1, port1, username1, password1))
+                //    LocalLogger(TLog.LogLevel.DEBUG, "Succeed to connect.");
+                //else LocalLogger(TLog.LogLevel.DEBUG, "Fail to connect.");
+
+                //Renci.SshNet.ProxyTypes proxyType = Renci.SshNet.ProxyTypes.Socks5;
+                //string proxyHost = "proxy.abc.net";
+                //int proxyPort = 1080;
+                //string proxyUsername = "first.last@abc.NET";
+                //string proxyPassword = "proxypassword";
+
+                //string host = "abc.net";
+                //int port = 22;
+                //string username = "sftpusername";
+                //string password = "sftppassword";
+                //string sshHostKeyFingerprint = "ssh-rsa 1024 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=";
+
+                //Renci.SshNet.ProxyTypes proxyType = Renci.SshNet.ProxyTypes.Socks5;
+                //string proxyHost = "proxy-sg-vip1.dtc.rccad.net";
+                //int proxyPort = 1080;
+                //string proxyUsername = "S-HKHQRI.WebAdmin@RCCAD.NET";
+                //string proxyPassword = "WEBR1chemont";
+
+                //string host = "richemont-dev-xfer.kronos.net";
+                //int port = 22;
+                //string username = "richem-1@richemont.com";
+                //string password = "lLo89QYNU9aC0sBQdozs";
+                ////string sshHostKeyFingerprint = "ssh-rsa 4096 pwiFdFZmClkPf82V95qd7ZfUue8jNmKb2JEN3QMlLyo=";
+
+                //if (FileHelper.SFTP.CheckConnection(host, port, username, password, proxyType, proxyHost, proxyPort, proxyUsername, proxyPassword))
+                //    LocalLogger(TLog.LogLevel.DEBUG, "Succeed to connect.");
+                //else LocalLogger(TLog.LogLevel.DEBUG, "Fail to connect.");
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
         #region Encrypt1Region
         private void EncryptFile1(string filepath, string targetFolder, byte[] headerByteArray)
         {
@@ -2484,7 +2669,8 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                Uri uri = new Uri("sftp://10.15.255.5/Dunhill_uk/FCDB_TestData/SFCI_APAC_P_*.csv");
+                string uriPath = "sftp://10.15.255.5/Dunhill_uk/FCDB_TestData/SFCI_APAC_P_*.csv";
+                Uri uri = new Uri(uriPath);
                 string host = uri?.Host;/// 10.10.255.255
                 string remotePath = uri?.AbsolutePath;/// /abc_folder/sub_folder/abc.zip
                 LocalLogger(TLog.LogLevel.DEBUG, "AbsolutePath = {0}", uri?.AbsolutePath);
@@ -2501,6 +2687,7 @@ namespace VsCSharpWinForm_sample2
                 LocalLogger(TLog.LogLevel.DEBUG, "Segments = {0}", uri?.Segments);
                 LocalLogger(TLog.LogLevel.DEBUG, "UserEscaped = {0}", uri?.UserEscaped);
                 LocalLogger(TLog.LogLevel.DEBUG, "UserInfo = {0}", uri?.UserInfo);
+                LocalLogger(TLog.LogLevel.DEBUG, "Filename = {0}", System.IO.Path.GetFileName(uriPath));
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
@@ -2568,7 +2755,7 @@ namespace VsCSharpWinForm_sample2
                 LocalLogger(TLog.LogLevel.DEBUG, "Folder = {0}", System.IO.Path.GetDirectoryName(s));
                 LocalLogger(TLog.LogLevel.DEBUG, "Filename = {0}", System.IO.Path.GetFileName(s));
                 LocalLogger(TLog.LogLevel.DEBUG, "Please go to URI.");
-                s = "2021-05-13T08:37:57.187Z";
+                s = "2021-07-19T00:00:00.000Z";
                 LocalLogger(TLog.LogLevel.DEBUG, "String = {0}", s);
                 if (DateTime.TryParse(s, out DateTime t)) LocalLogger(TLog.LogLevel.DEBUG, "Time = {0:yyyy-MM-dd HH:mm:ss.fff}. UTC time = {1:yyyy-MM-dd HH:mm:ss.fff}", t, t.ToUniversalTime());
                 else LocalLogger(TLog.LogLevel.DEBUG, "Cannot parse to time.");
