@@ -16,8 +16,15 @@ namespace VsCSharpWinForm_sample2.Models
         public string Body { get; set; }
         public string[] AttachmentPath { get; set; }
         public string SmtpHost { get; set; }
+        public int SmtpPort { get; set; }
         public string SmtpUserName { get; set; }
         public string SmtpPassword { get; set; }
 
+        public MailItem() { }
+        public MailItem(params string[] toAddresses)
+        {
+            if ((toAddresses?.Length ?? 0) < 1) return;
+            To = toAddresses;
+        }
     }
 }

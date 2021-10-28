@@ -18,7 +18,7 @@ namespace VsCSharpWinForm_sample2.Helpers
 
         static MailHelper()
         {
-            //System.Net.ServicePointManager.ServerCertificateValidationCallback = RemoteServerCertificateValidationCallback;
+            System.Net.ServicePointManager.ServerCertificateValidationCallback = RemoteServerCertificateValidationCallback;
         }
 
         private static bool RemoteServerCertificateValidationCallback(Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -76,7 +76,7 @@ namespace VsCSharpWinForm_sample2.Helpers
                     using (System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient()
                     {
                         EnableSsl = true,
-                        Port = 587,
+                        Port = o.SmtpPort,//587,
                         DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network,
                         UseDefaultCredentials = false,
                         Credentials = new System.Net.NetworkCredential(o.SmtpUserName, o.SmtpPassword),
@@ -85,6 +85,8 @@ namespace VsCSharpWinForm_sample2.Helpers
                     {
                         client.Send(mail);
                         client.Dispose();/// Sends a QUIT message to the SMTP server, gracefully ends the TCP connection, and releases all resources used by the current instance of the SmtpClient class.
+                        Logger?.Debug("Send email with subject = {0}", o?.Subject);
+                        Logger?.Debug("Recipient = {0}", string.Join(";", o.To));
                     }
                     mail.Dispose();
                 }

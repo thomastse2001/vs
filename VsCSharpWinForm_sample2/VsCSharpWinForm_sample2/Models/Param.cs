@@ -9,6 +9,19 @@ namespace VsCSharpWinForm_sample2.Models
     public class Param
     {
         public static bool IsService = false;// variables for system.
+        public static bool BoolValue1 = false;
+
+        public class IniKey
+        {
+            public const string IsService = "IsService";
+            public const string LogFilePathFormat = "LogFilePathFormat";
+            public const string LogContentFormat = "LogContentFormat";
+            public const string LoginMaxRetry = "LoginMaxRetry";
+            public const string LoginFailMessage = "LoginFailMessage";
+            public const string LoginExceedMaxRetryMessage = "LoginExceedMaxRetryMessage";
+            public const string BoolValue1 = "BoolValue1";
+        }
+
         public class Login
         {
             public static int MaxRetry = 3;// Maximum number of retry when login. If the value is less than 1, it means that there is no limit to retry. The default value is 3.
@@ -36,20 +49,18 @@ namespace VsCSharpWinForm_sample2.Models
                 public static bool ContainLengthAsHeader = true;
                 public static bool EncryptData = true;
                 public static string CryptPassword = "abc123";
-                public static string IncomingDataFilename = "{0:yyyyMMdd_HHmmss}_{1}.dat";// {0} is date time, {1} is Id.
-                public static string IncomingDataFolder = "TcpClient{0}";
+                public static string IncomingDataFilenameFormat = "{0:yyyyMMdd_HHmmss}_{1}.dat";// {0} is date time, {1} is Id.
+                public static string IncomingDataFolderFormat = "TcpClient{0}";
             }
         }
 
         public class TcpServer
         {
-            //public static Queue<Helpers.TTcpServerSocket.DataPackage> IncomingDataQueue = new Queue<Helpers.TTcpServerSocket.DataPackage>();
             public static Queue<Helpers.TTcpSocket.DataPackage> IncomingDataQueue = new Queue<Helpers.TTcpSocket.DataPackage>();
             public static readonly object IncomingDataQueueLocker = new object();
-            //public static Helpers.TTcpServerSocket ServerSocket = null;
             public static Helpers.TTcpSocket.Server ServerSocket = null;
             public static string CryptPassword = "abc123";
-            public static string IncomingDataFilename = "{0:yyyyMMdd_HHmmss}_{1}_{2}.dat";// {0} is date time, {1} is host, {2} is port.
+            public static string IncomingDataFilenameFormat = "{0:yyyyMMdd_HHmmss}_{1}_{2}.dat";// {0} is date time, {1} is host, {2} is port.
             public static string IncomingDataFolder = "TcpServer";
         }
     }

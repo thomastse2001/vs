@@ -50,8 +50,6 @@ namespace VsCSharpWinForm_sample2.Helpers
         /// path = input path
         private static string GetAbsolutePathIfRelative(string path)
         {
-            //path = path?.Trim(new char[] { (char)9, ' ', System.IO.Path.DirectorySeparatorChar });
-            //return System.IO.Path.IsPathRooted(path) ? path : DefaultFolder + System.IO.Path.DirectorySeparatorChar + path;
             return System.IO.Path.IsPathRooted(path) ? path : System.IO.Path.Combine(DefaultFolder, path);
         }
 
