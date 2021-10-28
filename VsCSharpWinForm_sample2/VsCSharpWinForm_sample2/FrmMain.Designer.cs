@@ -34,6 +34,8 @@
             this.TxtLog = new System.Windows.Forms.TextBox();
             this.TControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnCsvFile2 = new System.Windows.Forms.Button();
+            this.BtnSftpBySshDotNet = new System.Windows.Forms.Button();
             this.BtnWinSCP = new System.Windows.Forms.Button();
             this.BtnLinqToExcel = new System.Windows.Forms.Button();
             this.BtnGetWebAPI = new System.Windows.Forms.Button();
@@ -133,7 +135,7 @@
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerRenameFilenames = new System.ComponentModel.BackgroundWorker();
-            this.BtnSftpBySshDotNet = new System.Windows.Forms.Button();
+            this.BtnCopyFile1 = new System.Windows.Forms.Button();
             this.TControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.TPageTcpServerClient.SuspendLayout();
@@ -195,6 +197,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnCopyFile1);
+            this.tabPage1.Controls.Add(this.BtnCsvFile2);
             this.tabPage1.Controls.Add(this.BtnSftpBySshDotNet);
             this.tabPage1.Controls.Add(this.BtnWinSCP);
             this.tabPage1.Controls.Add(this.BtnLinqToExcel);
@@ -237,6 +241,26 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnCsvFile2
+            // 
+            this.BtnCsvFile2.Location = new System.Drawing.Point(6, 186);
+            this.BtnCsvFile2.Name = "BtnCsvFile2";
+            this.BtnCsvFile2.Size = new System.Drawing.Size(75, 23);
+            this.BtnCsvFile2.TabIndex = 35;
+            this.BtnCsvFile2.Text = "CSV File 2";
+            this.BtnCsvFile2.UseVisualStyleBackColor = true;
+            this.BtnCsvFile2.Click += new System.EventHandler(this.BtnCsvFile2_Click);
+            // 
+            // BtnSftpBySshDotNet
+            // 
+            this.BtnSftpBySshDotNet.Location = new System.Drawing.Point(632, 157);
+            this.BtnSftpBySshDotNet.Name = "BtnSftpBySshDotNet";
+            this.BtnSftpBySshDotNet.Size = new System.Drawing.Size(114, 23);
+            this.BtnSftpBySshDotNet.TabIndex = 34;
+            this.BtnSftpBySshDotNet.Text = "SFTP by SSH.NET";
+            this.BtnSftpBySshDotNet.UseVisualStyleBackColor = true;
+            this.BtnSftpBySshDotNet.Click += new System.EventHandler(this.BtnSftpBySshDotNet_Click);
             // 
             // BtnWinSCP
             // 
@@ -1321,15 +1345,15 @@
             // 
             this.BWorkerRenameFilenames.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerRenameFilenames_DoWork);
             // 
-            // BtnSftpBySshDotNet
+            // BtnCopyFile1
             // 
-            this.BtnSftpBySshDotNet.Location = new System.Drawing.Point(632, 157);
-            this.BtnSftpBySshDotNet.Name = "BtnSftpBySshDotNet";
-            this.BtnSftpBySshDotNet.Size = new System.Drawing.Size(114, 23);
-            this.BtnSftpBySshDotNet.TabIndex = 34;
-            this.BtnSftpBySshDotNet.Text = "SFTP by SSH.NET";
-            this.BtnSftpBySshDotNet.UseVisualStyleBackColor = true;
-            this.BtnSftpBySshDotNet.Click += new System.EventHandler(this.BtnSftpBySshDotNet_Click);
+            this.BtnCopyFile1.Location = new System.Drawing.Point(87, 186);
+            this.BtnCopyFile1.Name = "BtnCopyFile1";
+            this.BtnCopyFile1.Size = new System.Drawing.Size(75, 23);
+            this.BtnCopyFile1.TabIndex = 36;
+            this.BtnCopyFile1.Text = "Copy File 1";
+            this.BtnCopyFile1.UseVisualStyleBackColor = true;
+            this.BtnCopyFile1.Click += new System.EventHandler(this.BtnCopyFile1_Click);
             // 
             // FrmMain
             // 
@@ -1486,6 +1510,8 @@
         private System.Windows.Forms.Button BtnLinqToExcel;
         private System.Windows.Forms.Button BtnWinSCP;
         private System.Windows.Forms.Button BtnSftpBySshDotNet;
+        private System.Windows.Forms.Button BtnCsvFile2;
+        private System.Windows.Forms.Button BtnCopyFile1;
     }
 }
 

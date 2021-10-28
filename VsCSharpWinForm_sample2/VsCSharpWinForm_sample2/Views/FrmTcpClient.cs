@@ -106,13 +106,13 @@ namespace VsCSharpWinForm_sample2.Views
                             Logger?.Debug("FrmTcpClient {0} receives error message. Received Time = {1}", Id, s);
                             WriteLogToUI(s);
                         }
-                        deserializedData.DestFolder = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFolder, Id));
+                        deserializedData.DestFolder = Helpers.GeneralT.GetDefaultAbsolutePathIfRelative(string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFolderFormat, Id));
                         if (string.IsNullOrWhiteSpace(deserializedData.Filename))
                         {
                             s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Server = {1}:{2}. Last index of piece = {3}. Index of current piece = {4}. Filename is empty.", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece);
                             Logger?.Debug("FrmTcpClient {0} receives file piece. Received Time = {1}", Id, s);
                             WriteLogToUI(s);
-                            deserializedData.Filename = string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilename, o.Timestamp, Id);
+                            deserializedData.Filename = string.Format(Models.Param.TcpClient.DefaultValue.IncomingDataFilenameFormat, o.Timestamp, Id);
                         }
                         s = Helpers.TTcpSocket.Serialization.AppendDeserializedDataToFile(deserializedData);
                         if (string.IsNullOrEmpty(s))

@@ -607,10 +607,12 @@ namespace VsCSharpWinForm_sample2.Helpers
             
             private static string GetConnectionString(string path)
             {
+                /// Set HRD=NO;IMEX=1 to avoid crash and missing data.
+                /// https://stackoverflow.com/questions/10102149/what-is-imex-within-oledb-connection-strings
                 string strFileType = System.IO.Path.GetExtension(path).Trim().ToLower();
                 if (".xls".Equals(strFileType, StringComparison.OrdinalIgnoreCase))
                     //return "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + path + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
-                    return "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
+                    return "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=\"Excel 8.0;HDR=No;IMEX=1\"";
                 else if (".xlsx".Equals(strFileType, StringComparison.OrdinalIgnoreCase))
                     return "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=\"Excel 12.0;HDR=No;IMEX=1\"";
                 else
@@ -837,7 +839,5 @@ namespace VsCSharpWinForm_sample2.Helpers
         //        }
         //    }
         //}
-
-
     }
 }
