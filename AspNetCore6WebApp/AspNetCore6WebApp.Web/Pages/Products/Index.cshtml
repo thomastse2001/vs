@@ -1,0 +1,78 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.Products.IndexModel
+@{
+    ViewData["Title"] = "Products";
+}
+<div>
+    <h2>@ViewData["Title"]</h2>
+    <form method="get" id="form1">
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-text">Search</span>
+                <input type="search" class="form-control" asp-for="SearchText" aria-label="Search" aria-describedby="BtnSearch" placeholder="@Html.DisplayNameFor(model => model.Products!.First().Name)" />
+                <span class="input-group-text" id="BtnSearch"><button type="button" class="btn btn-default" onclick="formSubmit(1)"><span class="fa fa-search"></span></button></span>
+            </div>
+        </div>
+        <br />
+        @*<a asp-page="./Edit" class="btn btn-primary"><span class="fa fa-plus"></span> Add New</a>*@
+        <br />
+        <partial name="_PagerPartial" model="Model.Pager" />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().ProductId)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().Code)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().Name)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().ProductTypeId)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().Price)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().Price2)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().DiscountRate)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().Discount)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().IsEnabled)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().UpdatedDt)</th>
+                    <th>@Html.DisplayNameFor(model => model.Products!.First().UpdatedByDisplayName)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            @if (Model.Products != null && Model.Products.Any())
+            {
+                <tbody>
+                    @foreach (var item in Model.Products)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.ProductId)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Code)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ProductTypeId)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Price2)</td>
+                            <td>@Html.DisplayFor(modelItem => item.DiscountRate)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Discount)</td>
+                            <td>@Html.DisplayFor(modelItem => item.IsEnabled)</td>
+                            <td>@Html.DisplayFor(modelItem => item.UpdatedDt)</td>
+                            <td>@Html.DisplayFor(modelItem => item.UpdatedByDisplayName)</td>
+                            <td>
+                                <a class="btn btn-lg"><span class="fa fa-info"></span></a>
+                                @*<a class="btn btn-lg" asp-page="./Details" asp-route-id="@item.ProductId"><span class="fa fa-info"></span></a>
+                                <a class="btn btn-lg" asp-page="./Edit" asp-route-id="@item.ProductId"><span class="fa fa-edit"></span></a>
+                                <a class="btn btn-lg" asp-page="./Delete" asp-route-id="@item.ProductId"><span class="fa fa-trash"></span></a>*@
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            }
+        </table>
+        <partial name="_PagerPartial" model="Model.Pager" />
+        <input type="hidden" id="inputPage" name="p" value="1" />
+    </form>
+</div>
+
+@section Scripts{
+    <script>
+        function formSubmit(page){
+            $("#ModalLoading").modal("show");
+            document.getElementById("inputPage").value = page.toString();
+            document.getElementById("form1").submit();
+        }
+    </script>
+}

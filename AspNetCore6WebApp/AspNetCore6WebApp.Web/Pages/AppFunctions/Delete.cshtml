@@ -1,0 +1,33 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.AppFunctions.DeleteModel
+@{
+    ViewData["Title"] = "Delete AppFunction";
+}
+<div>
+    <h2>@ViewData["Title"]</h2>
+    <div>
+        <a class="btn" asp-page="./Index"><span class="fa fa-list-alt"></span> Back to List</a>
+    </div>
+    @if (Model.AppFunction == null){
+        <div>Cannot find.</div>
+    }
+    else{
+        <h3>Are you sure you want to delete this?</h3>
+        <hr />
+        <partial name="_Details" model="Model.AppFunction" />
+        <form method="post" id="form1">
+            @*<input type="hidden" asp-for="@Model.AppFunction.AppFunctionId" />*@
+            <input type="hidden" name="id" value="@Model.AppFunction.AppFunctionId" />
+            <button type="button" class="btn btn-danger" id="BtnDelete" onclick="BtnDelete_onClick()"><span class="fa fa-trash"></span> Delete</button>
+        </form>
+        @section Scripts{
+            <script>
+                function BtnDelete_onClick(){
+                    document.getElementById("BtnDelete").disabled = true;
+                    $("#ModalLoading").modal("show");
+                    document.getElementById("form1").submit();
+                }
+            </script>
+        }
+    }
+</div>

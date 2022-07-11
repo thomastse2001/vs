@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@using AspNetCore6WebApp.Entities;
+@model IEnumerable<AppFunction>
+@if (Model?.Any() ?? false){
+    @foreach (var item in Model)
+    {
+        @if (item != null)
+        {
+            <div class="divTableRow">
+                <div class="divTableCell">
+                    @if (item.ChildList?.Any() ?? false)
+                    {
+                        <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#DDivTableItemsOfParent@{@item.AppFunctionId}" />
+                    }
+                </div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.AppFunctionId)</div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.UniqueName)</div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.DisplayName)</div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.AppFuncLevelId)</div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.ParentId)</div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.SequentialNum)</div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.IsDisabled)</div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.IsNavItem)</div>
+                <div class="divTableCell">@Html.DisplayFor(modelItem => item.UpdatedDt)</div>
+                <div class="divTableCell">
+                    <a class="btn btn-lg" asp-page="./Details" asp-route-id="@item.AppFunctionId"><span class="fa fa-info"></span></a>
+                    <a class="btn btn-lg" asp-page="./Edit" asp-route-id="@item.AppFunctionId"><span class="fa fa-edit"></span></a>
+                    <a class="btn btn-lg" asp-page="./Delete" asp-route-id="@item.AppFunctionId"><span class="fa fa-trash"></span></a>
+                </div>
+            </div>
+            <div id="DDivTableItemsOfParent@{@item.AppFunctionId}" class="collapse">
+                <partial name="_Index_DisplayDivTable_item" model="item.ChildList" />
+            </div>
+        }
+    }
+}

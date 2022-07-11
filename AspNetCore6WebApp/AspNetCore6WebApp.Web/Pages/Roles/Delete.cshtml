@@ -1,0 +1,33 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.Roles.DeleteModel
+@{
+    ViewData["Title"] = "Delete Role";
+}
+<div>
+    <h2>@ViewData["Title"]</h2>
+    <div>
+        <a class="btn" asp-page="./Index"><span class="fa fa-list-alt"></span> Back to List</a>
+    </div>
+    @if (Model.Role == null){
+        <div>Cannot find.</div>
+    }
+    else{
+        <h3>Are you sure you want to delete this?</h3>
+        <hr />
+        <partial name="_Details" model="Model.Role" />
+        <form method="post" id="form1">
+            @*<input type="hidden" asp-for="@Model.Role.RoleId" />*@
+            <input type="hidden" name="id" value="@Model.Role.RoleId" />
+            <button type="button" class="btn btn-danger" id="BtnDelete" onclick="BtnDelete_onClick()"><span class="fa fa-trash"></span> Delete</button>
+        </form>
+        @section Scripts{
+            <script>
+                function BtnDelete_onClick(){
+                    document.getElementById("BtnDelete").disabled = true;
+                    $("#ModalLoading").modal("show");
+                    document.getElementById("form1").submit();
+                }
+            </script>
+        }
+    }
+</div>

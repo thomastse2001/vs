@@ -1,0 +1,35 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.AppFunctions.IndexModel
+@{
+    ViewData["Title"] = "AppFunctions";
+}
+<div>
+    <h2>@ViewData["Title"]</h2>
+    <br />
+    <a asp-page="./Edit" class="btn btn-primary"><span class="fa fa-plus"></span> Add New</a>
+    <br /><br />
+    <div id="Accordion">
+        <div class="card">
+            <div class="card-header" data-bs-toggle="collapse" href="#ListDisplayTable">Display in Table</div>
+            <div id="ListDisplayTable" class="collapse" data-bs-parent="#Accordion">
+                <div class="card-body"><partial name="_Index_DisplayTable" model="Model.AppFunctions" /></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" data-bs-toggle="collapse" href="#ListDisplayDivTable">Display in Div Table</div>
+            <div id="ListDisplayDivTable" class="collapse" data-bs-parent="#Accordion">
+                <div class="card-body"><partial name="_Index_DisplayDivTable" model="Model.AppFunctions" /></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" data-bs-toggle="collapse" href="#ListDisplayCard">Display in Card</div>
+            <div id="ListDisplayCard" class="collapse show" data-bs-parent="#Accordion">
+                <div class="card-body">
+                    <h7>https://www.w3schools.com/bootstrap/bootstrap_collapse.asp</h7>
+                    <h7>https://www.w3schools.com/bootstrap/bootstrap_panels.asp</h7>
+                    <partial name="_Index_DisplayCard" model="Model.AppFunctions" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,159 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.Vendors.IndexModel
+@{
+    ViewData["Title"] = "Vendors";
+}
+<div>
+    <h2>@ViewData["Title"]</h2>
+    <form method="get" id="form1">
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-text">Search</span>
+                <input type="search" class="form-control" asp-for="SearchText" aria-label="Search" aria-describedby="BtnSearch" placeholder="@Html.DisplayNameFor(model => model.Vendors!.First().Name)" />
+                <span class="input-group-text" id="BtnSearch"><button type="button" class="btn btn-default" onclick="formSubmit(1)"><span class="fa fa-search"></span></button></span>
+            </div>
+        </div>
+        <br />
+        @*<a asp-page="./Edit" class="btn btn-primary"><span class="fa fa-plus"></span> Add New</a>*@
+        <br />
+        @*<!-- https://getbootstrap.com/docs/5.0/components/pagination/ -->
+        <ul class="pagination">
+            @if (Model.PageNum > 1)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@(Model.PageNum - 1)"><span aria-hidden="true">&laquo;</span></a></li>
+            }
+            else
+            {
+                <li class="page-item"><a class="page-link"><span aria-hidden="true">&laquo;</span></a></li>
+            }
+            @if (Model.PageNum > 2)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="1">1</a></li>
+            }
+            @if (Model.PageNum > 3)
+            {
+                <li class="page-item">...</li>
+            }
+            @if (Model.PageNum > 1)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@(Model.PageNum - 1)">@(Model.PageNum - 1)</a></li>
+            }
+            <li class="page-item active" aria-current="page"><a class="page-link" asp-route-pageNum="@Model.PageNum">@Model.PageNum</a></li>
+            @if (Model.PageNum < Model.PageCount)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@(Model.PageNum + 1)">@(Model.PageNum + 1)</a></li>
+            }
+            @if (Model.PageNum + 2 < Model.PageCount)
+            {
+                <li class="page-item">...</li>
+            }
+            @if (Model.PageNum + 1 < Model.PageCount)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@Model.PageCount">@Model.PageCount</a></li>
+            }
+            @if (Model.PageNum < Model.PageCount)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@(Model.PageNum + 1)"><span aria-hidden="true">&raquo;</span></a></li>
+            }
+            else
+            {
+                <li class="page-item"><a class="page-link"><span aria-hidden="true">&raquo;</span></a></li>
+            }
+        </ul>
+        <partial name="../Shared/_PagerPartial" model="Model.Pager" />
+        <partial name="/Pages/Shared/_PagerPartial.cshtml" model="Model.Pager" />*@
+        <partial name="_PagerPartial" model="Model.Pager" />
+        <!-- If the name is without a file extension, it will search in /Pages/Shared. https://docs.microsoft.com/en-us/aspnet/core/mvc/views/partial?view=aspnetcore-6.0 -->
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Vendors!.First().VendorId)</th>
+                    <th>@Html.DisplayNameFor(model => model.Vendors!.First().Name)</th>
+                    <th>@Html.DisplayNameFor(model => model.Vendors!.First().IsDisabled)</th>
+                    <th>@Html.DisplayNameFor(model => model.Vendors!.First().UpdatedDt)</th>
+                    <th>@Html.DisplayNameFor(model => model.Vendors!.First().UpdatedByDisplayName)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            @if (Model.Vendors?.Any() ?? false)
+            {
+                <tbody>
+                    @foreach (var item in Model.Vendors)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.VendorId)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.IsDisabled)</td>
+                            <td>@Html.DisplayFor(modelItem => item.UpdatedDt)</td>
+                            <td>@Html.DisplayFor(modelItem => item.UpdatedByDisplayName)</td>
+                            <td>
+                                <a class="btn btn-lg"><span class="fa fa-info"></span></a>
+                                @*<a class="btn btn-lg" asp-page="./Details" asp-route-id="@item.VendorId"><span class="fa fa-info"></span></a>
+                                <a class="btn btn-lg" asp-page="./Edit" asp-route-id="@item.VendorId"><span class="fa fa-edit"></span></a>
+                                <a class="btn btn-lg" asp-page="./Delete" asp-route-id="@item.VendorId"><span class="fa fa-trash"></span></a>*@
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            }
+        </table>
+
+        @*<!-- https://getbootstrap.com/docs/5.0/components/pagination/ -->
+        <ul class="pagination">
+            @if (Model.PageNum > 1)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@(Model.PageNum - 1)"><span aria-hidden="true">&laquo;</span></a></li>
+            }
+            else
+            {
+                <li class="page-item"><a class="page-link"><span aria-hidden="true">&laquo;</span></a></li>
+            }
+            @if (Model.PageNum > 2)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="1">1</a></li>
+            }
+            @if (Model.PageNum > 3)
+            {
+                <li class="page-item">...</li>
+            }
+            @if (Model.PageNum > 1)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@(Model.PageNum - 1)">@(Model.PageNum - 1)</a></li>
+            }
+            <li class="page-item active" aria-current="page"><a class="page-link" asp-route-pageNum="@Model.PageNum">@Model.PageNum</a></li>
+            @if (Model.PageNum < Model.PageCount)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@(Model.PageNum + 1)">@(Model.PageNum + 1)</a></li>
+            }
+            @if (Model.PageNum + 2 < Model.PageCount)
+            {
+                <li class="page-item">...</li>
+            }
+            @if (Model.PageNum + 1 < Model.PageCount)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@Model.PageCount">@Model.PageCount</a></li>
+            }
+            @if (Model.PageNum < Model.PageCount)
+            {
+                <li class="page-item"><a class="page-link" asp-route-pageNum="@(Model.PageNum + 1)"><span aria-hidden="true">&raquo;</span></a></li>
+            }
+            else
+            {
+                <li class="page-item"><a class="page-link"><span aria-hidden="true">&raquo;</span></a></li>
+            }
+        </ul>*@
+        <partial name="_PagerPartial" model="Model.Pager" />
+        <input type="hidden" id="inputPage" name="p" value="1" />
+    </form>
+</div>
+
+@section Scripts{
+    <script>
+        function formSubmit(page){
+            $("#ModalLoading").modal("show");
+            document.getElementById("inputPage").value = page.toString();
+            document.getElementById("form1").submit();
+        }
+    </script>
+}

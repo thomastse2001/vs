@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@using AspNetCore6WebApp.Entities;
+@model IEnumerable<AppFunction>
+@if (Model?.Any() ?? false){
+    @foreach (var item in Model)
+    {
+        @if (item != null)
+        {
+            @if (item.AppFuncLevelId == 1)
+            {
+                <div class="card border-bottom">
+                    <partial name="_Index_DisplayCard_item" model="item" />
+                </div>
+            }
+            else if (item.AppFuncLevelId == 2)
+            {
+                <div class="card border-bottom border-success">
+                    <partial name="_Index_DisplayCard_item" model="item" />
+                </div>
+            }
+            else if (item.AppFuncLevelId == 3)
+            {
+                <div class="card border-bottom border-info">
+                    <partial name="_Index_DisplayCard_item" model="item" />
+                </div>
+            }
+            else
+            {
+                <div class="card border-bottom">
+                    <partial name="_Index_DisplayCard_item" model="item" />
+                </div>
+            }
+        }
+    }
+}

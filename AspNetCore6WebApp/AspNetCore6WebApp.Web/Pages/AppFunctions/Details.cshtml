@@ -1,0 +1,19 @@
+﻿@page "{id:int}"
+@model AspNetCore6WebApp.Web.Pages.AppFunctions.DetailsModel
+@{
+    ViewData["Title"] = "AppFunction Details";
+}
+<div>
+    <h2>@ViewData["Title"]</h2>
+    @if (Model.Message != null)
+    {
+        <div class="alert alert-info" role="alert">@Model.Message</div>
+    }
+    <div class="d-flex justify-content-start">
+        <div><a class="btn" asp-page="./Index"><span class="fa fa-list-alt"></span> Back to List</a></div>
+        <div><a class="btn" asp-page="./Edit" asp-route-id="@Model.AppFunction?.AppFunctionId"><span class="fa fa-edit"></span> Edit</a></div>
+        <div><a class="btn" asp-page="./Delete" asp-route-id="@Model.AppFunction?.AppFunctionId"><span class="fa fa-trash"></span> Delete</a></div>
+    </div>
+    <hr />
+    <partial name="_Details" model="Model.AppFunction" />
+</div>

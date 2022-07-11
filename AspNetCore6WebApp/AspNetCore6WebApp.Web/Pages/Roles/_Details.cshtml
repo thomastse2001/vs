@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@using AspNetCore6WebApp.Entities;
+@model Role
+@if (Model != null){
+<div>
+    <dl class="dl-horizontal">
+        <dt>@Html.DisplayNameFor(model => model.RoleId)</dt>
+        <dd>@Html.DisplayFor(model => model.RoleId)</dd>
+        <dt>@Html.DisplayNameFor(model => model.UniqueName)</dt>
+        <dd>@Html.DisplayFor(model => model.UniqueName)</dd>
+        <dt>@Html.DisplayNameFor(model => model.DisplayName)</dt>
+        <dd>@Html.DisplayFor(model => model.DisplayName)</dd>
+        <dt>@Html.DisplayNameFor(model => model.IsDisabled)</dt>
+        <dd>@Html.DisplayFor(model => model.IsDisabled)</dd>
+        <dt>@Html.DisplayNameFor(model => model.CreatedDt)</dt>
+        <dd>@Html.DisplayFor(model => model.CreatedDt)</dd>
+        <dt>@Html.DisplayNameFor(model => model.CreatedBy)</dt>
+        <dd>@Html.DisplayFor(model => model.CreatedBy)</dd>
+        <dt>@Html.DisplayNameFor(model => model.CreatedByDisplayName)</dt>
+        <dd>@Html.DisplayFor(model => model.CreatedByDisplayName)</dd>
+        <dt>@Html.DisplayNameFor(model => model.UpdatedDt)</dt>
+        <dd>@Html.DisplayFor(model => model.UpdatedDt)</dd>
+        <dt>@Html.DisplayNameFor(model => model.UpdatedBy)</dt>
+        <dd>@Html.DisplayFor(model => model.UpdatedBy)</dd>
+        <dt>@Html.DisplayNameFor(model => model.UpdatedByDisplayName)</dt>
+        <dd>@Html.DisplayFor(model => model.UpdatedByDisplayName)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Description)</dt>
+        <dd>@Html.DisplayFor(model => model.Description)</dd>
+    </dl>
+</div>
+}

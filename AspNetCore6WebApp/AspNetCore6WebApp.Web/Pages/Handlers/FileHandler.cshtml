@@ -1,0 +1,138 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.Handlers.FileHandlerModel
+@{
+    ViewData["Title"] = "File Handler";
+}
+
+<style type="text/css">
+    #fileBasket {
+        height: 300px;
+        width: 600px;
+        background-color: skyblue;
+    }
+</style>
+
+<div>
+    <h2>File Handler</h2>
+
+    <div class="card">
+        <div class="card-header">Upload Files</div>
+        <div class="card-body">
+            <h7>This method is completed.</h7>
+            <br /><h7>https://blog.johnwu.cc/article/ironman-day23-asp-net-core-upload-download-files.html</h7>
+            <form id="UploadFilesForm1" name="UploadFilesForm1" enctype="multipart/form-data" method="post" asp-controller="File" asp-action="UploadFiles">
+                <input type="file" name="files" accept="*" multiple />
+                <br /><br />
+                <button type="submit" class="btn btn-primary"><span class="fa fa-file-upload"></span> Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Upload Files by drag and drop</div>
+        <div class="card-body">
+            <h7>This method is completed.</h7>
+            <br /><h7>http://www.binaryintellect.net/articles/474dc031-087f-4b81-b994-9ca2adb949d6.aspx</h7>
+            <div class="form-group">
+                <form id="UploadFilesForm2" name="UploadFilesForm2" method="post" enctype="multipart/form-data">
+                    <div id="fileBasket" class="fileBasket">Drag and Drop files here.</div>
+                    <br />
+                    <div id="progress" class="spinner-border"></div>
+                    <br />
+                    <button type="submit" id="UploadFilesForm2UploadButton" class="btn btn-primary"><span class="fa fa-file-upload"></span> Upload</button>
+                    <button type="reset" id="UploadFilesForm2ResetButton" class="btn"><span class="fa fa-undo"></span> Reset</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Download File</div>
+        <div class="card-body">
+            <h7>Not completed.</h7>
+            <form id="DownloadFileForm" method="get" action="/api/File/test.csv">
+                <button type="submit" class="btn btn-primary"><span class="fa fa-file-download"></span> Download</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        //window.onload = function () {
+        //    alert("abc");
+        //};
+
+        var fileBasketSelectedFiles = [];
+        $(document).ready(function () {
+
+            $("#progress").hide();
+
+            $("#fileBasket").on("dragenter", function (evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+            });
+
+            $("#fileBasket").on("dragover", function (evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+            });
+
+            $("#fileBasket").on("drop", function (evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+
+                var files = evt.originalEvent.dataTransfer.files;
+                if (files.length > 0) {
+                    for (var i = 0; i < files.length; i++) {
+                        fileBasketSelectedFiles.push(files[i]);
+                    }
+                }
+
+                var fileNames = "";
+                if (fileBasketSelectedFiles.length > 0) {
+                    fileNames += "Upload <br/>";
+                    for (var i = 0; i < fileBasketSelectedFiles.length; i++) {
+                        fileNames += fileBasketSelectedFiles[i].name + " (" + fileBasketSelectedFiles[i].size + " bytes)<br />";
+                    }
+                }
+                $("#fileBasket").html(fileNames);
+            });
+
+            $("#UploadFilesForm2ResetButton").click(function () {
+                fileBasketSelectedFiles = [];
+                $("#fileBasket").html("Drag and Drop files here.");
+            });
+
+            $("#UploadFilesForm2UploadButton").click(function () {
+                var files = fileBasketSelectedFiles;
+                if (files != null && files.length > 0) {
+                    var data = new FormData();
+                    for (var i = 0; i < files.length; i++) {
+                        data.append(files[i].name, files[i]);
+                    }
+                    alert("ccc files.length = " + files.length);
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/File",
+                        contentType: false,
+                        processData: false,
+                        data: data,
+                        success: function (message) {
+                            $("#fileBasket").html(message + "   --> Drag and Drop files here.");
+                        },
+                        error: function () {
+                            $("#fileBasket").html("There was error uploading files!");
+                        },
+                        beforeSend: function () {
+                            $("#progress").show();
+                        },
+                        complete: function () {
+                            $("#progress").hide();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

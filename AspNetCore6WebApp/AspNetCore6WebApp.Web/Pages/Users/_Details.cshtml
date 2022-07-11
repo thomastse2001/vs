@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@using AspNetCore6WebApp.Entities;
+@model User
+@if (Model != null)
+{
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UserId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UserId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LoginName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.LoginName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DisplayName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.DisplayName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Hash)</dt>
+        <dd class="col-sm-9">xxxx</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Password)</dt>
+        <dd class="col-sm-9">xxxx</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DepartmentDisplayName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.DepartmentDisplayName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CategoryDisplayName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.CategoryDisplayName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SubCategoryDisplayName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.SubCategoryDisplayName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Birthday)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Birthday)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RegistrationFee)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.RegistrationFee)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IsDisabled)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.IsDisabled)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedDt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.CreatedDt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedBy)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.CreatedBy)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedByDisplayName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.CreatedByDisplayName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdatedDt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdatedDt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdatedBy)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdatedBy)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdatedByDisplayName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.UpdatedByDisplayName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+    </dl>
+</div>
+}

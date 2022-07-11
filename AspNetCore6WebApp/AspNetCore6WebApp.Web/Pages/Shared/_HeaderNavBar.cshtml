@@ -1,0 +1,38 @@
+﻿<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container">
+        <a class="navbar-brand" asp-area="" asp-page="/Index">AspNetCore6WebApp.Web</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a></li>
+                @*https://getbootstrap.com/docs/5.0/components/navbar/*@
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarHandlers" role="button" data-bs-toggle="dropdown" aria-expanded="false">Handlers</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarHandlers">
+                        <li><a class="dropdown-item" href="/Handlers/FileHandler">File Handler</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarBusiness" role="button" data-bs-toggle="dropdown" aria-expanded="false">Business</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarBusiness">
+                        <li><a class="dropdown-item" href="/Products/Index">Products</a></li>
+                        <li><a class="dropdown-item" href="/Vendors/Index">Vendors</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarAdmin" role="button" data-bs-toggle="dropdown" aria-expanded="false">Admin</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarAdmin">
+                        <li><a class="dropdown-item" href="/AppFunctions/Index">AppFunctions</a></li>
+                        <li><a class="dropdown-item" href="/Roles/Index">Roles</a></li>
+                        <li><a class="dropdown-item" href="/Users/Index">Users</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

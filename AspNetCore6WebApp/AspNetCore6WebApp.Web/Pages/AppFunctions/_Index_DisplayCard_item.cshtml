@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@using AspNetCore6WebApp.Entities;
+@model AppFunction
+@if (Model?.ChildList?.Any() ?? false)
+{
+    <div class="card-header" data-bs-toggle="collapse" href="#DCardItemsOfParent@{@Model.AppFunctionId}">
+        <partial name="_Index_DisplayCard_item2" model="Model" />
+    </div>
+    <div id="DCardItemsOfParent@{@Model.AppFunctionId}" class="collapse">
+        <div class="card-body">
+            <partial name="_Index_DisplayCard" model="Model.ChildList" />
+        </div>
+    </div>
+}
+else
+{
+    <div class="card-header">
+        <partial name="_Index_DisplayCard_item2" model="Model" />
+    </div>
+}
