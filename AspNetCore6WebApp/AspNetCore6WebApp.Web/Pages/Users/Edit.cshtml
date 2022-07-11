@@ -1,0 +1,285 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.Users.EditModel
+<div>
+    @if ((Model.User?.UserId ?? 0) == 0)
+    {
+        ViewData["Title"] = "Add User";
+    }
+    else
+    {
+        ViewData["Title"] = "Edit User";
+    }
+
+    <h2>@ViewData["Title"]</h2>
+    <div>
+        <a class="btn" asp-page="./Index"><span class="fa fa-list-alt"></span> Back to List</a>
+    </div>
+
+    @if (Model.User == null){
+        <div>No User.</div>
+    }
+    else{
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+                <form method="post" id="form1">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="hidden" asp-for="@Model.User.CreatedDt" />
+                    <input type="hidden" asp-for="@Model.User.CreatedBy" />
+                    <input type="hidden" asp-for="@Model.User.Hash" />
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.UserId" class="control-label"></label>
+                        <input asp-for="@Model.User.UserId" class="form-control" readonly="readonly" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.LoginName" class="control-label"></label>
+                        <input asp-for="@Model.User.LoginName" class="form-control" />
+                        <span asp-validation-for="@Model.User.LoginName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.DisplayName" class="control-label"></label>
+                        <input asp-for="@Model.User.DisplayName" class="form-control" />
+                        <span asp-validation-for="@Model.User.DisplayName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <label asp-for="@Model.User.IsUpdateHash" class="form-check-label"></label>
+                        <input asp-for="@Model.User.IsUpdateHash" class="form-check-input" onclick="chkIsUpdateHash()" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.Password" class="control-label"></label>
+                        <input asp-for="@Model.User.Password" class="form-control" disabled="disabled" />
+                        <span asp-validation-for="@Model.User.Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.RetypedPassword" class="control-label"></label>
+                        <input asp-for="@Model.User.RetypedPassword" class="form-control" disabled="disabled" aria-describedby="retypedPasswordHelpBlock" />
+                        <div id="retypedPasswordHelpBlock" class="form-text">Must same with the above password.</div>
+                        <span asp-validation-for="@Model.User.RetypedPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.DepartmentId" class="control-label"></label>
+                        <select asp-for="@Model.User.DepartmentId" asp-items="Model.DepartmentSelectList" class="form-control"></select>
+                        <span asp-validation-for="@Model.User.DepartmentId" class="text-danger"></span>
+                    </div>
+                    @*https://www.learnrazorpages.com/razor-pages/ajax/cascading-dropdowns*@
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.CategoryId" class="control-label"></label>
+                        <select asp-for="@Model.User.CategoryId" asp-items="Model.CategorySelectList" class="form-control"></select>
+                        <span asp-validation-for="@Model.User.CategoryId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.SubCategoryId" class="control-label"></label>
+                        <select asp-for="@Model.User.SubCategoryId" asp-items="Model.SubCategorySelectList" class="form-control"></select>
+                        <span asp-validation-for="@Model.User.SubCategoryId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.Birthday" class="control-label"></label>
+                        <input asp-for="@Model.User.Birthday" class="form-control" />
+                        <span asp-validation-for="@Model.User.Birthday" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.RegistrationFee" class="control-label"></label>
+                        <input asp-for="@Model.User.RegistrationFee" class="form-control" />
+                        <span asp-validation-for="@Model.User.RegistrationFee" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <label asp-for="@Model.User.IsDisabled" class="form-check-label"></label>
+                        <input asp-for="@Model.User.IsDisabled" class="form-check-input" />
+                        <span asp-validation-for="@Model.User.IsDisabled" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.User.Description" class="control-label"></label>
+                        <input asp-for="@Model.User.Description" class="form-control" />
+                        <span asp-validation-for="@Model.User.Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        @*<input type="submit" value="Save" class="btn btn-default" />*@
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#PopupDialog" id="btnSave" onclick="btnSave_onClick()"><span class="fa fa-save"></span> Save</button>
+                    </div>
+
+                    @*https://getbootstrap.com/docs/5.0/components/modal/*@
+                    <div id="PopupDialog" class="modal fade" tabindex="-1" aria-labelledby="lblPopupDialog" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="lblPopupDialog">Confirm?</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <dl class="dl-horizontal">
+                                        <dt>@Html.DisplayNameFor(model => model.User!.UserId)</dt>
+                                        <dd><p id="DialogUserId"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.LoginName)</dt>
+                                        <dd><p id="DialogLoginName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.DisplayName)</dt>
+                                        <dd><p id="DialogDisplayName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.Hash)</dt>
+                                        <dd><p>xxxx</p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.Password)</dt>
+                                        <dd><p>xxxx</p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.DepartmentDisplayName)</dt>
+                                        <dd><p id="DialogDepartmentDisplayName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.CategoryDisplayName)</dt>
+                                        <dd><p id="DialogCategoryDisplayName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.SubCategoryDisplayName)</dt>
+                                        <dd><p id="DialogSubCategoryDisplayName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.Birthday)</dt>
+                                        <dd><p id="DialogBirthday"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.RegistrationFee)</dt>
+                                        <dd><p id="DialogRegistrationFee"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.IsDisabled)</dt>
+                                        <dd><p id="DialogIsDisabled"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.User!.Description)</dt>
+                                        <dd><p id="DialogDescription"></p></dd>
+                                    </dl>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" id="btnConfirm" onclick="btnConfirm_onClick()" data-bs-dismiss="modal"><span class="fa fa-check"></span> Confirm</button>
+                                    <button type="button" class="btn" data-bs-dismiss="modal"><span class="fa fa-times"></span> Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <a asp-page="./Index">Back to List</a>
+        </div>
+
+        @section Scripts {
+            <script>
+                //// The unicode escape() function encodes strings
+                //// https://programmer.ink/think/javascript-character-and-unicode-conversion-chinese-character-to-unicode-code.html
+                function toStr(str){
+                    str = str.replace(/(\\u)(\w{1,4})/gi,function(v){
+                        return (String.fromCharCode(parseInt((escape(v).replace(/(%5Cu)(\w{1,4})/g,"$2")),16)));
+                    });
+                    str = str.replace(/(&#x)(\w{1,4});/gi,function(v){
+                        return String.fromCharCode(parseInt(escape(v).replace(/(%26%23x)(\w{1,4})(%3B)/g,"$2"),16));
+                    });
+                    str = str.replace(/(&#)(\d{1,6});/gi,function(v){
+                        return String.fromCharCode(parseInt(escape(v).replace(/(%26%23)(\d{1,6})(%3B)/g,"$2")));
+                    });
+                    return str;
+                }
+
+                function chkIsUpdateHash() {
+                    if ($("#User_IsUpdateHash").is(":checked")) {
+                        $("#User_Password").removeAttr("disabled");
+                        $("#User_RetypedPassword").removeAttr("disabled");
+                    }
+                    else {
+                        $("#User_Password").val("");
+                        $("#User_RetypedPassword").val("");
+                        $("#User_Password").attr("disabled", "disabled");
+                        $("#User_RetypedPassword").attr("disabled", "disabled");
+                    }
+                }
+                function btnSave_onClick() {
+                    $("#DialogUserId").html($("#User_UserId").val());
+                    $("#DialogLoginName").html($("#User_LoginName").val());
+                    $("#DialogDisplayName").html($("#User_DisplayName").val());
+                    $("#DialogBirthday").html($("#User_Birthday").val());
+                    $("#DialogRegistrationFee").html($("#User_RegistrationFee").val());
+                    $("#DialogIsDisabled").html($("#User_IsDisabled").is(":checked")?"True":"False");
+                    $("#DialogDescription").html($("#User_Description").val());
+
+                    @if (Model.DepartmentSelectList != null){
+                        @:let departmentOptions = {};
+                        @foreach (var item in Model.DepartmentSelectList){
+                            @:departmentOptions[@item.Value] = toStr("@item.Text");
+                        }
+                        @:$("#DialogDepartmentDisplayName").html(departmentOptions[$("#User_DepartmentId").val()]);
+                    }
+
+                    @if (Model.CategoryAllSelectList != null){
+                        @:let categoryOptions = {};
+                        @foreach (var item in Model.CategoryAllSelectList){
+                            @:categoryOptions[@item.Value] = toStr("@item.Text");
+                        }
+                        @:$("#DialogCategoryDisplayName").html(categoryOptions[$("#User_CategoryId").val()]);
+                    }
+
+                    @if (Model.SubCategoryAllSelectList != null){
+                        @:let subCatgoryOptions = {};
+                        @foreach (var item in Model.SubCategoryAllSelectList){
+                            @:subCatgoryOptions[@item.Value] = toStr("@item.Text");
+                        }
+                        @:$("#DialogSubCategoryDisplayName").html(subCatgoryOptions[$("#User_SubCategoryId").val()]);
+                    }
+                }
+
+                function btnConfirm_onClick(){
+                    document.getElementById("btnConfirm").disabled = true;
+                    $("#ModalLoading").modal({backdrop: 'static', keyboard: false});
+                    $("#ModalLoading").modal("show");
+                    @*https://reqbin.com/code/javascript/wzp2hxwh/javascript-post-request-example*@
+                    document.getElementById("form1").submit();
+                    //setTimeout(Submit1, 3000);
+                }
+
+                @*Call javascript function. Note that some input parameters may need to start in lower case.*@
+                document.getElementById("User_DepartmentId").addEventListener("change", (e) => {
+                    setCascadingDropdownItems(e, "User_CategoryId", "Categories", "departmentId", "categoryId", "displayName");
+                    document.getElementById("User_SubCategoryId").innerHTML="";
+                });
+                document.getElementById("User_CategoryId").addEventListener("change", (e) => {
+                    setCascadingDropdownItems(e, "User_SubCategoryId", "SubCategories", "categoryId", "subCategoryId", "displayName");
+                });
+
+                @*Non-jQuery method*@
+                @*Must start with lower case in functions and variables.*@
+                @*https://www.learnrazorpages.com/razor-pages/ajax/cascading-dropdowns*@
+                @*document.getElementById("User_DepartmentId").addEventListener("change", (e) => {
+                    document.getElementById("User_CategoryId").innerHTML="";
+                    document.getElementById("User_SubCategoryId").innerHTML="";
+                    //document.getElementById("User_CategoryId").innerHTML+="<option value=''>--- Select ---</option>";
+                    fetch(`?handler=Categories&departmentId=${e.target.value}`)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        Array.prototype.forEach.call(data, function(item, i){
+                            document.getElementById("User_CategoryId").innerHTML += `<option value="${item.categoryId}">${item.displayName}</option>`;
+                        });
+                    });
+                });
+                document.getElementById("User_CategoryId").addEventListener("change", (e) => {
+                    document.getElementById("User_SubCategoryId").innerHTML="";
+                    fetch(`?handler=SubCategories&categoryId=${e.target.value}`)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        Array.prototype.forEach.call(data, function(item, i){
+                            document.getElementById("User_SubCategoryId").innerHTML += `<option value="${item.subCategoryId}">${item.displayName}</option>`;
+                        });
+                    });
+                });*@
+
+                @*jQuery method*@
+                @*Must start with lower case in functions and variables.*@
+                @*https://www.learnrazorpages.com/razor-pages/ajax/cascading-dropdowns*@
+                @*$(function(){
+                    $("#User_DepartmentId").on("change", function(){
+                        var i1 = $("#User_DepartmentId").val();
+                        $("#User_CategoryId").empty();
+                        $("#User_SubCategoryId").empty();
+                        .getJSON(`?handler=Categories&departmentId=${i1}`, (data) => {
+                            $.each(data, function(i, item){
+                                $("#User_CategoryId").append(`<option value="${item.categoryId}">${item.displayName}</option>`);
+                            });
+                        });
+                    });
+                });*@
+            </script>
+
+            @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        }
+    }
+</div>

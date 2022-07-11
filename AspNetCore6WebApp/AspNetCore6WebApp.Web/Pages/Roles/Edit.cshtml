@@ -1,0 +1,115 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.Roles.EditModel
+<div>
+    @if ((Model.Role?.RoleId ?? 0) == 0)
+    {
+        ViewData["Title"] = "Add Role";
+    }
+    else
+    {
+        ViewData["Title"] = "Edit Role";
+    }
+
+    <h2>@ViewData["Title"]</h2>
+    <div>
+        <a class="btn" asp-page="./Index"><span class="fa fa-list-alt"></span> Back to List</a>
+    </div>
+
+    @if (Model.Role == null){
+        <div>No Role.</div>
+    }
+    else{
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+                <form method="post" id="form1">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="hidden" asp-for="@Model.Role.CreatedDt" />
+                    <input type="hidden" asp-for="@Model.Role.CreatedBy" />
+                    <div class="mb-3">
+                        <label asp-for="@Model.Role.RoleId" class="control-label"></label>
+                        <input asp-for="@Model.Role.RoleId" class="form-control" readonly="readonly" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.Role.UniqueName" class="control-label"></label>
+                        <input asp-for="@Model.Role.UniqueName" class="form-control" />
+                        <span asp-validation-for="@Model.Role.UniqueName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.Role.DisplayName" class="control-label"></label>
+                        <input asp-for="@Model.Role.DisplayName" class="form-control" />
+                        <span asp-validation-for="@Model.Role.DisplayName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <label asp-for="@Model.Role.IsDisabled" class="form-check-label"></label>
+                        <input asp-for="@Model.Role.IsDisabled" class="form-check-input" />
+                        <span asp-validation-for="@Model.Role.IsDisabled" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.Role.Description" class="control-label"></label>
+                        <input asp-for="@Model.Role.Description" class="form-control" />
+                        <span asp-validation-for="@Model.Role.Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#PopupDialog" id="btnSave" onclick="btnSave_onClick()"><span class="fa fa-save"></span> Save</button>
+                    </div>
+
+                    @*https://getbootstrap.com/docs/5.0/components/modal/*@
+                    <div id="PopupDialog" class="modal fade" tabindex="-1" aria-labelledby="lblPopupDialog" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="lblPopupDialog">Confirm?</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <dl class="dl-horizontal">
+                                        <dt>@Html.DisplayNameFor(model => model.Role!.RoleId)</dt>
+                                        <dd><p id="DialogRoleId"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.Role!.UniqueName)</dt>
+                                        <dd><p id="DialogUniqueName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.Role!.DisplayName)</dt>
+                                        <dd><p id="DialogDisplayName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.Role!.IsDisabled)</dt>
+                                        <dd><p id="DialogIsDisabled"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.Role!.Description)</dt>
+                                        <dd><p id="DialogDescription"></p></dd>
+                                    </dl>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" id="btnConfirm" onclick="btnConfirm_onClick()" data-bs-dismiss="modal"><span class="fa fa-check"></span> Confirm</button>
+                                    <button type="button" class="btn" data-bs-dismiss="modal"><span class="fa fa-times"></span> Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <a asp-page="./Index">Back to List</a>
+        </div>
+
+        @section Scripts {
+            <script>
+                function btnSave_onClick() {
+                    $("#DialogRoleId").html($("#Role_RoleId").val());
+                    $("#DialogUniqueName").html($("#Role_UniqueName").val());
+                    $("#DialogDisplayName").html($("#Role_DisplayName").val());
+                    $("#DialogIsDisabled").html($("#Role_IsDisabled").is(":checked")?"True":"False");
+                    $("#DialogDescription").html($("#Role_Description").val());
+                }
+                function btnConfirm_onClick(){
+                    document.getElementById("btnConfirm").disabled = true;
+                    $("#ModalLoading").modal({backdrop: 'static', keyboard: false});
+                    $("#ModalLoading").modal("show");
+                    @*https://reqbin.com/code/javascript/wzp2hxwh/javascript-post-request-example*@
+                    document.getElementById("form1").submit();
+                }
+            </script>
+
+            @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        }
+    }
+</div>

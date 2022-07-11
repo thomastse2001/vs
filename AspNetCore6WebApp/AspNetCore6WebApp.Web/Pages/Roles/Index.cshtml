@@ -1,0 +1,50 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.Roles.IndexModel
+@{
+    ViewData["Title"] = "Roles";
+}
+<div>
+    <h2>@ViewData["Title"]</h2>
+    <form method="get">
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-text">Search</span>
+                <input type="search" class="form-control" asp-for="SearchText" aria-label="Search" aria-describedby="BtnSearch" placeholder="@Html.DisplayNameFor(model => model.Roles!.First().UniqueName) / @Html.DisplayNameFor(model => model.Roles!.First().DisplayName) " />
+                <span class="input-group-text" id="BtnSearch"><button type="submit" class="btn btn-default"><span class="fa fa-search"></span></button></span>
+            </div>
+        </div>
+    </form>
+    <br />
+    <a asp-page="./Edit" class="btn btn-primary"><span class="fa fa-plus"></span> Add New</a>
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Roles!.First().RoleId)</th>
+                <th>@Html.DisplayNameFor(model => model.Roles!.First().UniqueName)</th>
+                <th>@Html.DisplayNameFor(model => model.Roles!.First().DisplayName)</th>
+                <th>@Html.DisplayNameFor(model => model.Roles!.First().IsDisabled)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        @if (Model.Roles != null && Model.Roles.Any())
+        {
+            <tbody>
+                @foreach (var item in Model.Roles)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.RoleId)</td>
+                        <td>@Html.DisplayFor(modelItem => item.UniqueName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.DisplayName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.IsDisabled)</td>
+                        <td>
+                            <a class="btn btn-lg" asp-page="./Details" asp-route-id="@item.RoleId"><span class="fa fa-info"></span></a>
+                            <a class="btn btn-lg" asp-page="./Edit" asp-route-id="@item.RoleId"><span class="fa fa-edit"></span></a>
+                            <a class="btn btn-lg" asp-page="./Delete" asp-route-id="@item.RoleId"><span class="fa fa-trash"></span></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</div>

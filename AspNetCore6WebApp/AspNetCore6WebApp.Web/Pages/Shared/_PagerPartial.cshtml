@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@model TT.IPagingHelper
+@if (Model != null)
+{
+    @*https://getbootstrap.com/docs/5.0/components/pagination/*@
+    <div>
+        <ul class="pagination">
+        @if (Model.PageNum > 1)
+        {
+            <li class="page-item"><a class="page-link" onclick="formSubmit(@(Model.PageNum - 1))"><span aria-hidden="true">&laquo;</span></a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link"><span aria-hidden="true">&laquo;</span></a></li>
+        }
+        @if (Model.PageNum > 2)
+        {
+            <li class="page-item"><a class="page-link" onclick="formSubmit(1)">1</a></li>
+        }
+        @if (Model.PageNum > 3)
+        {
+            <li class="page-item">...</li>
+        }
+        @if (Model.PageNum > 1)
+        {
+            <li class="page-item"><a class="page-link" onclick="formSubmit(@(Model.PageNum - 1))">@(Model.PageNum - 1)</a></li>
+        }
+        <li class="page-item active" aria-current="page"><a class="page-link">@Model.PageNum</a></li>
+        @if (Model.PageNum < Model.PageCount)
+        {
+            <li class="page-item"><a class="page-link" onclick="formSubmit(@(Model.PageNum + 1))">@(Model.PageNum + 1)</a></li>
+        }
+        @if (Model.PageNum + 2 < Model.PageCount)
+        {
+            <li class="page-item">...</li>
+        }
+        @if (Model.PageNum + 1 < Model.PageCount)
+        {
+            <li class="page-item"><a class="page-link" onclick="formSubmit(@Model.PageCount)">@Model.PageCount</a></li>
+        }
+        @if (Model.PageNum < Model.PageCount)
+        {
+            <li class="page-item"><a class="page-link" onclick="formSubmit(@(Model.PageNum + 1))"><span aria-hidden="true">&raquo;</span></a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link"><span aria-hidden="true">&raquo;</span></a></li>
+        }
+        </ul>
+    </div>
+}

@@ -1,0 +1,163 @@
+﻿@page
+@model AspNetCore6WebApp.Web.Pages.AppFunctions.EditModel
+<div>
+    @if ((Model.AppFunction?.AppFunctionId ?? 0) == 0)
+    {
+        ViewData["Title"] = "Add AppFunction";
+    }
+    else
+    {
+        ViewData["Title"] = "Edit AppFunction";
+    }
+
+    <h2>@ViewData["Title"]</h2>
+    <div>
+        <a class="btn" asp-page="./Index"><span class="fa fa-list-alt"></span> Back to List</a>
+    </div>
+
+    @if (Model.AppFunction == null){
+        <div>No AppFunction.</div>
+    }
+    else{
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+                <form method="post" id="form1">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="hidden" asp-for="@Model.AppFunction.CreatedDt" />
+                    <input type="hidden" asp-for="@Model.AppFunction.CreatedBy" />
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.AppFunctionId" class="control-label"></label>
+                        <input asp-for="@Model.AppFunction.AppFunctionId" class="form-control" readonly="readonly" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.UniqueName" class="control-label"></label>
+                        <input asp-for="@Model.AppFunction.UniqueName" class="form-control" />
+                        <span asp-validation-for="@Model.AppFunction.UniqueName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.DisplayName" class="control-label"></label>
+                        <input asp-for="@Model.AppFunction.DisplayName" class="form-control" />
+                        <span asp-validation-for="@Model.AppFunction.DisplayName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.ControllerName" class="control-label"></label>
+                        <input asp-for="@Model.AppFunction.ControllerName" class="form-control" />
+                        <span asp-validation-for="@Model.AppFunction.ControllerName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.ActionName" class="control-label"></label>
+                        <input asp-for="@Model.AppFunction.ActionName" class="form-control" />
+                        <span asp-validation-for="@Model.AppFunction.ActionName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.AppFuncLevelId" class="control-label"></label>
+                        <select asp-for="@Model.AppFunction.AppFuncLevelId" asp-items="Model.AppFuncLevelSelectList" class="form-control"></select>
+                        <span asp-validation-for="@Model.AppFunction.AppFuncLevelId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.ParentId" class="control-label"></label>
+                        <input asp-for="@Model.AppFunction.ParentId" class="form-control" />
+                        <span asp-validation-for="@Model.AppFunction.ParentId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.SequentialNum" class="control-label"></label>
+                        <input asp-for="@Model.AppFunction.SequentialNum" class="form-control" />
+                        <span asp-validation-for="@Model.AppFunction.SequentialNum" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <label asp-for="@Model.AppFunction.IsDisabled" class="form-check-label"></label>
+                        <input asp-for="@Model.AppFunction.IsDisabled" class="form-check-input" />
+                        <span asp-validation-for="@Model.AppFunction.IsDisabled" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <label asp-for="@Model.AppFunction.IsNavItem" class="form-check-label"></label>
+                        <input asp-for="@Model.AppFunction.IsNavItem" class="form-check-input" />
+                        <span asp-validation-for="@Model.AppFunction.IsNavItem" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="@Model.AppFunction.Description" class="control-label"></label>
+                        <input asp-for="@Model.AppFunction.Description" class="form-control" />
+                        <span asp-validation-for="@Model.AppFunction.Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#PopupDialog" id="btnSave" onclick="btnSave_onClick()"><span class="fa fa-save"></span> Save</button>
+                    </div>
+
+                    @*https://getbootstrap.com/docs/5.0/components/modal/*@
+                    <div id="PopupDialog" class="modal fade" tabindex="-1" aria-labelledby="LblPopupDialog" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="LblPopupDialog">Confirm?</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <dl class="dl-horizontal">
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.AppFunctionId)</dt>
+                                        <dd><p id="DialogAppFunctionId"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.UniqueName)</dt>
+                                        <dd><p id="DialogUniqueName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.DisplayName)</dt>
+                                        <dd><p id="DialogDisplayName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.ControllerName)</dt>
+                                        <dd><p id="DialogControllerName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.ActionName)</dt>
+                                        <dd><p id="DialogActionName"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.AppFuncLevelId)</dt>
+                                        <dd><p id="DialogAppFuncLevelId"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.ParentId)</dt>
+                                        <dd><p id="DialogParentId"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.SequentialNum)</dt>
+                                        <dd><p id="DialogSequentialNum"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.IsDisabled)</dt>
+                                        <dd><p id="DialogIsDisabled"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.IsNavItem)</dt>
+                                        <dd><p id="DialogIsNavItem"></p></dd>
+                                        <dt>@Html.DisplayNameFor(model => model.AppFunction!.Description)</dt>
+                                        <dd><p id="DialogDescription"></p></dd>
+                                    </dl>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" id="btnConfirm" onclick="btnConfirm_onClick()" data-bs-dismiss="modal"><span class="fa fa-check"></span> Confirm</button>
+                                    <button type="button" class="btn" data-bs-dismiss="modal"><span class="fa fa-times"></span> Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <a asp-page="./Index">Back to List</a>
+        </div>
+
+        @section Scripts {
+            <script>
+                function btnSave_onClick() {
+                    $("#DialogAppFunctionId").html($("#AppFunction_AppFunctionId").val());
+                    $("#DialogUniqueName").html($("#AppFunction_UniqueName").val());
+                    $("#DialogDisplayName").html($("#AppFunction_DisplayName").val());
+                    $("#DialogControllerName").html($("#AppFunction_ControllerName").val());
+                    $("#DialogActionName").html($("#AppFunction_ActionName").val());
+                    $("#DialogAppFuncLevelId").html($("#AppFunction_AppFuncLevelId").val());
+                    $("#DialogParentId").html($("#AppFunction_ParentId").val());
+                    $("#DialogSequentialNum").html($("#AppFunction_SequentialNum").val());
+                    $("#DialogIsDisabled").html($("#AppFunction_IsDisabled").is(":checked")?"True":"False");
+                    $("#DialogIsNavItem").html($("#AppFunction_IsNavItem").is(":checked")?"True":"False");
+                    $("#DialogDescription").html($("#AppFunction_Description").val());
+                }
+                function btnConfirm_onClick(){
+                    document.getElementById("btnConfirm").disabled = true;
+                    $("#ModalLoading").modal({backdrop: 'static', keyboard: false});
+                    $("#ModalLoading").modal("show");
+                    @*https://reqbin.com/code/javascript/wzp2hxwh/javascript-post-request-example*@
+                    document.getElementById("form1").submit();
+                }
+            </script>
+
+            @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        }
+    }
+</div>

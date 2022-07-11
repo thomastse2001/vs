@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@using AspNetCore6WebApp.Entities;
+@model AppFunction
+@if (Model != null){
+    <p>
+        @if (Model.ChildList?.Any() ?? false)
+        {
+            <span class="fa fa-caret-right"></span>
+        }
+        else
+        {
+            <span class="fa fa-asterisk"></span>
+        }
+        <a class="btn" asp-page="./Details" asp-route-id="@Model.AppFunctionId"><span class="fa fa-info"></span></a>
+        <a class="btn" asp-page="./Edit" asp-route-id="@Model.AppFunctionId"><span class="fa fa-edit"></span></a>
+        <a class="btn" asp-page="./Delete" asp-route-id="@Model.AppFunctionId"><span class="fa fa-trash"></span></a>
+        @Html.DisplayNameFor(model => model.AppFunctionId) <span class="badge bg-secondary">@Html.DisplayFor(model => model.AppFunctionId)</span>
+        @Html.DisplayNameFor(model => model.UniqueName) <span class="badge bg-secondary">@Html.DisplayFor(model => model.UniqueName)</span>
+        @Html.DisplayNameFor(model => Model.DisplayName) <span class="badge bg-secondary">@Html.DisplayFor(modelItem => Model.DisplayName)</span>
+        @Html.DisplayNameFor(model => Model.AppFuncLevelId) <span class="badge bg-secondary">@Html.DisplayFor(modelItem => Model.AppFuncLevelId)</span>
+        @Html.DisplayNameFor(model => Model.ParentId) <span class="badge bg-secondary">@Html.DisplayFor(modelItem => Model.ParentId)</span>
+        @Html.DisplayNameFor(model => Model.SequentialNum) <span class="badge bg-secondary">@Html.DisplayFor(modelItem => Model.SequentialNum)</span>
+        @Html.DisplayNameFor(model => Model.IsDisabled) <span class="badge bg-secondary">@Html.DisplayFor(modelItem => Model.IsDisabled)</span>
+        @Html.DisplayNameFor(model => Model.IsNavItem) <span class="badge bg-secondary">@Html.DisplayFor(modelItem => Model.IsNavItem)</span>
+        @Html.DisplayNameFor(model => Model.UpdatedDt) <span class="badge bg-secondary">@Html.DisplayFor(modelItem => Model.UpdatedDt)</span>
+    </p>
+}

@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@using AspNetCore6WebApp.Entities;
+@model IEnumerable<AppFunction>
+@if (Model != null && Model.Any()){
+<div class="table-responsive">
+    <table class="table">
+        <thread>
+            <tr>
+                <th>&nbsp;</th>
+                <th>@Html.DisplayNameFor(model => model.AppFunctionId)</th>
+                <th>@Html.DisplayNameFor(model => model.UniqueName)</th>
+                <th>@Html.DisplayNameFor(model => model.DisplayName)</th>
+                <th>@Html.DisplayNameFor(model => model.AppFuncLevelId)</th>
+                <th>@Html.DisplayNameFor(model => model.ParentId)</th>
+                <th>@Html.DisplayNameFor(model => model.SequentialNum)</th>
+                <th>@Html.DisplayNameFor(model => model.IsDisabled)</th>
+                <th>@Html.DisplayNameFor(model => model.IsNavItem)</th>
+                <th>@Html.DisplayNameFor(model => model.UpdatedDt)</th>
+                <th>Actions</th>
+            </tr>
+        </thread>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                @if (item != null)
+                {
+                    <tr>
+                        <td>
+                            @if (item.ChildList?.Any() ?? false)
+                            {
+                                <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#DTableItemsOfParent@{@item.AppFunctionId}"><span class="fa fa-caret-down"></span></button>
+                            }
+                            else
+                            {
+                                <span>&nbsp;</span>
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.AppFunctionId)</td>
+                        <td>@Html.DisplayFor(modelItem => item.UniqueName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.DisplayName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.AppFuncLevelId)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ParentId)</td>
+                        <td>@Html.DisplayFor(modelItem => item.SequentialNum)</td>
+                        <td>@Html.DisplayFor(modelItem => item.IsDisabled)</td>
+                        <td>@Html.DisplayFor(modelItem => item.IsNavItem)</td>
+                        <td>@Html.DisplayFor(modelItem => item.UpdatedDt)</td>
+                        <td>
+                            <a class="btn btn-lg" asp-page="./Details" asp-route-id="@item.AppFunctionId"><span class="fa fa-info"></span></a>
+                            <a class="btn btn-lg" asp-page="./Edit" asp-route-id="@item.AppFunctionId"><span class="fa fa-edit"></span></a>
+                            <a class="btn btn-lg" asp-page="./Delete" asp-route-id="@item.AppFunctionId"><span class="fa fa-trash"></span></a>
+                        </td>
+                    </tr>
+                    @if (item.ChildList?.Any() ?? false)
+                    {
+                        <tr>
+                            <td colspan="100">
+                                <div class="collapse" id="DTableItemsOfParent@{@item.AppFunctionId}">
+                                    <partial name="_Index_DisplayTable" model="item.ChildList" />
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+}
