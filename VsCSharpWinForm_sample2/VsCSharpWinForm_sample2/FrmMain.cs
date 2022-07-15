@@ -3017,5 +3017,119 @@ namespace VsCSharpWinForm_sample2
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
+
+        private static string TrimCsvFile2(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return input;
+            if (input.Length >= 3 && '='.Equals(input[0]) && '"'.Equals(input[1]) && '"'.Equals(input[input.Length - 1])) return input.Substring(2, input.Length - 3);
+            return input;
+        }
+
+        private void CsvMethodA()
+        {
+            string path = @"C:\svn2017\WebApps\SPOS\branches\SPOS_PAYMENT\SPOS\Temp\20210928_13000150_1_商店交易明細查詢.csv";
+            string[] lines = System.IO.File.ReadAllLines(path, System.Text.Encoding.UTF8);
+            if ((lines?.Length ?? 0) < 1)
+            {
+                LocalLogger(TLog.LogLevel.ERROR, "Cannot read file {0}", path);
+                return;
+            }
+            lines = lines.Skip(1).ToArray();// Remove the header line.
+            int i = lines.Length;
+            LocalLogger(TLog.LogLevel.DEBUG, "Number of records in CSV file = {0}", i);
+            //var fields = from l in lines select l.Split(',');
+            var fields = from l in lines where '='.Equals(l[0]) && '"'.Equals(l[1]) select l.Replace("\"", "").Replace("=", "").Split(',');
+            LocalLogger(TLog.LogLevel.DEBUG, "Number of records in CSV file 2 = {0}", fields.Count());
+            if (i != fields.Count())
+            {
+                LocalLogger(TLog.LogLevel.ERROR, "Number is different.");
+                return;
+            }
+            i = 0;
+            foreach (var f in fields)
+            {
+                //LocalLogger(TLog.LogLevel.DEBUG, "{0}: {1}, {2}", i, TrimCsvFile2(f[0]), TrimCsvFile2(f[1]));
+                LocalLogger(TLog.LogLevel.DEBUG, "{0}: {1}, {2}, {3}", i, f[1], f[0], f[26]);
+                /// CompanyAccount = f[1]
+                /// MerchantAccount = f[0]
+                /// PspReference = f[26]
+                /// MerchantReference = ??
+                /// PaymentMethod = f[23]
+                /// CreationDate = f[3]
+                /// xx Type = f[6] = 40
+                /// ModificationReference = null
+                /// GrossCurrency = defaultCurrencyCode
+                /// GrossCreditGC = f[4]
+                /// NetCurrency = defaultCurrencyCode
+                /// NetCreditNC = ??
+                /// CommissionNC = ??
+                /// MarkupNC = null
+                /// SchemeFeesNC = null
+                /// InterchangeNC = null
+                /// BatchNumber = refer to
+                i++;
+            }
+            LocalLogger(TLog.LogLevel.DEBUG, "End");
+        }
+
+        private void CsvMethodB()
+        {
+            /// Install ExcelDataReader.DataSet by NuGet.
+            string path = @"C:\svn2017\WebApps\SPOS\branches\SPOS_PAYMENT\SPOS\Temp\20210928_13000150_1_商店交易明細查詢.csv";
+            //using (var stream = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            //{
+            //    using (var reader = ExcelDataReader.ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration()
+            //    {
+            //        AutodetectSeparators = new char[] { ',' },
+            //        LeaveOpen = false
+            //    }))
+            //    {
+            //        var result = reader.AsDataSet(new ExcelDataReader.ExcelDataSetConfiguration()
+            //        {
+            //            ConfigureDataTable = (_) => new ExcelDataReader.ExcelDataTableConfiguration()
+            //            {
+            //                UseHeaderRow = true
+            //            }
+            //        });
+            //        if (result == null || (result.Tables?[0]?.Rows?.Count ?? 0) < 1) LocalLogger(TLog.LogLevel.DEBUG, "It is null.");
+            //        else
+            //        {
+            //            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            //            sb.AppendFormat("Total lines = {0}", result.Tables[0].Rows.Count).AppendLine();
+            //            foreach (DataRow dr in result.Tables[0].Rows)
+            //            {
+            //                if ((dr?.ItemArray?.Length ?? 0) > 0)
+            //                {
+            //                    sb.AppendLine(string.Join(";", dr.ItemArray).Replace("=", "").Replace("\"", ""));
+            //                }
+            //            }
+            //            LocalLogger(TLog.LogLevel.DEBUG, sb.ToString());
+            //            sb = null;
+            //        }
+            //    }
+            //}
+        }
+
+        private void BtnCsvFile2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //CsvMethodA();
+                CsvMethodB();
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnCopyFile1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string source = FileHelper.GetAbsolutePathIfRelative("testCsvFile.csv");
+                string destination = FileHelper.GetAbsolutePathIfRelative(@"folder1\testCsvFileABC.csv");
+                if (FileHelper.CopySingleFile(source, destination)) LocalLogger(TLog.LogLevel.DEBUG, "Done");
+                else LocalLogger(TLog.LogLevel.DEBUG, "Fail");
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
     }
 }
