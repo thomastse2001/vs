@@ -23,6 +23,42 @@ namespace TT
             else return System.IO.Path.Combine(GetDefaultFolder(defaultFolder), path);
         }
 
+        public static void Sleeping(int sleepingIntervalInMS)
+        {
+            //if (sleepingIntervalInMS >= 0) System.Threading.Thread.Sleep(sleepingIntervalInMS);
+            if (sleepingIntervalInMS >= 0) new System.Threading.ManualResetEvent(false).WaitOne(sleepingIntervalInMS);
+        }
+
+        public static bool ExitFileExists(bool isDeleteIfExist, params string[] extArray)
+        {
+            if (extArray == null || extArray.Length < 1) extArray = new string[] { ".exit", ".end", ".quit", ".stop", ".close", ".finish" };
+            string pathNoExt = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location) ?? string.Empty,
+                System.IO.Path.GetFileNameWithoutExtension(System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty));
+            bool bReturn = false;
+            bool b = true;
+            int i = 0;
+            while (b && i < extArray.Length)
+            {
+                string? s = extArray[i]?.Trim().ToLower();
+                if (!string.IsNullOrWhiteSpace(s))
+                {
+                    string path = pathNoExt + s;
+                    if (System.IO.File.Exists(path))
+                    {
+                        bReturn = true;
+                        if (isDeleteIfExist)
+                        {
+                            Sleeping(500);
+                            System.IO.File.Delete(path);
+                        }
+                        else b = false;// stop looping if choose to not delete the EXIT file
+                    }
+                }
+                i++;
+            }
+            return bReturn;
+        }
+
         public static bool GetArguments(string[] args, string switchString) { return GetArguments(args, switchString, out _); }
         public static bool GetArguments(string[] args, string switchString, out string output)
         {

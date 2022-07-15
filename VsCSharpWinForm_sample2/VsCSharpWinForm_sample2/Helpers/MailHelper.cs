@@ -84,9 +84,17 @@ namespace VsCSharpWinForm_sample2.Helpers
                     })
                     {
                         client.Send(mail);
-                        client.Dispose();/// Sends a QUIT message to the SMTP server, gracefully ends the TCP connection, and releases all resources used by the current instance of the SmtpClient class.
                         Logger?.Debug("Send email with subject = {0}", o?.Subject);
                         Logger?.Debug("Recipient = {0}", string.Join(";", o.To));
+                        try
+                        {
+                            client.Dispose();/// Sends a QUIT message to the SMTP server, gracefully ends the TCP connection, and releases all resources used by the current instance of the SmtpClient class.
+                        }
+                        catch (Exception ex2)
+                        {
+                            Logger?.Error("Subject = {0}", o?.Subject);
+                            Logger?.Error(ex2);
+                        }
                     }
                     mail.Dispose();
                 }

@@ -39,6 +39,9 @@
             this.NotifyIconHide = new System.Windows.Forms.NotifyIcon(this.components);
             this.TabControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnRenameFilenamesByModifiedDate = new System.Windows.Forms.Button();
+            this.BtnRenameFilenames = new System.Windows.Forms.Button();
+            this.BtnTicTacToe = new System.Windows.Forms.Button();
             this.BtnPolygonShape2 = new System.Windows.Forms.Button();
             this.BtnTest1 = new System.Windows.Forms.Button();
             this.TxtFirstInput = new System.Windows.Forms.TextBox();
@@ -69,7 +72,8 @@
             this.ColValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
-            this.BtnTicTacToe = new System.Windows.Forms.Button();
+            this.BWorkerExitFile = new System.ComponentModel.BackgroundWorker();
+            this.BtnCreateExitFile = new System.Windows.Forms.Button();
             this.ContextMenuStripHide.SuspendLayout();
             this.TabControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -158,6 +162,9 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.BtnCreateExitFile);
+            this.tabPage1.Controls.Add(this.BtnRenameFilenamesByModifiedDate);
+            this.tabPage1.Controls.Add(this.BtnRenameFilenames);
             this.tabPage1.Controls.Add(this.BtnTicTacToe);
             this.tabPage1.Controls.Add(this.BtnPolygonShape2);
             this.tabPage1.Controls.Add(this.BtnTest1);
@@ -170,6 +177,36 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnRenameFilenamesByModifiedDate
+            // 
+            this.BtnRenameFilenamesByModifiedDate.Location = new System.Drawing.Point(492, 35);
+            this.BtnRenameFilenamesByModifiedDate.Name = "BtnRenameFilenamesByModifiedDate";
+            this.BtnRenameFilenamesByModifiedDate.Size = new System.Drawing.Size(220, 23);
+            this.BtnRenameFilenamesByModifiedDate.TabIndex = 6;
+            this.BtnRenameFilenamesByModifiedDate.Text = "Rename Filenames by Modifed Date";
+            this.BtnRenameFilenamesByModifiedDate.UseVisualStyleBackColor = true;
+            this.BtnRenameFilenamesByModifiedDate.Click += new System.EventHandler(this.BtnRenameFilenamesByModifiedDate_Click);
+            // 
+            // BtnRenameFilenames
+            // 
+            this.BtnRenameFilenames.Location = new System.Drawing.Point(365, 36);
+            this.BtnRenameFilenames.Name = "BtnRenameFilenames";
+            this.BtnRenameFilenames.Size = new System.Drawing.Size(121, 23);
+            this.BtnRenameFilenames.TabIndex = 5;
+            this.BtnRenameFilenames.Text = "Rename Filenames";
+            this.BtnRenameFilenames.UseVisualStyleBackColor = true;
+            this.BtnRenameFilenames.Click += new System.EventHandler(this.BtnRenameFilenames_Click);
+            // 
+            // BtnTicTacToe
+            // 
+            this.BtnTicTacToe.Location = new System.Drawing.Point(284, 36);
+            this.BtnTicTacToe.Name = "BtnTicTacToe";
+            this.BtnTicTacToe.Size = new System.Drawing.Size(75, 23);
+            this.BtnTicTacToe.TabIndex = 4;
+            this.BtnTicTacToe.Text = "Tic Tac Toe";
+            this.BtnTicTacToe.UseVisualStyleBackColor = true;
+            this.BtnTicTacToe.Click += new System.EventHandler(this.BtnTicTacToe_Click);
             // 
             // BtnPolygonShape2
             // 
@@ -479,15 +516,19 @@
             // 
             this.BWorkerTcpServerUpdatingClientList.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerTcpServerUpdatingClientList_DoWork);
             // 
-            // BtnTicTacToe
+            // BWorkerExitFile
             // 
-            this.BtnTicTacToe.Location = new System.Drawing.Point(284, 36);
-            this.BtnTicTacToe.Name = "BtnTicTacToe";
-            this.BtnTicTacToe.Size = new System.Drawing.Size(75, 23);
-            this.BtnTicTacToe.TabIndex = 4;
-            this.BtnTicTacToe.Text = "Tic Tac Toe";
-            this.BtnTicTacToe.UseVisualStyleBackColor = true;
-            this.BtnTicTacToe.Click += new System.EventHandler(this.BtnTicTacToe_Click);
+            this.BWorkerExitFile.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerExitFile_DoWork);
+            // 
+            // BtnCreateExitFile
+            // 
+            this.BtnCreateExitFile.Location = new System.Drawing.Point(7, 65);
+            this.BtnCreateExitFile.Name = "BtnCreateExitFile";
+            this.BtnCreateExitFile.Size = new System.Drawing.Size(100, 23);
+            this.BtnCreateExitFile.TabIndex = 7;
+            this.BtnCreateExitFile.Text = "Create Exit File";
+            this.BtnCreateExitFile.UseVisualStyleBackColor = true;
+            this.BtnCreateExitFile.Click += new System.EventHandler(this.BtnCreateExitFile_Click);
             // 
             // FormMain
             // 
@@ -567,5 +608,9 @@
         private DataGridViewTextBoxColumn ColValue;
         private Button BtnPolygonShape2;
         private Button BtnTicTacToe;
+        private Button BtnRenameFilenames;
+        private Button BtnRenameFilenamesByModifiedDate;
+        private System.ComponentModel.BackgroundWorker BWorkerExitFile;
+        private Button BtnCreateExitFile;
     }
 }

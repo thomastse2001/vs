@@ -90,7 +90,7 @@ namespace AspNetCore6WebApp.DLL
                 string? code = _dbHelper.GetStringFromDb(dr, Param.Excel.ColumnHeader.Product.Code);
                 if (string.IsNullOrWhiteSpace(code))
                 {
-                    _logger.LogError("GetFromDataFow. Code cannot be empty.");
+                    _logger.LogError("GetFromDataFow. Code cannot be empty");
                     return null;
                 }
                 return new Product
@@ -144,15 +144,15 @@ namespace AspNetCore6WebApp.DLL
             try
             {
                 /// Insert new records.
-                _logger.LogWarning("Insert into database.");
+                _logger.LogWarning("Insert into database");
                 db.Products.AddRange(os);
                 int i = db.SaveChanges();
                 /// Delete the outdated.
-                _logger.LogWarning("Delete the outdated.");
+                _logger.LogWarning("Delete the outdated");
                 db.Products.RemoveRange(db.Products.Where(o => o.Version < updateVersion));
                 db.SaveChanges();
                 /// Commit.
-                _logger.LogWarning("Commit.");
+                _logger.LogWarning("Commit");
                 trans.Commit();
                 return i;
             }

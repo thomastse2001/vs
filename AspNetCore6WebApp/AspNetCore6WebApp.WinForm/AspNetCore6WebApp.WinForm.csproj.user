@@ -10,6 +10,12 @@
     <Compile Update="Forms\FormPolygonShape2.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forms\FormRenameFilenames.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\FormRenameFilenamesByModifiedDate.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forms\FormTcpClient.cs">
       <SubType>Form</SubType>
     </Compile>

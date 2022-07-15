@@ -49,14 +49,14 @@ namespace TT
         /// Variables.
         //private static readonly string ClassName = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name;
         private readonly object WriterLocker = new();
-        private readonly string? DefaultFolder;
+        private readonly string DefaultFolder;
         public string FilePathFormat { get; set; } = @"log\{0:yyyy-MM-dd}.log";/// {0} = Date time.
         public string ContentFormat { get; set; } = "{0:yyyy-MM-dd HH:mm:ss.fff} [{1}] {2}";/// {0} = Date time, {1} = Log level, {2} = Log message.
         public LogLevel MinLogLevel { get; set; } = LogLevel.ALL;
 
         public Logging()
         {
-            DefaultFolder = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
+            DefaultFolder = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location) ?? string.Empty;
         }
 
         ///// Get the absolte path if the input path is a relative path.
@@ -64,17 +64,18 @@ namespace TT
         ///// path = input path
         //private string GetAbsolutePathIfRelative(string path)
         //{
-        //    return System.IO.Path.IsPathRooted(path) ? path : System.IO.Path.Combine(DefaultFolder!, path);
+        //    return System.IO.Path.IsPathRooted(path) ? path : System.IO.Path.Combine(DefaultFolder, path);
         //}
 
         /// Verify if the folder exists or not. If the folder does not exist, create it.
         /// Return Value = true if the folder exists. False if the folder does not exist and it fails to create it.
         /// folder = folder path
-        private static bool FolderExistsOrCreateIt(string? folder)
+        private static bool FolderExistsOrCreateIt(string folder)
         {
             //folder = folder.TrimEnd((char)9, ' ', System.IO.Path.DirectorySeparatorChar).Trim();
+            if (string.IsNullOrWhiteSpace(folder)) return false;
             if (System.IO.Directory.Exists(folder)) return true;
-            System.IO.Directory.CreateDirectory(folder!);
+            System.IO.Directory.CreateDirectory(folder);
             return System.IO.Directory.Exists(folder);
         }
 
@@ -107,7 +108,7 @@ namespace TT
             {
                 try
                 {
-                    if (!FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath))) return false;
+                    if (!FolderExistsOrCreateIt(System.IO.Path.GetDirectoryName(filepath) ?? string.Empty)) return false;
                     WriteLineToFile(filepath, format, args);
                     return true;
                 }
@@ -119,8 +120,8 @@ namespace TT
         /// Write log to a file in a folder.
         private void WriteLogInFolder(string filepath, string format, params object?[] args)
         {
-            if (string.IsNullOrEmpty(filepath)) return;
-            if (!System.IO.Path.IsPathRooted(filepath)) filepath = System.IO.Path.Combine(DefaultFolder!, filepath);
+            if (string.IsNullOrWhiteSpace(filepath)) return;
+            if (!System.IO.Path.IsPathRooted(filepath)) filepath = System.IO.Path.Combine(DefaultFolder, filepath);
             lock (WriterLocker)
             {
                 if (!TryToWriteLineToFile(filepath, format, args))

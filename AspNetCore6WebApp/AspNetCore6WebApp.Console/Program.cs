@@ -9,7 +9,7 @@ using AspNetCore6WebApp.Entities;
 using AspNetCore6WebApp.DLL;
 using AspNetCore6WebApp.Business;
 
-Console.WriteLine("Start.");
+Console.WriteLine("Start");
 
 /// https://docs.microsoft.com/en-us/dotnet/core/extensions/configuration
 IConfiguration config = new ConfigurationBuilder()
@@ -51,7 +51,7 @@ using IHost host = Host.CreateDefaultBuilder(args)
 //IConfiguration config = host.Services.GetRequiredService<IConfiguration>();
 
 ILogger logger = host.Services.GetRequiredService<ILogger<Program>>();
-logger.LogWarning("AspNetCore6WebApp start.");
+logger.LogWarning("AspNetCore6WebApp start");
 
 TT.Logging tlogger = host.Services.GetRequiredService<TT.Logging>();
 tlogger.ContentFormat = config.GetValue<string>(Param.AppSettings.TT.Logging.ContentFormat);
@@ -65,8 +65,8 @@ ExemplifyScoping(config, logger, host.Services, "Scope 1");
 
 await host.StartAsync();
 
-logger.LogWarning("AspNetCore6WebApp end.");
-Console.WriteLine("End.");
+logger.LogWarning("AspNetCore6WebApp end");
+Console.WriteLine("End");
 
 static void ExemplifyScoping(IConfiguration config, ILogger logger, IServiceProvider services, string name)
 {
