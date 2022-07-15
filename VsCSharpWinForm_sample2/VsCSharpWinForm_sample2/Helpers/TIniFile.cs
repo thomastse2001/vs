@@ -1,6 +1,6 @@
 ﻿using System;
 //using System.Collections.Generic;
-//using System.Linq;
+using System.Linq;
 //using System.Text;
 //using System.Threading.Tasks;
 
@@ -11,7 +11,7 @@ namespace VsCSharpWinForm_sample2.Helpers
         public class INI
         {
             /// Get and set the values in the initial file.
-            /// Updated date: 2020-11-04
+            /// Updated date: 2021-10-19
 
             //public static TLog Logger { get; set; }
             //public static Exception LastException { get; set; }
@@ -41,16 +41,19 @@ namespace VsCSharpWinForm_sample2.Helpers
                 string[] sArr;
                 string[] sArrMultiValue;
                 char[] cArrayTrim = { (char)9, ' ', (char)10, (char)13 };
-                if (bAction) { sReturn = sBuffer; }/// set the buffer as the return value.
-                else { sReturn = bMultiValue ? "" : sValue; }/// set the default value as the return value if it is not multiple value.
+                //if (bAction) { sReturn = sBuffer; }/// set the buffer as the return value.
+                //else { sReturn = bMultiValue ? "" : sValue; }/// set the default value as the return value if it is not multiple value.
+                /// set the buffer as the return value, or set the default value as the return value if it is not multiple value.
+                sReturn = bAction ? sBuffer : (bMultiValue ? "" : sValue);
                 try
                 {
                     if (string.IsNullOrEmpty(sBuffer) || string.IsNullOrEmpty(sKey)) return sReturn;
                     sKey2 = sKey.Trim(cArrayTrim).ToLower();
                     if (string.IsNullOrEmpty(sKey2)) return sReturn;
                     /// section
-                    if (string.IsNullOrEmpty(sSection)) sSection2 = "";
-                    else sSection2 = sSection.Trim(cArrayTrim).ToLower();
+                    //if (string.IsNullOrEmpty(sSection)) sSection2 = "";
+                    //else sSection2 = sSection.Trim(cArrayTrim).ToLower();
+                    sSection2 = string.IsNullOrEmpty(sSection) ? "" : sSection.Trim(cArrayTrim).ToLower();
                     bSection = string.IsNullOrEmpty(sSection2) ? false : true;/// indicate if it is necessary to search section.
                                                                               /// comment
                     if (string.IsNullOrEmpty(sComment)) sComment = string.Empty;/// set to Empty instead of "".
@@ -66,16 +69,19 @@ namespace VsCSharpWinForm_sample2.Helpers
                         s = sArr[iLine].ToString();
                         if (!string.IsNullOrEmpty(s))
                         {
-                            if (string.IsNullOrEmpty(sComment)) iComment = -1;
-                            else iComment = s.IndexOf(sComment);/// position of comment.
+                            //if (string.IsNullOrEmpty(sComment)) iComment = -1;
+                            //else iComment = s.IndexOf(sComment);/// position of comment.
+                            iComment = string.IsNullOrEmpty(sComment) ? -1 : s.IndexOf(sComment);// position of comment.
 
                             /// Search section.
                             if (bSection)/// if need to find section.
                             {
                                 /// Get line without comment.
-                                if (iComment > -1) s2 = s.Substring(0, iComment).Trim(cArrayTrim);
-                                else s2 = s.Trim(cArrayTrim);
-                                if (s2.Substring(0, 1).Equals("[") && s2.Substring(s2.Length - 1, 1).Equals("]"))
+                                //if (iComment > -1) s2 = s.Substring(0, iComment).Trim(cArrayTrim);
+                                //else s2 = s.Trim(cArrayTrim);
+                                s2 = (iComment > -1 ? s.Substring(0, iComment) : s).Trim(cArrayTrim);
+                                //if (s2.Substring(0, 1).Equals("[") && s2.Substring(s2.Length - 1, 1).Equals("]"))
+                                if ('['.Equals(s2[0]) && ']'.Equals(s2[s2.Length - 1]))
                                 {
                                     s2 = s2.Substring(1, s2.Length - 2);
                                     if (s2.Trim(cArrayTrim).ToLower().Equals(sSection2))
@@ -109,8 +115,9 @@ namespace VsCSharpWinForm_sample2.Helpers
                                 /// Search key.
                                 if (bSection == false || bSectionMatch)// if (bSection == false || (bSection && bSectionMatch))
                                 {
-                                    if (iComment > -1) iEqual = s.IndexOf("=", 0, iComment);
-                                    else iEqual = s.IndexOf("=");
+                                    //if (iComment > -1) iEqual = s.IndexOf("=", 0, iComment);
+                                    //else iEqual = s.IndexOf("=");
+                                    iEqual = iComment > -1 ? s.IndexOf('=', 0, iComment) : s.IndexOf('=');
                                     if (iEqual > 0)
                                     {
                                         /// If match the key.
@@ -144,9 +151,11 @@ namespace VsCSharpWinForm_sample2.Helpers
                                                 /// bAction = False, get value(s).
                                                 if (iValue < s.Length)
                                                 {
-                                                    /// return value.
-                                                    if (iComment > -1) s2 = s.Substring(iValue, iComment - iValue);/// iComment must be larger than or equal to iValue, according to the logic of the above lines.
-                                                    else s2 = s.Substring(iValue);
+                                                    ///// return value.
+                                                    //if (iComment > -1) s2 = s.Substring(iValue, iComment - iValue);/// iComment must be larger than or equal to iValue, according to the logic of the above lines.
+                                                    //else s2 = s.Substring(iValue);
+                                                    /// return value. iComment must be larger than or equal to iValue, according to the logic of the above lines.
+                                                    s2 = iComment > -1 ? s.Substring(iValue, iComment - iValue) : s.Substring(iValue);
                                                     /// multiple values?
                                                     if (bMultiValue) sReturn += s2 + sMultiValueDelimiter;
                                                     else
@@ -220,22 +229,40 @@ namespace VsCSharpWinForm_sample2.Helpers
             /// Get the bool value from a string value of the initial file.
             /// Return value = bool value
             /// sString = input string
-            public static bool GetBool(string input)
+            //public static bool GetBool(string input)
+            //{
+            //    try
+            //    {
+            //        switch (input?.Trim().ToUpper())
+            //        {
+            //            case "1":
+            //            case "YES":
+            //            case "Y":
+            //            case "TRUE":
+            //            case "T":
+            //            case "ON":
+            //                return true;
+            //            default:
+            //                return false;
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Logger?.Error(ex);
+            //        return false;
+            //    }
+            //}
+
+            /// Get the bool value from a string value of the initial file.
+            /// Return value = bool value, false by default
+            /// input = input string
+            /// trueStringArray = string array for true
+            public static bool GetBool(string input, params string[] trueStringArray)
             {
                 try
                 {
-                    switch (input?.Trim().ToUpper())
-                    {
-                        case "1":
-                        case "YES":
-                        case "Y":
-                        case "TRUE":
-                        case "T":
-                        case "ON":
-                            return true;
-                        default:
-                            return false;
-                    }
+                    if ((trueStringArray?.Length ?? 0) < 1) trueStringArray = new string[] { "1", "YES", "Y", "TRUE", "T", "ON" };
+                    return trueStringArray.Contains(input?.Trim(), StringComparer.OrdinalIgnoreCase);
                 }
                 catch (Exception ex)
                 {

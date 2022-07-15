@@ -12,12 +12,15 @@ namespace AspNetCore6WebApp.Web.Pages
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-        private readonly ILogger<ErrorModel> _logger;
+        [TempData]
+        public string? ErrorMessage { get; set; } = null;
 
-        public ErrorModel(ILogger<ErrorModel> logger)
-        {
-            _logger = logger;
-        }
+        //private readonly ILogger<ErrorModel> _logger;
+
+        //public ErrorModel(ILogger<ErrorModel> logger)
+        //{
+        //    _logger = logger;
+        //}
 
         public void OnGet()
         {

@@ -45,14 +45,14 @@ namespace AspNetCore6WebApp.Business
                 logger.LogWarning("Update version = {updateVersion}", updateVersion);
                 if (updateVersion == int.MaxValue)
                 {
-                    logger.LogError("Update version reaches max value.");
+                    logger.LogError("Update version reaches max value");
                     return -11;
                 }
                 logger.LogWarning("Get from data table.");
                 IEnumerable<T>? list = excelEntityDao.GetFromDataTable(updateVersion, createdBy, createdDt, dt, out string? outList);
                 if (list == null || list.Any() == false)
                 {
-                    logger.LogError("Cannot extract records from DataSet.");
+                    logger.LogError("Cannot extract records from DataSet");
                     return -12;
                 }
                 int recordCount = list.Count();
@@ -76,7 +76,7 @@ namespace AspNetCore6WebApp.Business
             {
                 if (string.IsNullOrWhiteSpace(path))
                 {
-                    logger.LogWarning("UpdateFromCsv. Empty path.");
+                    logger.LogWarning("UpdateFromCsv. Empty path");
                     return -2;
                 }
                 DateTime createdTime = DateTime.Now;

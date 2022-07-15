@@ -39,29 +39,29 @@
             // LblVersion
             // 
             this.LblVersion.AutoSize = true;
-            this.LblVersion.Location = new System.Drawing.Point(499, 8);
+            this.LblVersion.Location = new System.Drawing.Point(499, 9);
             this.LblVersion.Name = "LblVersion";
-            this.LblVersion.Size = new System.Drawing.Size(120, 12);
+            this.LblVersion.Size = new System.Drawing.Size(113, 13);
             this.LblVersion.TabIndex = 0;
             this.LblVersion.Text = "Version: XX.XX.XX.XX";
             // 
             // LblMode
             // 
             this.LblMode.AutoSize = true;
-            this.LblMode.Location = new System.Drawing.Point(12, 87);
+            this.LblMode.Location = new System.Drawing.Point(12, 94);
             this.LblMode.Name = "LblMode";
-            this.LblMode.Size = new System.Drawing.Size(32, 12);
+            this.LblMode.Size = new System.Drawing.Size(34, 13);
             this.LblMode.TabIndex = 3;
             this.LblMode.Text = "Mode";
             // 
             // TxtLog
             // 
-            this.TxtLog.Location = new System.Drawing.Point(12, 23);
+            this.TxtLog.Location = new System.Drawing.Point(12, 25);
             this.TxtLog.Multiline = true;
             this.TxtLog.Name = "TxtLog";
             this.TxtLog.ReadOnly = true;
             this.TxtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.TxtLog.Size = new System.Drawing.Size(600, 56);
+            this.TxtLog.Size = new System.Drawing.Size(600, 60);
             this.TxtLog.TabIndex = 2;
             this.TxtLog.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtLog_KeyUp);
             // 
@@ -69,9 +69,9 @@
             // 
             this.CbxMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CbxMode.FormattingEnabled = true;
-            this.CbxMode.Location = new System.Drawing.Point(52, 84);
+            this.CbxMode.Location = new System.Drawing.Point(52, 91);
             this.CbxMode.Name = "CbxMode";
-            this.CbxMode.Size = new System.Drawing.Size(100, 20);
+            this.CbxMode.Size = new System.Drawing.Size(100, 21);
             this.CbxMode.TabIndex = 4;
             this.CbxMode.SelectedIndexChanged += new System.EventHandler(this.CbxMode_SelectedIndexChanged);
             this.CbxMode.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CbxMode_KeyUp);
@@ -84,22 +84,22 @@
             this.TlpGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.TlpGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.TlpGrid.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
-            this.TlpGrid.Location = new System.Drawing.Point(12, 111);
+            this.TlpGrid.Location = new System.Drawing.Point(12, 120);
             this.TlpGrid.Name = "TlpGrid";
             this.TlpGrid.RowCount = 3;
             this.TlpGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.TlpGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.TlpGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.TlpGrid.Size = new System.Drawing.Size(600, 287);
+            this.TlpGrid.Size = new System.Drawing.Size(600, 311);
             this.TlpGrid.TabIndex = 6;
             this.TlpGrid.CellPaint += new System.Windows.Forms.TableLayoutCellPaintEventHandler(this.TlpGrid_CellPaint);
             this.TlpGrid.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TlpGrid_MouseClick);
             // 
             // BtnRestartGame
             // 
-            this.BtnRestartGame.Location = new System.Drawing.Point(187, 84);
+            this.BtnRestartGame.Location = new System.Drawing.Point(187, 91);
             this.BtnRestartGame.Name = "BtnRestartGame";
-            this.BtnRestartGame.Size = new System.Drawing.Size(90, 21);
+            this.BtnRestartGame.Size = new System.Drawing.Size(90, 23);
             this.BtnRestartGame.TabIndex = 5;
             this.BtnRestartGame.Text = "Restart Game";
             this.BtnRestartGame.UseVisualStyleBackColor = true;
@@ -108,9 +108,9 @@
             // 
             // FrmTicTacToe
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 407);
+            this.ClientSize = new System.Drawing.Size(624, 441);
             this.Controls.Add(this.BtnRestartGame);
             this.Controls.Add(this.TlpGrid);
             this.Controls.Add(this.CbxMode);

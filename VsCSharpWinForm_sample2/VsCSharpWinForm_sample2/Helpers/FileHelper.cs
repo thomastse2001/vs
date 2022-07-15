@@ -8,7 +8,7 @@ namespace VsCSharpWinForm_sample2.Helpers
 {
     public partial class FileHelper
     {
-        /// Updated date: 2021-08-16
+        /// Updated date: 2021-10-07
         public static TLog Logger { get; set; }
 
         /// Delete file.
@@ -36,6 +36,35 @@ namespace VsCSharpWinForm_sample2.Helpers
             Logger?.Debug("Create folder {0}", folder);
             System.IO.Directory.CreateDirectory(folder);
             return System.IO.Directory.Exists(folder);
+        }
+
+        /// Get the absolte path if the input path is a relative path.
+        /// Return value = output.
+        /// path = input path
+        public static string GetAbsolutePathIfRelative(string path)
+        {
+            return System.IO.Path.IsPathRooted(path) ? path : System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), path);
+        }
+
+        public static bool CopySingleFile(string source, string destination)
+        {
+            try
+            {
+                if (System.IO.File.Exists(destination)) System.IO.File.Delete(destination);
+                else
+                {
+                    string folder = System.IO.Path.GetDirectoryName(destination);
+                    if (!System.IO.Directory.Exists(folder)) System.IO.Directory.CreateDirectory(folder);
+                }
+                System.IO.File.Copy(source, destination);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error("Source = {0}, destination = {1}", source, destination);
+                Logger?.Error(ex);
+                return false;
+            }
         }
 
         public class CSV

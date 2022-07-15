@@ -22,8 +22,7 @@ namespace AspNetCore6WebApp.WinForm
         private string ExeFileNameWithoutExt = String.Empty;
         //private bool IsLockFileCreatedNormally = false;/// Whether the lock file is created normally. The default value is false.
         private bool IsLoginSuccess = false;/// Whether login successful. The default value is false.
-        //private bool IsWarnIfFormClosing = true;/// Whether show a warning dialog box when form is closing. The default value is true.
-        private bool IsRenameFilenamesEnd = false;/// Whether the process of renaming filenames is end. The default value is false
+        private bool IsWarnIfFormClosing = true;/// Whether show a warning dialog box when form is closing. The default value is true.
 
         private string _username = string.Empty;
         private string _password = string.Empty;
@@ -67,14 +66,14 @@ namespace AspNetCore6WebApp.WinForm
             }
             catch (Exception ex)
             {
-                try { Logger.Error(ex); }
+                try { Logger?.Error(ex); }
                 catch (Exception ex4) { Console.WriteLine("[error] {0}", ex4.ToString()); }
             }
         }
 
         private void LocalLogger(TT.Logging.LogLevel logLevel, string format, params object?[] args)
         {
-            Logger.Log(logLevel, format, args);
+            Logger?.Log(logLevel, format, args);
             LogToUi(format, args);
         }
 
@@ -103,14 +102,14 @@ namespace AspNetCore6WebApp.WinForm
                 new System.Threading.ManualResetEvent(false).WaitOne(500);
 
                 //if (IsLockFileCreatedNormally) { }
-                if (IsLoginSuccess) Logger.Debug("{0} ends. Version = {1}", ExeFileNameWithoutExt, Application.ProductVersion);
+                if (IsLoginSuccess) Logger?.Debug("{0} ends. Version = {1}", ExeFileNameWithoutExt, Application.ProductVersion);
             }
             catch (Exception ex) { Logger?.Error(ex); }
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (IsLoginSuccess)
+            if (IsLoginSuccess && IsWarnIfFormClosing)
             {
                 /// Before exit, show a dialog box to ask whether really want to exit
                 /// http://msdn.microsoft.com/en-us/library/system.windows.forms.form.closing(v=vs.110).aspx
@@ -219,7 +218,7 @@ namespace AspNetCore6WebApp.WinForm
                 }
                 if (!IsLoginSuccess)
                 {
-                    Logger.Warn(Param.Login.ExceedMaxRetryMessage);
+                    Logger?.Warn(Param.Login.ExceedMaxRetryMessage);
                     MessageBox.Show(Param.Login.ExceedMaxRetryMessage, "Warn", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     this.Close();
                     return;
@@ -230,8 +229,9 @@ namespace AspNetCore6WebApp.WinForm
                 UiConfigForTcpServer(false);
 
                 /// Main process
-                Logger.Debug("{0} starts. Version = {1}", ExeFileNameWithoutExt, Application.ProductVersion);
-                Logger.Debug("Current Working Directory = {0}", System.IO.Directory.GetCurrentDirectory());
+                Logger?.Debug("{0} starts. Version = {1}", ExeFileNameWithoutExt, Application.ProductVersion);
+                Logger?.Debug("Current Working Directory = {0}", System.IO.Directory.GetCurrentDirectory());
+                BWorkerExitFile.RunWorkerAsync();
             }
             catch (Exception ex) { Logger?.Error(ex); }
         }
@@ -282,6 +282,48 @@ namespace AspNetCore6WebApp.WinForm
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+        #endregion
+
+        #region ExitFileRegion
+        private void BWorkerExitFile_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                DateTime tNow;
+                DateTime tRef = DateTime.Now;
+                bool b = true;
+                while (IsExit == false && b)
+                {
+                    tNow = DateTime.Now;
+                    if ((int)(tNow - tRef).TotalSeconds > 2)
+                    {
+                        tRef = tNow;
+                        if (TT.GeneralHelper.ExitFileExists(true)) b = false;
+                    }
+                    TT.GeneralHelper.Sleeping(1000);
+                }
+                if (!b)
+                {
+                    IsWarnIfFormClosing = false;
+                    Application.Exit();
+                }
+            }
+            catch (Exception ex) { Logger?.Error(ex); }
+        }
+
+        private void BtnCreateExitFile_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location) ?? string.Empty,
+                    System.IO.Path.GetFileNameWithoutExtension(System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty)) + ".exit";
+                if (!System.IO.File.Exists(path))
+                {
+                    using (System.IO.File.Create(path)) { }
+                }
+            }
+            catch (Exception ex) { Logger?.Error(ex); }
         }
         #endregion
 
@@ -852,6 +894,30 @@ namespace AspNetCore6WebApp.WinForm
         private void BtnTicTacToe_Click(object sender, EventArgs e)
         {
             new Forms.FormTicTacToe() { VersionString = LblVersion.Text }.ShowDialog();
+        }
+
+        private void BtnRenameFilenames_Click(object sender, EventArgs e)
+        {
+            BtnRenameFilenames.Enabled = false;
+            try
+            {
+                new Forms.FormRenameFilenames()
+                {
+                    Logger = Logger,
+                    VersionString = LblVersion.Text
+                }.ShowDialog();
+            }
+            catch (Exception ex) { LocalLogger(TT.Logging.LogLevel.ERROR, ex.ToString()); }
+            finally { BtnRenameFilenames.Enabled = true; }
+        }
+
+        private void BtnRenameFilenamesByModifiedDate_Click(object sender, EventArgs e)
+        {
+            new Forms.FormRenameFilenamesByModifiedDate()
+            {
+                Logger = Logger,
+                VersionString = LblVersion.Text
+            }.ShowDialog();
         }
     }
 }

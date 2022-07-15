@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using VsCSharpWinForm_sample2.Models;
 using VsCSharpWinForm_sample2.Helpers;
 
+//using ExcelDataReader;// Install ExcelDataReader by NuGet.
+
 namespace VsCSharpWinForm_sample2
 {
     public partial class FrmMain : Form
@@ -185,21 +187,24 @@ namespace VsCSharpWinForm_sample2
             try
             {
                 /// system.
-                sb.Append("IsService = ").Append(Param.IsService.ToString()).AppendLine();
-                //sb.Append("MainLoopSleepingIntervalInMS = ").Append(miMainLoopSleepingIntervalInMS.ToString()).AppendLine();
+                sb.AppendFormat("{0} = {1}", Param.IniKey.IsService, Param.IsService).AppendLine();
+                //sb.Append("MainLoopSleepingIntervalInMS = ").AppendLine(miMainLoopSleepingIntervalInMS.ToString());
 
                 /// Logger.
                 if (Logger != null)
                 {
-                    sb.Append("FilePathFormat = ").Append(Logger.FilePathFormat).AppendLine();
-                    sb.Append("ContentFormat = ").Append(Logger.ContentFormat).AppendLine();
-                    sb.Append("MinLogLevel = ").Append(Logger.MinLogLevel.ToString()).AppendLine();
+                    sb.AppendFormat("{0} = {1}", Param.IniKey.LogFilePathFormat, Logger.FilePathFormat).AppendLine();
+                    sb.AppendFormat("{0} = {1}", Param.IniKey.LogContentFormat, Logger.ContentFormat).AppendLine();
+                    sb.AppendFormat("{0} = {1}", "MinLogLevel", Logger.MinLogLevel.ToString()).AppendLine();
                 }
 
                 /// Login.
-                sb.Append("LoginMaxRetry = ").Append(Param.Login.MaxRetry.ToString()).AppendLine();
-                sb.Append("LoginFailMessage = ").Append(Param.Login.FailMessage).AppendLine();
-                sb.Append("LoginExceedMaxRetryMessage = ").Append(Param.Login.ExceedMaxRetryMessage).AppendLine();
+                sb.AppendFormat("{0} = {1}", Param.IniKey.LoginMaxRetry, Param.Login.MaxRetry).AppendLine();
+                sb.AppendFormat("{0} = {1}", Param.IniKey.LoginFailMessage, Param.Login.FailMessage).AppendLine();
+                sb.AppendFormat("{0} = {1}", Param.IniKey.LoginExceedMaxRetryMessage, Param.Login.ExceedMaxRetryMessage).AppendLine();
+
+                /// Others.
+                sb.AppendFormat("{0} = {1}", Param.IniKey.BoolValue1, Param.BoolValue1).AppendLine();
 
                 sReturn = sb.ToString();
             }
@@ -229,20 +234,23 @@ namespace VsCSharpWinForm_sample2
                     char[] cArrayTrim = { ' ', '\t', (char)10, (char)13 };
 
                     /// system.
-                    Param.IsService = FileHelper.INI.GetBool(FileHelper.INI.DoIniParaInBuffer(false, sIni, "IsService", "", Param.IsService.ToString()).Trim(cArrayTrim).ToUpper());
+                    Param.IsService = FileHelper.INI.GetBool(FileHelper.INI.DoIniParaInBuffer(false, sIni, Param.IniKey.IsService, "", Param.IsService.ToString()).Trim(cArrayTrim).ToUpper());
                     //GeneralT.DoIniParaInBufferGetInteger(ref miMainLoopSleepingIntervalInMS, sIni, "MainLoopSleepingIntervalInMS", "", miMainLoopSleepingIntervalInMS);
 
                     /// Log.
                     if (Logger != null)
                     {
-                        Logger.FilePathFormat = GeneralT.GetDefaultAbsolutePathIfRelative(FileHelper.INI.DoIniParaInBuffer(false, sIni, "FilePathFormat", "", Logger.FilePathFormat).Trim(cArrayTrim));
-                        Logger.ContentFormat = FileHelper.INI.DoIniParaInBuffer(false, sIni, "ContentFormat", "", Logger.ContentFormat).Trim(cArrayTrim);
+                        Logger.FilePathFormat = GeneralT.GetDefaultAbsolutePathIfRelative(FileHelper.INI.DoIniParaInBuffer(false, sIni, Param.IniKey.LogFilePathFormat, "", Logger.FilePathFormat).Trim(cArrayTrim));
+                        Logger.ContentFormat = FileHelper.INI.DoIniParaInBuffer(false, sIni, Param.IniKey.LogContentFormat, "", Logger.ContentFormat).Trim(cArrayTrim);
                     }
 
                     /// Login.
-                    Param.Login.MaxRetry = FileHelper.INI.GetInt(FileHelper.INI.DoIniParaInBuffer(false, sIni, "LoginMaxRetry", "", Param.Login.MaxRetry.ToString()), 0) ?? 0;
-                    Param.Login.FailMessage = FileHelper.INI.DoIniParaInBuffer(false, sIni, "LoginFailMessage", "", Param.Login.FailMessage).Trim(cArrayTrim);
-                    Param.Login.ExceedMaxRetryMessage = FileHelper.INI.DoIniParaInBuffer(false, sIni, "LoginExceedMaxRetryMessage", "", Param.Login.ExceedMaxRetryMessage).Trim(cArrayTrim);
+                    Param.Login.MaxRetry = FileHelper.INI.GetInt(FileHelper.INI.DoIniParaInBuffer(false, sIni, Param.IniKey.LoginMaxRetry, "", Param.Login.MaxRetry.ToString()), 0) ?? 0;
+                    Param.Login.FailMessage = FileHelper.INI.DoIniParaInBuffer(false, sIni, Param.IniKey.LoginFailMessage, "", Param.Login.FailMessage).Trim(cArrayTrim);
+                    Param.Login.ExceedMaxRetryMessage = FileHelper.INI.DoIniParaInBuffer(false, sIni, Param.IniKey.LoginExceedMaxRetryMessage, "", Param.Login.ExceedMaxRetryMessage).Trim(cArrayTrim);
+
+                    /// Others.
+                    Param.BoolValue1 = FileHelper.INI.GetBool(FileHelper.INI.DoIniParaInBuffer(false, sIni, Param.IniKey.BoolValue1, "", Param.BoolValue1.ToString()).Trim(cArrayTrim).ToUpper(), "true");
                 }
             }
             catch (Exception ex) { Logger?.Error(ex); }
@@ -302,7 +310,7 @@ namespace VsCSharpWinForm_sample2
                 //TTcpServerSocket.InnerClient.Logger = Logger;/// Declare in the static constructor of InnerClient.
                 TTcpSocket.Client.Logger = Logger;
                 TTcpSocket.Server.Logger = Logger;
-                Views.FrmWait.Logger = Logger;
+                //Views.FrmWait.Logger = Logger;
                 Views.FrmTcpClient.Logger = Logger;
                 Views.FrmTicTacToe.Logger = Logger;
                 MailHelper.Logger = Logger;
@@ -312,10 +320,10 @@ namespace VsCSharpWinForm_sample2
                 args = System.Environment.GetCommandLineArgs();
                 if (GeneralT.GetArguments1(args, "-?") || GeneralT.GetArguments1(args, "/?"))
                 {
-                    sb.Append("Syntax:").AppendLine();
-                    sb.Append(ExeFileNameWithoutExt).Append(" -u[Username] -p[Password]").AppendLine().AppendLine();
-                    sb.Append("Example:").AppendLine();
-                    sb.Append(ExeFileNameWithoutExt).Append(" -uThomas -pabc").AppendLine();
+                    sb.AppendLine("Syntax:");
+                    sb.Append(ExeFileNameWithoutExt).AppendLine(" -u[Username] -p[Password]").AppendLine();
+                    sb.AppendLine("Example:");
+                    sb.Append(ExeFileNameWithoutExt).AppendLine(" -uThomas -pabc");
                     s = sb.ToString();
                     Console.WriteLine(s);
                     MessageBox.Show(s, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -770,7 +778,7 @@ namespace VsCSharpWinForm_sample2
                             s = string.Format("{0:yyyy-MM-dd HH:mm:ss}. Client = {1}:{2}. Last index of pieces = {3}. Index of current piece = {4}. Filename is empty.", o.Timestamp, o.Host, o.Port, deserializedData.LastIndexPiece, deserializedData.IndexPiece);
                             Logger?.Debug("TCP server finds empty filename. Received Time = {0)");
                             WriteLogToUI(s);
-                            deserializedData.Filename = string.Format(Param.TcpServer.IncomingDataFilename, o.Timestamp, o.Host, o.Port);
+                            deserializedData.Filename = string.Format(Param.TcpServer.IncomingDataFilenameFormat, o.Timestamp, o.Host, o.Port);
                         }
                         s = TTcpSocket.Serialization.AppendDeserializedDataToFile(deserializedData);
                         if (string.IsNullOrEmpty(s))
@@ -1837,59 +1845,98 @@ namespace VsCSharpWinForm_sample2
         #endregion
 
         #region ExcelRegion
+        private void ExcelDLLMethod()
+        {
+            ///// DLL method.
+            //string path = GeneralT.GetDefaultAbsolutePathIfRelative("abc.xls");
+            //if (System.IO.File.Exists(path))
+            //{
+            //    LocalLogger(TLog.LogLevel.DEBUG, "Delete file {0}", path);
+            //    System.IO.File.Delete(path);
+            //}
+            //else
+            //{
+            //    string folder = System.IO.Path.GetDirectoryName(path);
+            //    if (!System.IO.Directory.Exists(folder))
+            //    {
+            //        LocalLogger(TLog.LogLevel.DEBUG, "Create folder {0}", folder);
+            //        System.IO.Directory.CreateDirectory(folder);
+            //    }
+            //}
+            //if (ExcelHelper.Dll.ExportFile(path)) { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to export Excel file {0}", path); }
+            //else { LocalLogger(TLog.LogLevel.DEBUG, "Fail to export Excel file {0}", path); }
+            ///// OpenXml method.
+            //string path2 = GeneralT.GetDefaultAbsolutePathIfRelative("abc.xlsx");
+            //if (System.IO.File.Exists(path2))
+            //{
+            //    LocalLogger(TLog.LogLevel.DEBUG, "Delete file {0}", path2);
+            //    System.IO.File.Delete(path2);
+            //}
+            //else
+            //{
+            //    string folder = System.IO.Path.GetDirectoryName(path2);
+            //    if (!System.IO.Directory.Exists(folder))
+            //    {
+            //        LocalLogger(TLog.LogLevel.DEBUG, "Create folder {0}", folder);
+            //        System.IO.Directory.CreateDirectory(folder);
+            //    }
+            //}
+            //if (ExcelHelper.OpenXml.ExportFile(path2)) { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to export Excel file {0}", path2); }
+            //else { LocalLogger(TLog.LogLevel.DEBUG, "Fail to export Excel file {0}", path2); }
+
+            //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+            //string s = ExcelHelper.ClosedXML.DeleteRows(path, "QMData");
+            //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
+
+            //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+            //string s = ExcelHelper.EPPlus.DeleteRows(path, "QMData");
+            //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
+
+            //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
+            //string s = ExcelHelper.EPPlusCore.DeleteRows(path, "QMData");
+            //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
+        }
+
+        private void ExcelDataReaderMethod()
+        {
+            /// Install ExcelDataReader.DataSet by NuGet.
+            /// https://github.com/ExcelDataReader/ExcelDataReader
+            string path = FileHelper.GetAbsolutePathIfRelative("10420005460000_20210701_9.xls");
+            //using (var stream = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            //{
+            //    using (var reader = ExcelDataReader.ExcelReaderFactory.CreateReader(stream))
+            //    {
+            //        /// To use AsDataSet, please contain the line "using ExcelDataReader;" 
+            //        var result = reader.AsDataSet(new ExcelDataReader.ExcelDataSetConfiguration()
+            //        {
+            //            ConfigureDataTable = (_) => new ExcelDataReader.ExcelDataTableConfiguration()
+            //            {
+            //                UseHeaderRow = false
+            //            }
+            //        });
+            //        if (result == null || (result.Tables?[0]?.Rows?.Count ?? 0) < 1) LocalLogger(TLog.LogLevel.DEBUG, "It is null.");
+            //        else
+            //        {
+            //            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            //            sb.AppendFormat("Total lines = {0}", result.Tables[0].Rows.Count).AppendLine();
+            //            foreach (DataRow dr in result.Tables[0].Rows)
+            //            {
+            //                sb.AppendLine(string.Join(";", dr.ItemArray));
+            //            }
+            //            LocalLogger(TLog.LogLevel.DEBUG, sb.ToString());
+            //            sb = null;
+            //        }
+            //    }
+            //}
+        }
+
         private void BtnExcel_Click(object sender, EventArgs e)
         {
             BtnExcel.Enabled = false;
             try
             {
-                ///// DLL method.
-                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("abc.xls");
-                //if (System.IO.File.Exists(path))
-                //{
-                //    LocalLogger(TLog.LogLevel.DEBUG, "Delete file {0}", path);
-                //    System.IO.File.Delete(path);
-                //}
-                //else
-                //{
-                //    string folder = System.IO.Path.GetDirectoryName(path);
-                //    if (!System.IO.Directory.Exists(folder))
-                //    {
-                //        LocalLogger(TLog.LogLevel.DEBUG, "Create folder {0}", folder);
-                //        System.IO.Directory.CreateDirectory(folder);
-                //    }
-                //}
-                //if (ExcelHelper.Dll.ExportFile(path)) { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to export Excel file {0}", path); }
-                //else { LocalLogger(TLog.LogLevel.DEBUG, "Fail to export Excel file {0}", path); }
-                ///// OpenXml method.
-                //string path2 = GeneralT.GetDefaultAbsolutePathIfRelative("abc.xlsx");
-                //if (System.IO.File.Exists(path2))
-                //{
-                //    LocalLogger(TLog.LogLevel.DEBUG, "Delete file {0}", path2);
-                //    System.IO.File.Delete(path2);
-                //}
-                //else
-                //{
-                //    string folder = System.IO.Path.GetDirectoryName(path2);
-                //    if (!System.IO.Directory.Exists(folder))
-                //    {
-                //        LocalLogger(TLog.LogLevel.DEBUG, "Create folder {0}", folder);
-                //        System.IO.Directory.CreateDirectory(folder);
-                //    }
-                //}
-                //if (ExcelHelper.OpenXml.ExportFile(path2)) { LocalLogger(TLog.LogLevel.DEBUG, "Succeed to export Excel file {0}", path2); }
-                //else { LocalLogger(TLog.LogLevel.DEBUG, "Fail to export Excel file {0}", path2); }
-
-                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
-                //string s = ExcelHelper.ClosedXML.DeleteRows(path, "QMData");
-                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
-
-                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
-                //string s = ExcelHelper.EPPlus.DeleteRows(path, "QMData");
-                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
-
-                //string path = GeneralT.GetDefaultAbsolutePathIfRelative("QM_0173_HRSM.xlsx");
-                //string s = ExcelHelper.EPPlusCore.DeleteRows(path, "QMData");
-                //LocalLogger(TLog.LogLevel.DEBUG, "Result = {0}", s);
+                ExcelDLLMethod();
+                //ExcelDataReaderMethod();
             }
             catch (Exception ex) { Logger?.Error(ex); }
             finally { BtnExcel.Enabled = true; }
@@ -2288,10 +2335,10 @@ namespace VsCSharpWinForm_sample2
                 /// https://stackoverflow.com/questions/32260/sending-email-in-net-through-gmail
                 MailHelper.Send(new MailItem()
                 {
-                    From = "\"Thomas Tse\" <thomastse2001@gmail.com>",
-                    To = new string[] { "thomas_tse2001@hotmail.com" },
                     Subject = "Test3",
                     Body = "Testing mail 3.",
+                    From = "\"Thomas Tse\" <thomastse2001@gmail.com>",
+                    To = new string[] { "thomas_tse2001@hotmail.com" },
                     SmtpHost = "smtp.gmail.com",
                     SmtpPort = 587,
                     SmtpUserName = "thomastse2001@gmail.com",
@@ -2400,41 +2447,39 @@ namespace VsCSharpWinForm_sample2
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }
 
-        private void BtnLinqToExcel_Click(object sender, EventArgs e)
+        private void LinqToExcelExample1()
         {
-            try
+            string fieldDelimiter = "|";
+            //string filepath = GeneralT.GetDefaultAbsolutePathIfRelative("10420005460000_20210701_9.xls");
+            string filepath = GeneralT.GetDefaultAbsolutePathIfRelative("10420005460000_20210731_9.xls");
+
+            Helpers.LinqToExcelProvider provider = new LinqToExcelProvider(filepath);
+            string[] sheetNames = provider.GetExcelSheetNames();
+            if (sheetNames != null && sheetNames.Length > 0)
             {
-                string fieldDelimiter = "|";
-                //string filepath = GeneralT.GetDefaultAbsolutePathIfRelative("10420005460000_20210701_9.xls");
-                string filepath = GeneralT.GetDefaultAbsolutePathIfRelative("10420005460000_20210731_9.xls");
-                
-                Helpers.LinqToExcelProvider provider = new LinqToExcelProvider(filepath);
-                string[] sheetNames = provider.GetExcelSheetNames();
-                if (sheetNames != null && sheetNames.Length > 0)
+                LocalLogger(TLog.LogLevel.DEBUG, "Method 1");
+                var result1 = from p in provider.GetWorkSheet(sheetNames[0])
+                              select new Models.LinqToExcelObject()
+                              {
+                                  TransactionDateString = Convert.ToString(p[0]).Trim(),
+                                  TransactionTimeString = Convert.ToString(p[1]).Trim(),
+                                  TerminalNo = Convert.ToString(p[3]).Trim(),
+                                  CardNo = Convert.ToString(p[10]).Trim(),
+                                  MerchantNo = Convert.ToString(p[11]).Trim()
+                              };
+                List<LinqToExcelObject> list1 = result1.Skip(1).ToList();
+                if ((list1?.Count ?? 0) > 0)
                 {
-                    LocalLogger(TLog.LogLevel.DEBUG, "Method 1");
-                    var result1 = from p in provider.GetWorkSheet(sheetNames[0])
-                                 select new Models.LinqToExcelObject()
-                                 {
-                                     TransactionDateString = Convert.ToString(p[0]).Trim(),
-                                     TransactionTimeString = Convert.ToString(p[1]).Trim(),
-                                     TerminalNo = Convert.ToString(p[3]).Trim(),
-                                     CardNo = Convert.ToString(p[10]).Trim(),
-                                     MerchantNo = Convert.ToString(p[11]).Trim()
-                                 };
-                    List<LinqToExcelObject> list1 = result1.ToList();
-                    if ((list1?.Count ?? 0) > 0)
+                    LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list1.Count);
+                    foreach (var o in list1)
                     {
-                        LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list1.Count);
-                        foreach (var o in list1)
-                        {
-                            LocalLogger(TLog.LogLevel.DEBUG, "{0}, {1}, {2}", o.TransactionDateString, o.TransactionTimeString, o.TerminalNo);
-                        }
+                        LocalLogger(TLog.LogLevel.DEBUG, "{0}, {1}, {2}", o.TransactionDateString, o.TransactionTimeString, o.TerminalNo);
                     }
-                    LocalLogger(TLog.LogLevel.DEBUG, "Method 2");
-                    var result2 = from p in provider.GetWorkSheet(sheetNames[0])
-                                  select new string[]
-                                  {
+                }
+                LocalLogger(TLog.LogLevel.DEBUG, "Method 2");
+                var result2 = from p in provider.GetWorkSheet(sheetNames[0])
+                              select new string[]
+                              {
                                       Convert.ToString(p?[0]).Trim(), Convert.ToString(p?[1]).Trim(), Convert.ToString(p?[2]).Trim(),
                                       Convert.ToString(p?[3]).Trim(), Convert.ToString(p?[4]).Trim(), Convert.ToString(p?[5]).Trim(),
                                       Convert.ToString(p?[6]).Trim(), Convert.ToString(p?[7]).Trim(), Convert.ToString(p?[8]).Trim(),
@@ -2443,58 +2488,130 @@ namespace VsCSharpWinForm_sample2
                                       Convert.ToString(p?[15]).Trim(), Convert.ToString(p?[16]).Trim(), Convert.ToString(p?[17]).Trim(),
                                       Convert.ToString(p?[18]).Trim(), Convert.ToString(p?[19]).Trim(), Convert.ToString(p?[20]).Trim(),
                                       Convert.ToString(p?[21]).Trim(), Convert.ToString(p?[22]).Trim(), Convert.ToString(p?[23]).Trim(),
-                                  };
-                    List<string[]> list2 = result2.ToList();
-                    if ((list2?.Count ?? 0) > 0)
+                              };
+                List<string[]> list2 = result2.Skip(1).ToList();
+                if ((list2?.Count ?? 0) > 0)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list2.Count);
+                    foreach (var o in list2)
                     {
-                        LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list2.Count);
-                        foreach (var o in list2)
-                        {
-                            if (o != null) LocalLogger(TLog.LogLevel.DEBUG, string.Join(",", o));
-                        }
-                    }
-                    LocalLogger(TLog.LogLevel.DEBUG, "Method 2b");
-                    var result2b = from p in provider.GetWorkSheet(sheetNames[0])
-                                   where p[10].ToString().Contains("清算日期")
-                                   select Convert.ToString(p?[11]).Trim();
-                    List<string> list2b = result2b.ToList();
-                    if ((list2b?.Count ?? 0) > 0)
-                    {
-                        LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list2b.Count);
-                        foreach (var o in list2b)
-                        {
-                            if (o != null) LocalLogger(TLog.LogLevel.DEBUG, o);
-                        }
-                    }
-                    if (DateTime.TryParse(list2b.FirstOrDefault(), out DateTime date2b)) LocalLogger(TLog.LogLevel.DEBUG, "Success to parse date = {0:yyyy-MM-dd}", date2b);
-                    else LocalLogger(TLog.LogLevel.ERROR, "Fail to parse date = {0}", list2b.FirstOrDefault());
-                    LocalLogger(TLog.LogLevel.DEBUG, "Method 3");
-                    var result3 = from p in provider.GetWorkSheet(sheetNames[0])
-                                  select new string[] { string.Join(fieldDelimiter, p.ItemArray) };
-                    List<string[]> list3 = result3.ToList();
-                    if ((list3?.Count ?? 0) > 0)
-                    {
-                        LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list3.Count);
-                        foreach (var o in list3)
-                        {
-                            if (o != null) LocalLogger(TLog.LogLevel.DEBUG, string.Join(",", o));
-                        }
+                        if (o != null) LocalLogger(TLog.LogLevel.DEBUG, string.Join(",", o));
                     }
                 }
+                LocalLogger(TLog.LogLevel.DEBUG, "Method 2b");
+                var result2b = from p in provider.GetWorkSheet(sheetNames[0])
+                               where p[10].ToString().Contains("清算日期")
+                               select Convert.ToString(p?[11]).Trim();
+                List<string> list2b = result2b.ToList();
+                if ((list2b?.Count ?? 0) > 0)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list2b.Count);
+                    foreach (var o in list2b)
+                    {
+                        if (o != null) LocalLogger(TLog.LogLevel.DEBUG, o);
+                    }
+                }
+                if (DateTime.TryParse(list2b.FirstOrDefault(), out DateTime date2b)) LocalLogger(TLog.LogLevel.DEBUG, "Success to parse date = {0:yyyy-MM-dd}", date2b);
+                else LocalLogger(TLog.LogLevel.ERROR, "Fail to parse date = {0}", list2b.FirstOrDefault());
+                LocalLogger(TLog.LogLevel.DEBUG, "Method 3");
+                var result3 = from p in provider.GetWorkSheet(sheetNames[0])
+                              select new string[] { string.Join(fieldDelimiter, p.ItemArray) };
+                List<string[]> list3 = result3.Skip(1).ToList();
+                if ((list3?.Count ?? 0) > 0)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}", list3.Count);
+                    foreach (var o in list3)
+                    {
+                        if (o != null) LocalLogger(TLog.LogLevel.DEBUG, string.Join(",", o));
+                    }
+                }
+            }
 
-                LocalLogger(TLog.LogLevel.DEBUG, "Method 8");
-                var result8 = from p in ExcelHelper.OleDb.GetWorkSheet(filepath)
+            LocalLogger(TLog.LogLevel.DEBUG, "Method 8");
+            var result8 = from p in ExcelHelper.OleDb.GetWorkSheet(filepath)
+                          select string.Join(fieldDelimiter, p.ItemArray);
+            string[] array8 = result8.ToArray();
+            if ((array8?.Length ?? 0) > 0) LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}{1}{2}", array8.Length, Environment.NewLine, string.Join(Environment.NewLine, array8));
+            LocalLogger(TLog.LogLevel.DEBUG, "Method 9");
+            var result9 = from p in ExcelHelper.OleDb.GetWorkSheet(filepath)
+                          where string.IsNullOrEmpty(p[0].ToString()) == false && p[0].ToString().Contains("-")
+                          select string.Join(fieldDelimiter, p.ItemArray);
+            string[] array9 = result9?.ToArray();
+            if ((array9?.Length ?? 0) > 0) LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}{1}{2}", array9.Length, Environment.NewLine, string.Join(Environment.NewLine, array9));
+        }
+
+        private void LinqToExcelExample2()
+        {
+            string fieldDelimiter = "|";
+            string filepath = GeneralT.GetDefaultAbsolutePathIfRelative("Stock Load- TW v2.xlsx");
+            Helpers.LinqToExcelProvider provider = new LinqToExcelProvider(filepath);
+            string[] sheetNames = provider.GetExcelSheetNames();
+            if (sheetNames != null && sheetNames.Length > 0)
+            {
+                var result1 = from p in provider.GetWorkSheet(sheetNames[0])
+                              select new string[]
+                              {
+                                  p[0].ToString(),
+                                  p[1].ToString(),
+                                  p[2].ToString(),
+                                  p[3].ToString(),
+                                  p[4].ToString(),
+                                  p[7].ToString(),
+                                  p[8].ToString(),
+                                  p[9].ToString()
+                              };
+                List<string[]> list1 = result1.Skip(1).ToList();
+                if ((list1?.Count ?? 0) > 0)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, "Method 1. Count = {0}", list1.Count);
+                    int i = 0;
+                    while (i < list1.Count)
+                    {
+                        string[] o = list1[i];
+                        if (o != null)
+                        {
+                            if (i >= 8690 && i <= 8700)
+                            {
+                                LocalLogger(TLog.LogLevel.DEBUG, string.Join(fieldDelimiter, o));
+                            }
+                        }
+                        i++;
+                    }
+                }
+                var result2 = from p in provider.GetWorkSheet(sheetNames[0])
                               select string.Join(fieldDelimiter, p.ItemArray);
-                string[] array8 = result8.ToArray();
-                if ((array8?.Length ?? 0) > 0) LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}{1}{2}", array8.Length, Environment.NewLine, string.Join(Environment.NewLine, array8));
-                LocalLogger(TLog.LogLevel.DEBUG, "Method 9");
-                var result9 = from p in ExcelHelper.OleDb.GetWorkSheet(filepath)
-                              where string.IsNullOrEmpty(p[0].ToString()) == false && p[0].ToString().Contains("-")
-                              select string.Join(fieldDelimiter, p.ItemArray);
-                string[] array9 = result9?.ToArray();
-                if ((array9?.Length ?? 0) > 0) LocalLogger(TLog.LogLevel.DEBUG, "Count = {0}{1}{2}", array9.Length, Environment.NewLine, string.Join(Environment.NewLine, array9));
+                string[] list2 = result2.Skip(1).ToArray();
+                if ((list2?.Length ?? 0) > 0)
+                {
+                    LocalLogger(TLog.LogLevel.DEBUG, "Method 2. Count = {0}", list1.Count);
+                    int i = 0;
+                    while (i < list2.Length)
+                    {
+                        string o = list2[i];
+                        if (!string.IsNullOrEmpty(o))
+                        {
+                            if (i > 8690 && i <= 8700)
+                            {
+                                LocalLogger(TLog.LogLevel.DEBUG, o);
+                            }
+                        }
+                        i++;
+                    }
+                }
+            }
+            LocalLogger(TLog.LogLevel.DEBUG, "Finish.");
+        }
+
+        private void BtnLinqToExcel_Click(object sender, EventArgs e)
+        {
+            BtnLinqToExcel.Enabled = false;
+            try
+            {
+                LinqToExcelExample1();
+                //LinqToExcelExample2();
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+            finally { BtnLinqToExcel.Enabled = true; }
         }
 
         private void BtnWinSCP_Click(object sender, EventArgs e)
@@ -2669,11 +2786,13 @@ namespace VsCSharpWinForm_sample2
         {
             try
             {
-                string uriPath = "sftp://10.15.255.5/Dunhill_uk/FCDB_TestData/SFCI_APAC_P_*.csv";
+                //string uriPath = "sftp://10.15.255.5/Dunhill_uk/FCDB_TestData/SFCI_APAC_P_*.csv";
+                string uriPath = "sftp://175.184.243.49/aptoap/INMI/0130030436/20211221_013003043_1_商店交易明細查詢.csv";
                 Uri uri = new Uri(uriPath);
                 string host = uri?.Host;/// 10.10.255.255
                 string remotePath = uri?.AbsolutePath;/// /abc_folder/sub_folder/abc.zip
                 LocalLogger(TLog.LogLevel.DEBUG, "AbsolutePath = {0}", uri?.AbsolutePath);
+                LocalLogger(TLog.LogLevel.DEBUG, "AbsolutePath decoded = {0}", System.Web.HttpUtility.UrlDecode(uri?.AbsolutePath));
                 LocalLogger(TLog.LogLevel.DEBUG, "AbsoluteUri = {0}", uri?.AbsoluteUri);
                 LocalLogger(TLog.LogLevel.DEBUG, "Fragment = {0}", uri?.Fragment);
                 LocalLogger(TLog.LogLevel.DEBUG, "Host = {0}", uri?.Host);
@@ -2769,6 +2888,132 @@ namespace VsCSharpWinForm_sample2
                 if (DateTime.TryParseExact(s2, "yyyyMMdd-HHmmss-fff", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime t2)) LocalLogger(TLog.LogLevel.DEBUG, "Time = {0:yyyy-MM-dd HH:mm:ss.fff}", t2);
                 if ((int)(t2 - t).TotalDays >= 0) LocalLogger(TLog.LogLevel.DEBUG, "In");
                 else LocalLogger(TLog.LogLevel.DEBUG, "Out");
+                int i = 10250;
+                if (i.ToString().StartsWith("1025", StringComparison.OrdinalIgnoreCase)) LocalLogger(TLog.LogLevel.DEBUG, "True");
+                else LocalLogger(TLog.LogLevel.DEBUG, "False");
+                s = "CN-PIA-S0050543";
+                s2 = s.Split(';').FirstOrDefault();
+                LocalLogger(TLog.LogLevel.DEBUG, "s = {0}, s2 = {1}", s, s2);
+                LocalLogger(TLog.LogLevel.DEBUG, "----------");
+                string uriPath = "sftp://175.184.243.49/aptoap/INMI/0130030436/20211221_013003043_1_商店交易明細查詢.csv";
+                Uri sftpUri = new Uri(uriPath);
+                string uriFilepath = sftpUri == null ? null : sftpUri.AbsolutePath;
+                LocalLogger(TLog.LogLevel.DEBUG, "UriPath = {0}", uriPath);
+                LocalLogger(TLog.LogLevel.DEBUG, "AbsolutePath = {0}", uriFilepath);
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private static string TrimCsvFile2(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return input;
+            if (input.Length >= 3 && '='.Equals(input[0]) && '"'.Equals(input[1]) && '"'.Equals(input[input.Length - 1])) return input.Substring(2, input.Length - 3);
+            return input;
+        }
+
+        private void CsvMethodA()
+        {
+            string path = @"C:\svn2017\WebApps\SPOS\branches\SPOS_PAYMENT\SPOS\Temp\20210928_13000150_1_商店交易明細查詢.csv";
+            string[] lines = System.IO.File.ReadAllLines(path, System.Text.Encoding.UTF8);
+            if ((lines?.Length ?? 0) < 1)
+            {
+                LocalLogger(TLog.LogLevel.ERROR, "Cannot read file {0}", path);
+                return;
+            }
+            lines = lines.Skip(1).ToArray();// Remove the header line.
+            int i = lines.Length;
+            LocalLogger(TLog.LogLevel.DEBUG, "Number of records in CSV file = {0}", i);
+            //var fields = from l in lines select l.Split(',');
+            var fields = from l in lines where '='.Equals(l[0]) && '"'.Equals(l[1]) select l.Replace("\"", "").Replace("=", "").Split(',');
+            LocalLogger(TLog.LogLevel.DEBUG, "Number of records in CSV file 2 = {0}", fields.Count());
+            if (i != fields.Count())
+            {
+                LocalLogger(TLog.LogLevel.ERROR, "Number is different.");
+                return;
+            }
+            i = 0;
+            foreach (var f in fields)
+            {
+                //LocalLogger(TLog.LogLevel.DEBUG, "{0}: {1}, {2}", i, TrimCsvFile2(f[0]), TrimCsvFile2(f[1]));
+                LocalLogger(TLog.LogLevel.DEBUG, "{0}: {1}, {2}, {3}", i, f[1], f[0], f[26]);
+                /// CompanyAccount = f[1]
+                /// MerchantAccount = f[0]
+                /// PspReference = f[26]
+                /// MerchantReference = ??
+                /// PaymentMethod = f[23]
+                /// CreationDate = f[3]
+                /// xx Type = f[6] = 40
+                /// ModificationReference = null
+                /// GrossCurrency = defaultCurrencyCode
+                /// GrossCreditGC = f[4]
+                /// NetCurrency = defaultCurrencyCode
+                /// NetCreditNC = ??
+                /// CommissionNC = ??
+                /// MarkupNC = null
+                /// SchemeFeesNC = null
+                /// InterchangeNC = null
+                /// BatchNumber = refer to
+                i++;
+            }
+            LocalLogger(TLog.LogLevel.DEBUG, "End");
+        }
+
+        private void CsvMethodB()
+        {
+            /// Install ExcelDataReader.DataSet by NuGet.
+            string path = @"C:\svn2017\WebApps\SPOS\branches\SPOS_PAYMENT\SPOS\Temp\20210928_13000150_1_商店交易明細查詢.csv";
+            //using (var stream = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            //{
+            //    using (var reader = ExcelDataReader.ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration()
+            //    {
+            //        AutodetectSeparators = new char[] { ',' },
+            //        LeaveOpen = false
+            //    }))
+            //    {
+            //        var result = reader.AsDataSet(new ExcelDataReader.ExcelDataSetConfiguration()
+            //        {
+            //            ConfigureDataTable = (_) => new ExcelDataReader.ExcelDataTableConfiguration()
+            //            {
+            //                UseHeaderRow = true
+            //            }
+            //        });
+            //        if (result == null || (result.Tables?[0]?.Rows?.Count ?? 0) < 1) LocalLogger(TLog.LogLevel.DEBUG, "It is null.");
+            //        else
+            //        {
+            //            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            //            sb.AppendFormat("Total lines = {0}", result.Tables[0].Rows.Count).AppendLine();
+            //            foreach (DataRow dr in result.Tables[0].Rows)
+            //            {
+            //                if ((dr?.ItemArray?.Length ?? 0) > 0)
+            //                {
+            //                    sb.AppendLine(string.Join(";", dr.ItemArray).Replace("=", "").Replace("\"", ""));
+            //                }
+            //            }
+            //            LocalLogger(TLog.LogLevel.DEBUG, sb.ToString());
+            //            sb = null;
+            //        }
+            //    }
+            //}
+        }
+
+        private void BtnCsvFile2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //CsvMethodA();
+                CsvMethodB();
+            }
+            catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
+        }
+
+        private void BtnCopyFile1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string source = FileHelper.GetAbsolutePathIfRelative("testCsvFile.csv");
+                string destination = FileHelper.GetAbsolutePathIfRelative(@"folder1\testCsvFileABC.csv");
+                if (FileHelper.CopySingleFile(source, destination)) LocalLogger(TLog.LogLevel.DEBUG, "Done");
+                else LocalLogger(TLog.LogLevel.DEBUG, "Fail");
             }
             catch (Exception ex) { LocalLogger(TLog.LogLevel.ERROR, ex.ToString()); }
         }

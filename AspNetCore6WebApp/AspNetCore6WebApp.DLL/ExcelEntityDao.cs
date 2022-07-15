@@ -38,11 +38,11 @@ namespace AspNetCore6WebApp.DLL
             try
             {
                 /// Insert new records.
-                _logger.LogWarning("Insert into database.");
+                _logger.LogWarning("Insert into database");
                 dbSet.AddRange(os);
                 int i = db.SaveChanges();
                 /// Delete the outdated.
-                _logger.LogWarning("Delete the outdated.");
+                _logger.LogWarning("Delete the outdated");
                 dbSet.RemoveRange(dbSet.Where(o => o.Version < updateVersion));
                 db.SaveChanges();
                 /// Commit.

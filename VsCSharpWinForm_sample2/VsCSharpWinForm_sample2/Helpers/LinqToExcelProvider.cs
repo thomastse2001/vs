@@ -22,9 +22,11 @@ namespace VsCSharpWinForm_sample2.Helpers
         }
 
         /// Template connectionstring for Excel connections
+        /// Set HRD=NO;IMEX=1 to avoid crash and missing data.
+        /// https://stackoverflow.com/questions/10102149/what-is-imex-within-oledb-connection-strings
         //private const string ConnectionStringTemplate = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;IMEX=1;"";";
         private const string ConnectionStringTemplate = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1;"";";
-        private const string ConnectionStringTemplateXlsx = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1;"";";
+        private const string ConnectionStringTemplateXlsx = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=NO;IMEX=1;"";";
 
         /// Default constructor
         public LinqToExcelProvider(string fileName)
@@ -60,6 +62,19 @@ namespace VsCSharpWinForm_sample2.Helpers
                 da.Fill(dt);
                 return dt.AsEnumerable();
             }
+            //using (OleDbConnection cn = new OleDbConnection(GetConnectionString()))
+            //{
+            //    cn.Open();
+            //    using (OleDbCommand cm = new OleDbCommand(string.Format("SELECT * FROM [{0}$]", sheetName), cn))
+            //    {
+            //        using (OleDbDataReader reader = cm.ExecuteReader())
+            //        {
+            //            DataTable dt = new DataTable();
+            //            dt.Load(reader);
+            //            return dt.AsEnumerable();
+            //        }
+            //    }
+            //}
         }
 
         public string[] GetExcelSheetNames()

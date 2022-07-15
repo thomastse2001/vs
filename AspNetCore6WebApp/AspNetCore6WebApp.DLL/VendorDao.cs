@@ -82,7 +82,7 @@ namespace AspNetCore6WebApp.DLL
                 string? name = _dbHelper.GetStringFromDb(dr, Param.Excel.ColumnHeader.Vendor.Name);
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    _logger.LogError("GetFromDataFow. Name cannot be empty.");
+                    _logger.LogError("GetFromDataFow. Name cannot be empty");
                     return null;
                 }
                 return new Vendor
@@ -129,15 +129,15 @@ namespace AspNetCore6WebApp.DLL
             try
             {
                 /// Insert new records.
-                _logger.LogWarning("Insert into database.");
+                _logger.LogWarning("Insert into database");
                 db.Vendors.AddRange(os);
                 int i = db.SaveChanges();
                 /// Delete the outdated.
-                _logger.LogWarning("Delete the outdated.");
+                _logger.LogWarning("Delete the outdated");
                 db.Vendors.RemoveRange(db.Vendors.Where(o => o.Version < updateVersion));
                 db.SaveChanges();
                 /// Commit.
-                _logger.LogWarning("Commit.");
+                _logger.LogWarning("Commit");
                 trans.Commit();
                 return i;
             }

@@ -27,9 +27,10 @@ namespace TT
 
         public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv)
         {
-            var cr = GetCryptography(key, iv);
-            var transform = cr.CreateEncryptor();
-            return transform.TransformFinalBlock(data, 0, data.Length);
+            //var cr = GetCryptography(key, iv);
+            //var transform = cr.CreateEncryptor();
+            //return transform.TransformFinalBlock(data, 0, data.Length);
+            return GetCryptography(key, iv).CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
         }
 
         public static byte[] Encrypt(byte[] data, string password)
@@ -45,9 +46,10 @@ namespace TT
 
         public static byte[] Decrypt(byte[] cipherData, byte[] key, byte[] iv)
         {
-            var cr = GetCryptography(key, iv);
-            var transform = cr.CreateDecryptor();
-            return transform.TransformFinalBlock(cipherData, 0, cipherData.Length);
+            //var cr = GetCryptography(key, iv);
+            //var transform = cr.CreateDecryptor();
+            //return transform.TransformFinalBlock(cipherData, 0, cipherData.Length);
+            return GetCryptography(key, iv).CreateDecryptor().TransformFinalBlock(cipherData, 0, cipherData.Length);
         }
 
         public static byte[] Decrypt(byte[] cipherData, string password)
