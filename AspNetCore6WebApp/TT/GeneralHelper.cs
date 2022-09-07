@@ -98,24 +98,24 @@ namespace TT
 
         /// Version should be in the format of X.X.X.X, where X is an non-negative integer. E.g. 12.0.6.83
         /// Return value = True if the current version is up-to-date. False if the current version is outdated. Null if error.
-        public static bool? IsVersionUpdated(string currentVersion, string mostUpdatedVersion, out string errorMessage)
+        public static bool IsVersionUpdated(string currentVersion, string mostUpdatedVersion, out string errorMessage)
         {
             errorMessage = string.Empty;
             try
             {
-                int[] currentVersionNumbers = GetVersionNumberArray(currentVersion);
+                int[] currentVersionNumbers = GetVersionNumberArray(currentVersion.TrimEnd('.'));
                 if (currentVersionNumbers == null || currentVersionNumbers.Length < 1)
                 {
                     errorMessage = string.Format("Current version is in a wrong format. {0}", currentVersion);
-                    return null;
+                    return false;
                 }
-                int[] mostUpdatedVersionNumbers = GetVersionNumberArray(mostUpdatedVersion);
+                int[] mostUpdatedVersionNumbers = GetVersionNumberArray(mostUpdatedVersion.TrimEnd('.'));
                 if (mostUpdatedVersionNumbers == null || mostUpdatedVersionNumbers.Length < 1)
                 {
                     errorMessage = string.Format("Most updated version is in a wrong format. {0}", mostUpdatedVersion);
-                    return null;
+                    return false;
                 }
-                int minLength = currentVersionNumbers.Length >= mostUpdatedVersionNumbers.Length ? currentVersionNumbers.Length : mostUpdatedVersionNumbers.Length;
+                int minLength = currentVersionNumbers.Length <= mostUpdatedVersionNumbers.Length ? currentVersionNumbers.Length : mostUpdatedVersionNumbers.Length;
                 int i = 0;
                 while (i < minLength && currentVersionNumbers[i] == mostUpdatedVersionNumbers[i])
                 { i++; }
@@ -137,7 +137,7 @@ namespace TT
             catch (Exception ex)
             {
                 errorMessage = ex.Message;
-                return null;
+                return false;
             }
         }
 

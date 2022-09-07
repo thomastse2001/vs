@@ -39,6 +39,8 @@
             this.NotifyIconHide = new System.Windows.Forms.NotifyIcon(this.components);
             this.TabControlMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BtnIsVersionUpdated = new System.Windows.Forms.Button();
+            this.BtnCreateExitFile = new System.Windows.Forms.Button();
             this.BtnRenameFilenamesByModifiedDate = new System.Windows.Forms.Button();
             this.BtnRenameFilenames = new System.Windows.Forms.Button();
             this.BtnTicTacToe = new System.Windows.Forms.Button();
@@ -73,7 +75,7 @@
             this.BWorkerTcpServerIncomingDataHandler = new System.ComponentModel.BackgroundWorker();
             this.BWorkerTcpServerUpdatingClientList = new System.ComponentModel.BackgroundWorker();
             this.BWorkerExitFile = new System.ComponentModel.BackgroundWorker();
-            this.BtnCreateExitFile = new System.Windows.Forms.Button();
+            this.Dtp1 = new System.Windows.Forms.DateTimePicker();
             this.ContextMenuStripHide.SuspendLayout();
             this.TabControlMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -162,6 +164,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.Dtp1);
+            this.tabPage1.Controls.Add(this.BtnIsVersionUpdated);
             this.tabPage1.Controls.Add(this.BtnCreateExitFile);
             this.tabPage1.Controls.Add(this.BtnRenameFilenamesByModifiedDate);
             this.tabPage1.Controls.Add(this.BtnRenameFilenames);
@@ -177,6 +181,26 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BtnIsVersionUpdated
+            // 
+            this.BtnIsVersionUpdated.Location = new System.Drawing.Point(113, 65);
+            this.BtnIsVersionUpdated.Name = "BtnIsVersionUpdated";
+            this.BtnIsVersionUpdated.Size = new System.Drawing.Size(120, 23);
+            this.BtnIsVersionUpdated.TabIndex = 8;
+            this.BtnIsVersionUpdated.Text = "Is Version Updated";
+            this.BtnIsVersionUpdated.UseVisualStyleBackColor = true;
+            this.BtnIsVersionUpdated.Click += new System.EventHandler(this.BtnIsVersionUpdated_Click);
+            // 
+            // BtnCreateExitFile
+            // 
+            this.BtnCreateExitFile.Location = new System.Drawing.Point(7, 65);
+            this.BtnCreateExitFile.Name = "BtnCreateExitFile";
+            this.BtnCreateExitFile.Size = new System.Drawing.Size(100, 23);
+            this.BtnCreateExitFile.TabIndex = 7;
+            this.BtnCreateExitFile.Text = "Create Exit File";
+            this.BtnCreateExitFile.UseVisualStyleBackColor = true;
+            this.BtnCreateExitFile.Click += new System.EventHandler(this.BtnCreateExitFile_Click);
             // 
             // BtnRenameFilenamesByModifiedDate
             // 
@@ -520,15 +544,14 @@
             // 
             this.BWorkerExitFile.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWorkerExitFile_DoWork);
             // 
-            // BtnCreateExitFile
+            // Dtp1
             // 
-            this.BtnCreateExitFile.Location = new System.Drawing.Point(7, 65);
-            this.BtnCreateExitFile.Name = "BtnCreateExitFile";
-            this.BtnCreateExitFile.Size = new System.Drawing.Size(100, 23);
-            this.BtnCreateExitFile.TabIndex = 7;
-            this.BtnCreateExitFile.Text = "Create Exit File";
-            this.BtnCreateExitFile.UseVisualStyleBackColor = true;
-            this.BtnCreateExitFile.Click += new System.EventHandler(this.BtnCreateExitFile_Click);
+            this.Dtp1.Location = new System.Drawing.Point(239, 65);
+            this.Dtp1.Name = "Dtp1";
+            this.Dtp1.Size = new System.Drawing.Size(200, 23);
+            this.Dtp1.TabIndex = 9;
+            this.Dtp1.Value = new System.DateTime(2022, 9, 1, 8, 45, 0, 0);
+            this.Dtp1.ValueChanged += new System.EventHandler(this.Dtp1_ValueChanged);
             // 
             // FormMain
             // 
@@ -612,5 +635,7 @@
         private Button BtnRenameFilenamesByModifiedDate;
         private System.ComponentModel.BackgroundWorker BWorkerExitFile;
         private Button BtnCreateExitFile;
+        private Button BtnIsVersionUpdated;
+        private DateTimePicker Dtp1;
     }
 }

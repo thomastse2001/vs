@@ -919,5 +919,65 @@ namespace AspNetCore6WebApp.WinForm
                 VersionString = LblVersion.Text
             }.ShowDialog();
         }
+
+        private void BtnIsVersionUpdated_Click(object sender, EventArgs e)
+        {
+            BtnIsVersionUpdated.Enabled = false;
+            try
+            {
+                string currentVersion = "3.45.3.8";
+                string updatedVersion = "3.45.3.8";
+                if (TT.GeneralHelper.IsVersionUpdated(currentVersion, updatedVersion, out string errorMessage))
+                {
+                    LocalLogger(TT.Logging.LogLevel.INFO, "Current version is updated.");
+                }
+                else
+                {
+                    LocalLogger(TT.Logging.LogLevel.INFO, "Current version is NOT updated.");
+                }
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    LocalLogger(TT.Logging.LogLevel.ERROR, errorMessage);
+                }
+            }
+            catch (Exception ex) { LocalLogger(TT.Logging.LogLevel.ERROR, ex.ToString()); }
+            finally { BtnIsVersionUpdated.Enabled = true; }
+        }
+
+        private bool IsSettlementReportNotProceededIfLast2DaysOfMonthIsOnWeekEnd(DateTime dt)
+        {
+            DateTime dtNextMonth = new DateTime(dt.Year, dt.Month, 1).AddMonths(1);
+            double d = (dtNextMonth - dt).TotalDays;
+            return (d <= 2 && d > 1 && dt.DayOfWeek == DayOfWeek.Saturday)
+                || (d <= 1 && d > 0 && (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday));
+        }
+
+        private void Dtp1_ValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                DateTime dt = Dtp1.Value.Date;
+                //dt = DateTime.Today;
+                DateTime dtNextMonth = new DateTime(dt.Year, dt.Month, 1).AddMonths(1);
+                double d = (dtNextMonth - dt).TotalDays;
+                LocalLogger(TT.Logging.LogLevel.DEBUG, "{0:yyyy-MM-dd} different {1}", dt, d);
+                //if (d <= 2)
+                //{
+                //    if ((d <= 2 && d > 1 && dt.DayOfWeek == DayOfWeek.Saturday)
+                //        || (d <= 1 && d > 0 && (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday)))
+                //    { LocalLogger(TT.Logging.LogLevel.DEBUG, "{0:yyyy-MM-dd} is weekend, NOT proceed", dt); }
+                //    //LocalLogger(TT.Logging.LogLevel.DEBUG, "{0:yyyy-MM-dd} is last 2 days of month", dt);
+                //    //if (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday) { LocalLogger(TT.Logging.LogLevel.DEBUG, "{0:yyyy-MM-dd} is weekend, NOT proceed", dt); }
+                //    //else { LocalLogger(TT.Logging.LogLevel.DEBUG, "{0:yyyy-MM-dd} is weekday", dt); }
+                //}
+                if (IsSettlementReportNotProceededIfLast2DaysOfMonthIsOnWeekEnd(dt))
+                {
+                    LocalLogger(TT.Logging.LogLevel.DEBUG, "{0:yyyy-MM-dd} is weekend and last 2 day of month, NOT proceed", dt);
+                }
+                LocalLogger(TT.Logging.LogLevel.DEBUG, "{0:yyyy-MM-dd} Complete -----", dt);
+            }
+            catch (Exception ex) { LocalLogger(TT.Logging.LogLevel.ERROR, ex.ToString()); }
+            finally { BtnIsVersionUpdated.Enabled = true; }
+        }
     }
 }
