@@ -35,9 +35,9 @@ namespace TT
         public DataTable? GetDataTable(string filepath, string sheetName)
         {
             var ds = GetDataSet(filepath);
-            if ((ds?.Tables?.Count ?? 0) < 1) return null;
-            if (string.IsNullOrWhiteSpace(sheetName)) return ds?.Tables[0];
-            return (ds?.Tables.Contains(sheetName) ?? false) ? ds?.Tables[sheetName] : null;
+            if (ds == null || ds.Tables == null || ds.Tables.Count < 1) return null;
+            if (string.IsNullOrWhiteSpace(sheetName)) return ds.Tables[0];
+            return ds.Tables.Contains(sheetName) ? ds.Tables[sheetName] : null;
         }
     }
 }

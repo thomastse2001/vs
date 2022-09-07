@@ -38,7 +38,7 @@ namespace TT
         {
             /// Check if the column index is out of range.
             /// Check if it is equal to DBNull.
-            return dr == null || dr.Table.Columns.Count <= columnIndex || DBNull.Value.Equals(dr[columnIndex]);
+            return dr == null || columnIndex < 0 || dr.Table.Columns.Count <= columnIndex || DBNull.Value.Equals(dr[columnIndex]);
         }
 
         private static bool ShouldReturnNull(DataRow dr, string fieldName)
